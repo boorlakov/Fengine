@@ -6,8 +6,8 @@ public static class Program
 {
     public static void Main()
     {
-        var content = File.ReadAllText("input.json");
-        var input = JsonSerializer.Deserialize<JsonModel>(content);
-        var grid = new Grid(input);
+        var input = JsonSerializer.Deserialize<JsonModel>(File.ReadAllText("input.json"));
+        var grid = new Grid(input!);
+        var bim = 0;
     }
 }

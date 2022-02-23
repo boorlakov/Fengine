@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace umf_1;
 
 public class Grid
@@ -16,10 +18,14 @@ public class Grid
         }
     }
 
-    public double StepX { get; }
-    public double StepY { get; }
+    public double Hx { get; set; }
+    public double Hy { get; set; }
 
-    public Node[] Nodes;
+    public double[] X { get; set; }
+    public double[] Y { get; set; }
+
+
+    public readonly Node[] Nodes;
 
     private static bool _isFictive(JsonModel input, double x, double y)
     {
@@ -49,30 +55,61 @@ public class Grid
 
     public Grid(JsonModel input)
     {
-        StepX = (input.AnchorX[2] - input.AnchorX[0]) / input.StepsNumX;
-        StepY = (input.AnchorY[2] - input.AnchorY[0]) / input.StepsNumY;
-        var x = new double[input.StepsNumX + 1];
-        var y = new double[input.StepsNumY + 1];
-
-        for (var i = 0; i < input.StepsNumX + 1; i++)
+        if (Math.Abs(input.DischargeCoefX - 1) > 1e-10)
         {
-            x[i] = input.AnchorX[0] + i * StepX;
-        }
-        for (var i = 0; i < input.StepsNumY + 1; i++)
-        {
-            y[i] = input.AnchorY[0] + i * StepY;
-        }
-
-        var nodes = new Node[(input.StepsNumX + 1) * (input.StepsNumY + 1)];
-
-        var globalNum = 0;
-        for (var i = 0; i < input.StepsNumY + 1; i++)
-        {
-            for (var j = 0; j < input.StepsNumX + 1; j++)
+            var sumKx = (1 - Math.Pow(input.DischargeCoefX, input.PointsNumX - 1)) / (1 - input.DischargeCoefX);
+            Hx = (input.AnchorX[2] - input.AnchorX[0]) / sumKx;
+            var x = new double[input.PointsNumX];
+            for (var i = 0; i < input.PointsNumX; i++)
             {
-                nodes[globalNum] = new Node(x[j], y[i], _isFictive(input, x[j], y[i]));
+                x[i] = input.AnchorX[0] + Hx * (1 - Math.Pow(input.DischargeCoefX, i)) / (1 - input.DischargeCoefX);
+            }
+        }
+        else
+        {
+            var x = new double[input.PointsNumX + 1];
+            Hx = (input.AnchorX[2] - input.AnchorX[0]) / input.PointsNumX;
+            for (var i = 0; i <= input.PointsNumX; i++)
+            {
+                x[i] = input.AnchorX[0] + i * Hx;
+            }
+            X = x;
+        }
 
-                globalNum++;
+        if (Math.Abs(input.DischargeCoefY - 1) > 1e-10)
+        {
+            var sumKy = (1 - Math.Pow(input.DischargeCoefY, input.PointsNumY - 1)) / (1 - input.DischargeCoefY);
+            Hy = (input.AnchorY[2] - input.AnchorY[0]) / sumKy;
+            var y = new double[input.PointsNumY];
+            for (var i = 0; i < input.PointsNumY; i++)
+            {
+                y[i] = input.AnchorY[0] + Hy * (1 - Math.Pow(input.DischargeCoefY, i)) / (1 - input.DischargeCoefY);
+            }
+            Y = y;
+        }
+        else
+        {
+            var y = new double[input.PointsNumY + 1];
+            Hy = (input.AnchorY[2] - input.AnchorY[0]) / input.PointsNumY;
+            for (var i = 0; i <= input.PointsNumY; i++)
+            {
+                y[i] = input.AnchorY[0] + i * Hy;
+            }
+            Y = y;
+        }
+
+        Debug.Assert(X != null, nameof(X) + " != null");
+        Debug.Assert(Y != null, nameof(Y) + " != null");
+
+        var nodes = new Node[X.Length * Y.Length];
+        var num = 0;
+
+        foreach (var i in Y)
+        {
+            foreach (var j in X)
+            {
+                nodes[num] = new Node(j, i, _isFictive(input, j, i));
+                num++;
             }
         }
 
