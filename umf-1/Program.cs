@@ -8,7 +8,7 @@ public static class Program
     {
         var area = JsonSerializer.Deserialize<AreaModel>(File.ReadAllText("area.json"));
         var grid = new Grid(area!);
-        var boundaryConditions = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText("BoundaryConditions.json"));
+        var boundaryConditions = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText("boundary_conditions.json"));
         var accuracy = JsonSerializer.Deserialize<SlaeAccuracyModel>(File.ReadAllText("accuracy.json"));
         var slae = new Slae(area!, grid, boundaryConditions!);
         slae.Solve(accuracy!);
