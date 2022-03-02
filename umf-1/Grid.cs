@@ -27,7 +27,7 @@ public class Grid
 
     public readonly Node[] Nodes;
 
-    private bool IsFictiveCheck(AreaModel area, double x, double y)
+    private static bool IsFictiveCheck(AreaModel area, double x, double y)
     {
         //    GRID TYPE
         //   +--Upper----
