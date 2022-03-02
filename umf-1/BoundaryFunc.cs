@@ -2,23 +2,60 @@ namespace umf_1;
 
 public static class BoundaryFunc
 {
-    public static readonly Func<double, double, double>[] Left =
+    //    GRID TYPE
+    //   +--Upper----
+    //   |         LeftUpper
+    //   |          +
+    //   |     |LowerRight
+    //   |     |
+    //   |     |
+    // Left   LeftLower
+    //   |     |
+    //   |     |
+    //   +-----+
+    //    LowerLeft
+
+    public static readonly Dictionary<string, Func<double, double, double>> First = new()
     {
-        (x, y) => x,
+        {
+            "Left", (x, y) => 0.0
+        },
+        {
+            "Upper", (x, y) => x
+        },
+        {
+            "RightUpper", (x, y) => 3.0
+        },
+        {
+            "LowerRight", (x, y) => x
+        },
+        {
+            "RightLower", (x, y) => 1.0
+        },
+        {
+            "LowerLeft", (x, y) => x
+        }
     };
 
-    public static readonly Func<double, double, double>[] Right =
+    public static readonly Dictionary<string, Func<double, double, double>> Second = new()
     {
-        (x, y) => x,
-    };
-
-    public static readonly Func<double, double, double>[] Upper =
-    {
-        (x, y) => x,
-    };
-
-    public static readonly Func<double, double, double>[] Lower =
-    {
-        (x, y) => x,
+        {
+            "Left", (x, y) => throw new Exception("Illegal access!")
+        },
+        {
+            "Upper", (x, y) => throw new Exception("Illegal access!")
+        },
+        {
+            "RightUpper", (x, y) => throw new Exception("Illegal access!")
+        },
+        {
+            "LowerRight", (x, y) => throw new Exception("Illegal access!")
+        },
+        {
+            "RightLower", (x, y) => throw new Exception("Illegal access!")
+        },
+        {
+            "LowerLeft", (x, y) => throw new Exception("Illegal access!")
+        }
     };
 }

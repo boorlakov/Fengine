@@ -6,8 +6,15 @@ public static class Program
 {
     public static void Main()
     {
-        var input = JsonSerializer.Deserialize<JsonModel>(File.ReadAllText("input.json"));
-        var grid = new Grid(input!);
-        var bim = 0;
+        var area = JsonSerializer.Deserialize<AreaModel>(File.ReadAllText("area.json"));
+        var grid = new Grid(area!);
+        var boundaryConditions = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText("BoundaryConditions.json"));
+        var accuracy = JsonSerializer.Deserialize<SlaeAccuracyModel>(File.ReadAllText("accuracy.json"));
+        var slae = new Slae(area!, grid, boundaryConditions!);
+        // SLAE solution subroutine
+        slae.Solve(accuracy!);
+        var resVec = Utils.ExcludeFictiveFrom(slae.ResVec, grid);
+        // For breakpoint
+        var bom = 0;
     }
 }

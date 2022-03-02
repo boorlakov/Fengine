@@ -1,51 +1,48 @@
-using System.Diagnostics;
-
 namespace umf_1;
 
 public class Grid
 {
     public class Node
     {
-        public double X;
-        public double Y;
-        public bool IsFictive;
+        public double X { get; }
+        public double Y { get; }
 
-        public Node(double x, double y, bool isFictive)
+        public bool IsFictive { get; }
+
+        public bool IsOnBorder { get; }
+        public string BorderType { get; }
+
+        public Node(double x, double y, bool isFictive, bool isOnBorder, string borderType)
         {
             X = x;
             Y = y;
             IsFictive = isFictive;
+            IsOnBorder = isOnBorder;
+            BorderType = borderType;
         }
     }
 
-    public double Hx { get; set; }
-    public double Hy { get; set; }
-
-    public double[] X { get; set; }
-    public double[] Y { get; set; }
-
+    public double[] X { get; }
+    public double[] Y { get; }
 
     public readonly Node[] Nodes;
 
-    private static bool _isFictive(JsonModel input, double x, double y)
+    private bool IsFictiveCheck(AreaModel area, double x, double y)
     {
-        // Here is for L-form
-        // +-+
-        // | |
-        // | |
-        // +-+--+
-        // +----+
-        if (input.AnchorX[0] > x || input.AnchorY[0] > y)
-        {
-            return true;
-        }
+        //    GRID TYPE
+        //   +--Upper----
+        //   |         LeftUpper
+        //   |          +
+        //   |     |LowerRight
+        //   |     |
+        //   |     |
+        // Left   LeftLower
+        //   |     |
+        //   |     |
+        //   +-----+
+        //    LowerLeft
 
-        if (input.AnchorX[1] < x && input.AnchorY[1] < y)
-        {
-            return true;
-        }
-
-        if (input.AnchorX[2] < x || input.AnchorY[2] < y)
+        if (x > area.PivotX[1] && y < area.PivotY[1])
         {
             return true;
         }
@@ -53,53 +50,88 @@ public class Grid
         return false;
     }
 
-    public Grid(JsonModel input)
+    private static bool IsOnBorderCheck(AreaModel area, double x, double y)
     {
-        if (Math.Abs(input.DischargeCoefX - 1) > 1e-10)
+        // ReSharper disable CompareOfFloatsByEqualityOperator
+        return x == area.PivotX[0] || x == area.PivotX[2] || y == area.PivotY[0] || y == area.PivotY[2] ||
+               y == area.PivotY[1] && x >= area.PivotX[1] || x == area.PivotX[1] && y <= area.PivotY[1];
+    }
+
+    private static string GetBorderType(AreaModel area, double x, double y)
+    {
+        if (x == area.PivotX[0]) return "Left";
+
+        if (y == area.PivotY[2]) return "Upper";
+
+        if (x == area.PivotX[2] && y >= area.PivotY[1]) return "RightUpper";
+
+        if (y == area.PivotY[1] && x >= area.PivotX[1]) return "LowerRight";
+
+        if (x == area.PivotX[1] && y <= area.PivotY[1]) return "RightLower";
+
+        if (y == area.PivotY[0] && x <= area.PivotX[1]) return "LowerLeft";
+
+        return "None";
+    }
+
+    public Grid(AreaModel area)
+    {
+        if (Math.Abs(area.DischargeRatioX - 1) > 1e-10)
         {
-            var sumKx = (1 - Math.Pow(input.DischargeCoefX, input.PointsNumX - 1)) / (1 - input.DischargeCoefX);
-            Hx = (input.AnchorX[2] - input.AnchorX[0]) / sumKx;
-            var x = new double[input.PointsNumX];
-            for (var i = 0; i < input.PointsNumX; i++)
+            var sumKx = (1 - Math.Pow(area.DischargeRatioX, area.AmountX - 1)) / (1 - area.DischargeRatioX);
+            var hX = (area.PivotX[2] - area.PivotX[0]) / sumKx;
+            var x = new double[area.AmountX];
+
+            for (var i = 0; i < area.AmountX; i++)
             {
-                x[i] = input.AnchorX[0] + Hx * (1 - Math.Pow(input.DischargeCoefX, i)) / (1 - input.DischargeCoefX);
+                x[i] = area.PivotX[0] + hX * (1 - Math.Pow(area.DischargeRatioX, i)) / (1 - area.DischargeRatioX);
             }
+
+            X = x;
         }
         else
         {
-            var x = new double[input.PointsNumX + 1];
-            Hx = (input.AnchorX[2] - input.AnchorX[0]) / input.PointsNumX;
-            for (var i = 0; i <= input.PointsNumX; i++)
+            var x = new double[area.AmountX];
+            var hX = (area.PivotX[2] - area.PivotX[0]) / (area.AmountX - 1);
+
+            for (var i = 0; i < area.AmountX; i++)
             {
-                x[i] = input.AnchorX[0] + i * Hx;
+                x[i] = area.PivotX[0] + i * hX;
             }
+
             X = x;
         }
 
-        if (Math.Abs(input.DischargeCoefY - 1) > 1e-10)
+        if (Math.Abs(area.DischargeRatioY - 1) > 1e-10)
         {
-            var sumKy = (1 - Math.Pow(input.DischargeCoefY, input.PointsNumY - 1)) / (1 - input.DischargeCoefY);
-            Hy = (input.AnchorY[2] - input.AnchorY[0]) / sumKy;
-            var y = new double[input.PointsNumY];
-            for (var i = 0; i < input.PointsNumY; i++)
+            var sumKy = (1 - Math.Pow(area.DischargeRatioY, area.AmountY - 1)) / (1 - area.DischargeRatioY);
+            var hY = (area.PivotY[2] - area.PivotY[0]) / sumKy;
+            var y = new double[area.AmountY];
+
+            for (var i = 0; i < area.AmountY; i++)
             {
-                y[i] = input.AnchorY[0] + Hy * (1 - Math.Pow(input.DischargeCoefY, i)) / (1 - input.DischargeCoefY);
+                y[i] = area.PivotY[0] + hY * (1 - Math.Pow(area.DischargeRatioY, i)) / (1 - area.DischargeRatioY);
             }
+
             Y = y;
         }
         else
         {
-            var y = new double[input.PointsNumY + 1];
-            Hy = (input.AnchorY[2] - input.AnchorY[0]) / input.PointsNumY;
-            for (var i = 0; i <= input.PointsNumY; i++)
+            var y = new double[area.AmountY];
+            var hY = (area.PivotY[2] - area.PivotY[0]) / (area.AmountY - 1);
+
+            for (var i = 0; i < area.AmountY; i++)
             {
-                y[i] = input.AnchorY[0] + i * Hy;
+                y[i] = area.PivotY[0] + i * hY;
             }
+
             Y = y;
         }
 
-        Debug.Assert(X != null, nameof(X) + " != null");
-        Debug.Assert(Y != null, nameof(Y) + " != null");
+        if (!Utils.CheckGridConsistency(X, area.PivotX) || !Utils.CheckGridConsistency(Y, area.PivotY))
+        {
+            throw new Exception("Non consistent data");
+        }
 
         var nodes = new Node[X.Length * Y.Length];
         var num = 0;
@@ -108,7 +140,13 @@ public class Grid
         {
             foreach (var j in X)
             {
-                nodes[num] = new Node(j, i, _isFictive(input, j, i));
+                nodes[num] = new Node(
+                    j,
+                    i,
+                    IsFictiveCheck(area, j, i),
+                    IsOnBorderCheck(area, j, i),
+                    GetBorderType(area, j, i)
+                );
                 num++;
             }
         }
