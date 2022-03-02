@@ -2,9 +2,9 @@ namespace umf_1;
 
 public static class Utils
 {
-    public static bool CheckGridConsistency(double[] grid, IEnumerable<double> anchor)
+    public static bool CheckGridConsistency(double[] grid, IEnumerable<double> pivot)
     {
-        foreach (var point in anchor)
+        foreach (var point in pivot)
         {
             if (Array.FindIndex(grid, x => Math.Abs(x - point) < 1e-10) < 0)
             {
