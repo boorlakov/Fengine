@@ -11,7 +11,6 @@ public static class Program
         var boundaryConditions = JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText("BoundaryConditions.json"));
         var accuracy = JsonSerializer.Deserialize<SlaeAccuracyModel>(File.ReadAllText("accuracy.json"));
         var slae = new Slae(area!, grid, boundaryConditions!);
-        // SLAE solution subroutine
         slae.Solve(accuracy!);
         var resVec = Utils.ExcludeFictiveFrom(slae.ResVec, grid);
         // For breakpoint
