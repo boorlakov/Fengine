@@ -31,12 +31,12 @@ public class Grid
     {
         //    GRID TYPE
         //   +--Upper----
-        //   |         LeftUpper
+        //   |         RightUpper
         //   |          +
         //   |     |LowerRight
         //   |     |
         //   |     |
-        // Left   LeftLower
+        // Left   RightLower
         //   |     |
         //   |     |
         //   +-----+
