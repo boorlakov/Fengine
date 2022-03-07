@@ -36,67 +36,73 @@ public class Slae
 
         for (var i = 0; i < grid.Nodes.Length; i++)
         {
-            if (grid.Nodes[i].IsFictive) continue;
-
-            if (grid.Nodes[i].IsOnBorder)
+            if (grid.Nodes[i].IsFictive)
             {
-                if (boundaryConditions[grid.Nodes[i].BorderType] == "First")
-                {
-                    diag[i] = 1.0;
-                    rhsVec[i] = BoundaryFunc.First[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
-                }
-                else
-                {
-                    if (grid.Nodes[i].BorderType == "Left")
-                    {
-                        var hX = grid.Nodes[i + 1].X - grid.Nodes[i].X;
-                        diag[i] = area.Lambda / hX;
-                        u0[i] = -area.Lambda / hX;
-                        rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
-                    }
-
-                    if (grid.Nodes[i].BorderType == "Upper")
-                    {
-                        var hY = grid.Nodes[i].Y - grid.Nodes[i - shift].Y;
-                        diag[i] = area.Lambda / hY;
-                        l1[i - shift] = -area.Lambda / hY;
-                        rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
-                    }
-
-                    if (grid.Nodes[i].BorderType is "RightUpper" or "RightLower")
-                    {
-                        var hX = grid.Nodes[i].X - grid.Nodes[i - 1].X;
-                        diag[i] = area.Lambda / hX;
-                        l0[i - 1] = -area.Lambda / hX;
-                        rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
-                    }
-
-                    if (grid.Nodes[i].BorderType is "LowerRight" or "LowerLeft")
-                    {
-                        var hY = grid.Nodes[i + shift].Y - grid.Nodes[i].Y;
-                        diag[i] = area.Lambda / hY;
-                        u1[i] = -area.Lambda / hY;
-                        rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
-                    }
-                }
+                diag[i] = 1.0;
+                rhsVec[i] = 0.0;
             }
             else
             {
-                var hXLeft = grid.Nodes[i].X - grid.Nodes[i - 1].X;
-                var hXRight = grid.Nodes[i + 1].X - grid.Nodes[i].X;
+                if (grid.Nodes[i].IsOnBorder)
+                {
+                    if (boundaryConditions[grid.Nodes[i].BorderType] == "First")
+                    {
+                        diag[i] = 1.0;
+                        rhsVec[i] = BoundaryFunc.First[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
+                    }
+                    else
+                    {
+                        if (grid.Nodes[i].BorderType == "Left")
+                        {
+                            var hX = grid.Nodes[i + 1].X - grid.Nodes[i].X;
+                            diag[i] = area.Lambda / hX;
+                            u0[i] = -area.Lambda / hX;
+                            rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
+                        }
 
-                var hYLower = grid.Nodes[i].Y - grid.Nodes[i - shift].Y;
-                var hYUpper = grid.Nodes[i + shift].Y - grid.Nodes[i].Y;
+                        if (grid.Nodes[i].BorderType == "Upper")
+                        {
+                            var hY = grid.Nodes[i].Y - grid.Nodes[i - shift].Y;
+                            diag[i] = area.Lambda / hY;
+                            l1[i - shift] = -area.Lambda / hY;
+                            rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
+                        }
 
-                diag[i] = -area.Lambda * (2 / (hXLeft * hXRight) + 2 / (hYLower * hYUpper)) + area.Gamma;
+                        if (grid.Nodes[i].BorderType is "RightUpper" or "RightLower")
+                        {
+                            var hX = grid.Nodes[i].X - grid.Nodes[i - 1].X;
+                            diag[i] = area.Lambda / hX;
+                            l0[i - 1] = -area.Lambda / hX;
+                            rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
+                        }
 
-                u0[i] = area.Lambda * 2 / (hXRight * (hXRight + hXLeft));
-                l0[i - 1] = area.Lambda * 2 / (hXLeft * (hXRight + hXLeft));
+                        if (grid.Nodes[i].BorderType is "LowerRight" or "LowerLeft")
+                        {
+                            var hY = grid.Nodes[i + shift].Y - grid.Nodes[i].Y;
+                            diag[i] = area.Lambda / hY;
+                            u1[i] = -area.Lambda / hY;
+                            rhsVec[i] = BoundaryFunc.Second[grid.Nodes[i].BorderType](grid.Nodes[i].X, grid.Nodes[i].Y);
+                        }
+                    }
+                }
+                else
+                {
+                    var hXLeft = grid.Nodes[i].X - grid.Nodes[i - 1].X;
+                    var hXRight = grid.Nodes[i + 1].X - grid.Nodes[i].X;
 
-                l1[i - shift] = area.Lambda * 2 / (hYUpper * (hYUpper + hYLower));
-                u1[i] = area.Lambda * 2 / (hYLower * (hYUpper + hYLower));
+                    var hYLower = grid.Nodes[i].Y - grid.Nodes[i - shift].Y;
+                    var hYUpper = grid.Nodes[i + shift].Y - grid.Nodes[i].Y;
 
-                rhsVec[i] = RhsFunc.Eval(grid.Nodes[i].X, grid.Nodes[i].Y);
+                    diag[i] = -area.Lambda * (2 / (hXLeft * hXRight) + 2 / (hYLower * hYUpper)) + area.Gamma;
+
+                    u0[i] = area.Lambda * 2 / (hXRight * (hXRight + hXLeft));
+                    l0[i - 1] = area.Lambda * 2 / (hXLeft * (hXRight + hXLeft));
+
+                    l1[i - shift] = area.Lambda * 2 / (hYUpper * (hYUpper + hYLower));
+                    u1[i] = area.Lambda * 2 / (hYLower * (hYUpper + hYLower));
+
+                    rhsVec[i] = RhsFunc.Eval(grid.Nodes[i].X, grid.Nodes[i].Y);
+                }
             }
         }
 
@@ -105,7 +111,7 @@ public class Slae
         ResVec = resVec;
     }
 
-    public double[] RhsVec;
-    public Matrix Matrix;
+    public readonly double[] RhsVec;
+    public readonly Matrix Matrix;
     public double[] ResVec;
 }
