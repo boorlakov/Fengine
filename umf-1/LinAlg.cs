@@ -19,31 +19,26 @@ public static class LinAlg
     public static double Dot(int i, Matrix matrix, double[] vec)
     {
         var res = 0.0;
+        res += matrix.Diag[i] * vec[i];
 
-        if (i == 0)
+        if (i >= 0 && i < matrix.Size - 1)
         {
-            res += matrix.Diag[0] * vec[0] + matrix.UpperPart[0][0] * vec[1];
+            res += matrix.UpperPart[0][i] * vec[i + 1];
         }
 
-        if (i >= 0 && i <= matrix.Size - matrix.Shift - 3)
+        if (i >= 0 && i < matrix.Size - matrix.Shift)
         {
-            res += matrix.UpperPart[1][i] * vec[i + matrix.Shift + 2];
+            res += matrix.UpperPart[1][i] * vec[i + matrix.Shift];
         }
 
-        if (i <= matrix.Size - 1 && i >= matrix.Shift + 2)
+        if (i <= matrix.Size - 1 && i >= matrix.Shift)
         {
-            res += matrix.LowPart[1][i - matrix.Shift - 2] * vec[i - matrix.Shift - 2];
+            res += matrix.LowPart[1][i - matrix.Shift] * vec[i - matrix.Shift];
         }
 
-        if (i > 0 && i < matrix.Size - 1)
+        if (i > 0 && i <= matrix.Size - 1)
         {
-            res += matrix.Diag[i] * vec[i] + matrix.UpperPart[0][i] * vec[i + 1] +
-                   matrix.LowPart[0][i - 1] * vec[i - 1];
-        }
-
-        if (i == matrix.Size - 1)
-        {
-            res += matrix.Diag[i] * vec[i] + matrix.LowPart[0][i - 1] * vec[i - 1];
+            res += matrix.LowPart[0][i - 1] * vec[i - 1];
         }
 
         return res;
