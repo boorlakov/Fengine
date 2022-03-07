@@ -76,64 +76,60 @@ public class Grid
 
     public Grid(AreaModel area)
     {
-        if (Math.Abs(area.DischargeRatioX - 1) > 1e-10)
-        {
-            var sumKx = (1 - Math.Pow(area.DischargeRatioX, area.AmountX - 1)) / (1 - area.DischargeRatioX);
-            var hX = (area.PivotX[2] - area.PivotX[0]) / sumKx;
-            var x = new double[area.AmountX];
+        var x = new List<double> {area.PivotX[0]};
+        var y = new List<double> {area.PivotY[0]};
 
-            for (var i = 0; i < area.AmountX; i++)
+        for (var block = 0; block < 2; block++)
+        {
+            if (Math.Abs(area.DischargeRatioX[block] - 1) > 1e-10)
             {
-                x[i] = area.PivotX[0] + hX * (1 - Math.Pow(area.DischargeRatioX, i)) / (1 - area.DischargeRatioX);
+                var sumKx = (1 - Math.Pow(area.DischargeRatioX[block], area.AmountX[block] - 1)) /
+                            (1 - area.DischargeRatioX[block]);
+                var hX = (area.PivotX[block + 1] - area.PivotX[block]) / sumKx;
+
+                for (var i = 1; i < area.AmountX[block]; i++)
+                {
+                    x.Add(area.PivotX[block] +
+                          hX * (1 - Math.Pow(area.DischargeRatioX[block], i)) / (1 - area.DischargeRatioX[block]));
+                }
+            }
+            else
+            {
+                var hX = (area.PivotX[block + 1] - area.PivotX[block]) / (area.AmountX[block] - 1);
+
+                for (var i = 1; i < area.AmountX[block]; i++)
+                {
+                    x.Add(area.PivotX[block] + i * hX);
+                }
             }
 
-            X = x;
-        }
-        else
-        {
-            var x = new double[area.AmountX];
-            var hX = (area.PivotX[2] - area.PivotX[0]) / (area.AmountX - 1);
-
-            for (var i = 0; i < area.AmountX; i++)
+            if (Math.Abs(area.DischargeRatioY[block] - 1) > 1e-10)
             {
-                x[i] = area.PivotX[0] + i * hX;
+                var sumKy = (1 - Math.Pow(area.DischargeRatioY[block], area.AmountY[block] - 1)) /
+                            (1 - area.DischargeRatioY[block]);
+                var hY = (area.PivotY[block + 1] - area.PivotY[block]) / sumKy;
+
+                for (var i = 1; i < area.AmountY[block]; i++)
+                {
+                    y.Add(area.PivotY[block] +
+                          hY * (1 - Math.Pow(area.DischargeRatioY[block], i)) / (1 - area.DischargeRatioY[block]));
+                }
+            }
+            else
+            {
+                var hY = (area.PivotY[block + 1] - area.PivotY[block]) / (area.AmountY[block] - 1);
+
+                for (var i = 1; i < area.AmountY[block]; i++)
+                {
+                    y.Add(area.PivotY[block] + i * hY);
+                }
             }
 
-            X = x;
+            X = x.ToArray();
+            Y = y.ToArray();
         }
 
-        if (Math.Abs(area.DischargeRatioY - 1) > 1e-10)
-        {
-            var sumKy = (1 - Math.Pow(area.DischargeRatioY, area.AmountY - 1)) / (1 - area.DischargeRatioY);
-            var hY = (area.PivotY[2] - area.PivotY[0]) / sumKy;
-            var y = new double[area.AmountY];
-
-            for (var i = 0; i < area.AmountY; i++)
-            {
-                y[i] = area.PivotY[0] + hY * (1 - Math.Pow(area.DischargeRatioY, i)) / (1 - area.DischargeRatioY);
-            }
-
-            Y = y;
-        }
-        else
-        {
-            var y = new double[area.AmountY];
-            var hY = (area.PivotY[2] - area.PivotY[0]) / (area.AmountY - 1);
-
-            for (var i = 0; i < area.AmountY; i++)
-            {
-                y[i] = area.PivotY[0] + i * hY;
-            }
-
-            Y = y;
-        }
-
-        if (!Utils.CheckGridConsistency(X, area.PivotX) || !Utils.CheckGridConsistency(Y, area.PivotY))
-        {
-            throw new Exception("Non consistent data");
-        }
-
-        var nodes = new Node[X.Length * Y.Length];
+        var nodes = new Node[X!.Length * Y!.Length];
         var num = 0;
 
         foreach (var i in Y)
