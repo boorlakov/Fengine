@@ -8,11 +8,8 @@ public static class SlaeSolver
     {
         for (var i = 0; i < x.Length; i++)
         {
-            if (matrix.Center[i] != 0.0)
-            {
-                var sum = GeneralOperations.Dot(i, matrix, x);
-                x[i] += w * (f[i] - sum) / matrix.Center[i];
-            }
+            var sum = GeneralOperations.Dot(i, matrix, x);
+            x[i] += w * (f[i] - sum) / matrix.Center[i];
         }
 
         return x;

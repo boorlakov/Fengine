@@ -7,13 +7,13 @@ public static class Program
 {
     public static void Main()
     {
-        var area = JsonSerializer.Deserialize<JsonModels.Area>(File.ReadAllText("input/area.json"))!;
+        var area = JsonSerializer.Deserialize<Models.Area>(File.ReadAllText("input/area.json"))!;
         var inputFuncs =
-            JsonSerializer.Deserialize<JsonModels.InputFuncs>(File.ReadAllText("input/inputFuncs.json"))!;
+            JsonSerializer.Deserialize<Models.InputFuncs>(File.ReadAllText("input/inputFuncs.json"))!;
         var boundaryConditions =
-            JsonSerializer.Deserialize<JsonModels.BoundaryConditions>(
+            JsonSerializer.Deserialize<Models.BoundaryConditions>(
                 File.ReadAllText("input/boundaryConditions.json"))!;
-        var accuracy = JsonSerializer.Deserialize<JsonModels.Accuracy>(File.ReadAllText("input/accuracy.json"))!;
+        var accuracy = JsonSerializer.Deserialize<Models.Accuracy>(File.ReadAllText("input/accuracy.json"))!;
 
         var grid = new Grid(area);
         var result = Solver.SolveWithSimpleIteration(grid, inputFuncs, area, boundaryConditions, accuracy);

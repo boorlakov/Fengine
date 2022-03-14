@@ -4,7 +4,7 @@ public class Grid
 {
     public double[] X { get; }
 
-    public Grid(JsonModels.Area area)
+    public Grid(Models.Area area)
     {
         var x = new double[area.AmountPoints];
         x[0] = area.LeftBorder;

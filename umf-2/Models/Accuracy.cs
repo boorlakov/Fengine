@@ -1,4 +1,4 @@
-namespace umf_2.JsonModels;
+namespace umf_2.Models;
 
 public class Accuracy
 {
