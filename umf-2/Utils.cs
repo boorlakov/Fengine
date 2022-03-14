@@ -1,6 +1,6 @@
 namespace umf_2;
 
-public class Utils
+public static class Utils
 {
     public static double EvalFunc(string inputFuncString, double arg)
     {

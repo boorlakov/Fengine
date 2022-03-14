@@ -21,7 +21,7 @@ public static class Program
 
 public static class LinearBasis
 {
-    public static Func<double, double>[] Func =
+    public static readonly Func<double, double>[] Func =
     {
         x => x,
         x => 1.0 - x
