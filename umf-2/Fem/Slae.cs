@@ -9,7 +9,7 @@ public class Slae
 {
     public void Solve(Accuracy accuracy)
     {
-        ResVec = SlaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
+        ResVec = SlaeSolver.Iterate(ResVec, Matrix, 1.7, RhsVec);
         var residual = SlaeSolver.RelResidual(Matrix, ResVec, RhsVec);
         var iter = 1;
         var prevResVec = new double[ResVec.Length];
@@ -103,6 +103,13 @@ public class Slae
         }
 
         Matrix = new Matrix(upper, center, lower);
+    }
+
+    public Slae(Matrix matrix, double[] rhsVec)
+    {
+        Matrix = matrix;
+        ResVec = new double[rhsVec.Length];
+        RhsVec = rhsVec;
     }
 
     private string BuildRhsFunc(Grid grid, InputFuncs inputFuncs)
