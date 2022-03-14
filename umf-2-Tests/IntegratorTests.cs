@@ -89,7 +89,7 @@ public class IntegratorTests
         const double expected = 2.0;
 
         // Act
-        var result = Integrator.Integrate1DWithStringFunc(grid, func);
+        var result = Integrator.Integrate1D(grid, func);
 
         // Assert
         Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
@@ -105,7 +105,7 @@ public class IntegratorTests
         const double expected = 2.0;
 
         // Act
-        var result = Integrator.Integrate1DWithStringFunc(grid, func);
+        var result = Integrator.Integrate1D(grid, func);
 
         // Assert
         Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
@@ -121,7 +121,7 @@ public class IntegratorTests
         const double expected = 4.0;
 
         // Act
-        var result = Integrator.Integrate1DWithStringFunc(grid, func);
+        var result = Integrator.Integrate1D(grid, func);
 
         // Assert
         Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
@@ -137,7 +137,7 @@ public class IntegratorTests
         const double expected = 4.0;
 
         // Act
-        var result = Integrator.Integrate1DWithStringFunc(grid, func);
+        var result = Integrator.Integrate1D(grid, func);
 
         // Assert
         Assert.IsTrue(IsNearby(result, expected, 1.0e-7));

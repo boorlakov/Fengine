@@ -53,7 +53,7 @@ public static class Integrator
     /// <param name="grid"> Array grid </param>
     /// <param name="funcFromString"> Function to integrate. Note: must have 1-dimension </param>
     /// <returns> Value of the definite integral </returns>
-    public static double Integrate1DWithStringFunc(double[] grid, string funcFromString)
+    public static double Integrate1D(double[] grid, string funcFromString)
     {
         var ti = new[]
         {

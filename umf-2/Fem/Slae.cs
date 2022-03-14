@@ -89,10 +89,10 @@ public class Slae
 
             var integrationValues = new[]
             {
-                Integrator.Integrate1DWithStringFunc(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
+                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
                     string.Concat(rhsFuncString, psi[0])),
 
-                Integrator.Integrate1DWithStringFunc(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
+                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
                     string.Concat(rhsFuncString, psi[1]))
             };
 
