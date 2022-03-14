@@ -7,4 +7,5 @@ public class BoundaryConditionsModel
 
     public string Right { get; init; }
     public string RightFunc { get; init; }
+    public double Beta { get; init; }
 }

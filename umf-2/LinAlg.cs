@@ -75,5 +75,32 @@ public static class LinAlg
 
             return Norm(diff) / Norm(f);
         }
+
+        public static double RelTol(double[] q, double[] qPrev)
+        {
+            var diff = new double[qPrev.Length];
+
+
+            for (var i = 0; i < qPrev.Length; i++)
+            {
+                diff[i] = qPrev[i] - q[i];
+            }
+
+            return Norm(diff) / Norm(qPrev);
+        }
+
+        public static double RelResidual(Slae slae)
+        {
+            var diff = new double[slae.RhsVec.Length];
+
+            var innerProd = MatMul(slae.Matrix, slae.ResVec);
+
+            for (var i = 0; i < slae.RhsVec.Length; i++)
+            {
+                diff[i] = slae.RhsVec[i] - innerProd[i];
+            }
+
+            return Norm(diff) / Norm(slae.RhsVec);
+        }
     }
 }

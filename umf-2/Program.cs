@@ -17,6 +17,7 @@ public static class Program
         var accuracy = JsonSerializer.Deserialize<JsonModels.AccuracyModel>(File.ReadAllText("input/accuracy.json"))!;
 
         var grid = new Grid(area);
+        var result = Fem.SolveWithSimpleIteration(grid, inputFuncs, area, boundaryConditions, accuracy);
     }
 }
 

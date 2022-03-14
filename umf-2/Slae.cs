@@ -1,10 +1,12 @@
+using System.Text;
 using umf_2.Integration;
+using umf_2.JsonModels;
 
 namespace umf_2;
 
 public class Slae
 {
-    public void Solve(JsonModels.AccuracyModel accuracy)
+    public void Solve(AccuracyModel accuracy)
     {
         ResVec = LinAlg.SlaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
         var residual = LinAlg.SlaeSolver.RelResidual(Matrix, ResVec, RhsVec);
@@ -21,9 +23,11 @@ public class Slae
         }
     }
 
-    public Slae(Grid grid, JsonModels.InputFuncsModel inputFuncs, double[] initApprox)
+    public Slae(Grid grid, InputFuncsModel inputFuncs, double[] initApprox)
     {
-        ResVec = initApprox;
+        ResVec = new double[grid.X.Length];
+        initApprox.AsSpan().CopyTo(ResVec);
+        RhsVec = new double[grid.X.Length];
 
         var localStiffness = BuildLocalStiffness();
         var localMass = BuildLocalMass();
@@ -32,7 +36,7 @@ public class Slae
         var center = new double[grid.X.Length];
         var lower = new double[grid.X.Length - 1];
 
-        var uK = BuildUk(grid);
+        var rhsFuncString = BuildRhsFunc(grid, inputFuncs);
 
         for (var i = 0; i < grid.X.Length - 1; i++)
         {
@@ -73,24 +77,57 @@ public class Slae
             #endregion
 
             #endregion
+
+            #region buildRhs
+
+            var psi = new[]
+            {
+                $"* (x - {grid.X[i]}) / ({step})",
+                $"* ({grid.X[i + 1]} - x) / ({step})"
+            };
+
+            var integrationValues = new[]
+            {
+                Integrator.Integrate1DWithStringFunc(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
+                    string.Concat(rhsFuncString, psi[0])),
+
+                Integrator.Integrate1DWithStringFunc(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
+                    string.Concat(rhsFuncString, psi[1]))
+            };
+
+            RhsVec[i] += integrationValues[0];
+            RhsVec[i + 1] += integrationValues[1];
+
+            #endregion
         }
+
+        Matrix = new Matrix(upper, center, lower);
     }
 
-    private Func<double, double> BuildUk(Grid grid)
+    private string BuildRhsFunc(Grid grid, InputFuncsModel inputFuncs)
     {
-        var uK = (double x) =>
-            ResVec[0] * (x - grid.X[0]) / (grid.X[1] - grid.X[0]) +
-            ResVec[1] * (grid.X[1] - x) / (grid.X[1] - grid.X[0]);
+        var uKString = BuildUk(grid);
+        var rhsFuncCopy = inputFuncs.RhsFunc!;
 
-        for (var i = 1; i < grid.X.Length - 1; i++)
+        return rhsFuncCopy.Replace("u", uKString);
+    }
+
+    private string BuildUk(Grid grid)
+    {
+        var sb = new StringBuilder();
+
+        for (var i = 0; i < grid.X.Length - 2; i++)
         {
-            var toSumFunc = (double x) => uK(x) +
-                                          ResVec[i] * (x - grid.X[i]) / (grid.X[i + 1] - grid.X[i]) +
-                                          ResVec[i + 1] * (grid.X[i + 1] - x) / (grid.X[i + 1] - grid.X[i]);
-            uK = toSumFunc;
+            sb.Append(
+                $"({ResVec[i]} * (x - {grid.X[i]}) / ({grid.X[i + 1] - grid.X[i]})) + ");
+            sb.Append($"({ResVec[i + 1]} * ({grid.X[i + 1]} - x) / ({grid.X[i + 1] - grid.X[i]})) + ");
         }
 
-        return uK;
+        sb.Append(
+            $"({ResVec[grid.X.Length - 2]} * (x - {grid.X[^2]}) / ({grid.X[^1] - grid.X[^2]})) + ");
+        sb.Append(
+            $"({ResVec[grid.X.Length - 1]} * ({grid.X[^1]} - x) / ({grid.X[^1] - grid.X[^2]}))");
+        return sb.ToString();
     }
 
     private static double[][][] BuildLocalStiffness()
@@ -134,9 +171,9 @@ public class Slae
     {
         var grid = Integrator.Make0To1Grid();
 
-        var localStiffness = new double[2][][];
-        localStiffness[0] = new double[2][];
-        localStiffness[1] = new double[2][];
+        var localMass = new double[2][][];
+        localMass[0] = new double[2][];
+        localMass[1] = new double[2][];
 
         var integralValues = new[]
         {
@@ -148,28 +185,28 @@ public class Slae
 
         for (var i = 0; i < 2; i++)
         {
-            localStiffness[0][i] = new double[2];
-            localStiffness[1][i] = new double[2];
+            localMass[0][i] = new double[2];
+            localMass[1][i] = new double[2];
 
             for (var j = 0; j <= i; j++)
             {
                 if (i == j)
                 {
-                    localStiffness[0][i][j] = integralValues[2 * i];
-                    localStiffness[1][i][j] = integralValues[2 * i + 1];
+                    localMass[0][i][j] = integralValues[2 * i];
+                    localMass[1][i][j] = integralValues[2 * i + 1];
                 }
                 else
                 {
-                    localStiffness[0][i][j] = integralValues[i];
-                    localStiffness[0][j][i] = localStiffness[0][i][j];
+                    localMass[0][i][j] = integralValues[i];
+                    localMass[0][j][i] = localMass[0][i][j];
 
-                    localStiffness[1][i][j] = integralValues[2 * i];
-                    localStiffness[1][j][i] = localStiffness[1][i][j];
+                    localMass[1][i][j] = integralValues[2 * i];
+                    localMass[1][j][i] = localMass[1][i][j];
                 }
             }
         }
 
-        return localStiffness;
+        return localMass;
     }
 
     public readonly double[] RhsVec;
