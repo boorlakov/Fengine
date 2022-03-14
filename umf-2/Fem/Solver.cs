@@ -25,7 +25,7 @@ public static class Solver
         return slae.ResVec;
     }
 
-    public static void ApplyBoundaryConditions(
+    private static void ApplyBoundaryConditions(
         Matrix m,
         double[] rhs,
         Area area,
