@@ -14,7 +14,7 @@ public static class Solver
         slae.Solve(accuracy);
 
         while (SlaeSolver.RelResidual(slae) > accuracy.Eps &&
-               SlaeSolver.RelTol(slae.ResVec, initApprox) > accuracy.Delta)
+               !SlaeSolver.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta))
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
             slae = new Slae(grid, inputFuncs, initApprox);
