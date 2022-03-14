@@ -1,4 +1,4 @@
-namespace umf_2;
+namespace umf_2.Fem;
 
 public class Grid
 {

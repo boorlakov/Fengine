@@ -1,4 +1,4 @@
-namespace umf_2;
+namespace umf_2.LinAlg;
 
 public class Matrix
 {

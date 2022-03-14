@@ -1,8 +1,9 @@
 using umf_2.JsonModels;
+using umf_2.LinAlg;
 
-namespace umf_2;
+namespace umf_2.Fem;
 
-public static class Fem
+public static class Solver
 {
     public static double[] SolveWithSimpleIteration(Grid grid, InputFuncs inputFuncs, Area area,
         BoundaryConditions boundaryConds, Accuracy accuracy)

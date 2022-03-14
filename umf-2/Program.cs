@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using umf_2.Fem;
 
 namespace umf_2;
 
@@ -15,15 +16,6 @@ public static class Program
         var accuracy = JsonSerializer.Deserialize<JsonModels.Accuracy>(File.ReadAllText("input/accuracy.json"))!;
 
         var grid = new Grid(area);
-        var result = Fem.SolveWithSimpleIteration(grid, inputFuncs, area, boundaryConditions, accuracy);
+        var result = Fem.Solver.SolveWithSimpleIteration(grid, inputFuncs, area, boundaryConditions, accuracy);
     }
-}
-
-public static class LinearBasis
-{
-    public static readonly Func<double, double>[] Func =
-    {
-        x => x,
-        x => 1.0 - x
-    };
 }

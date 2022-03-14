@@ -1,8 +1,9 @@
 using System.Text;
 using umf_2.Integration;
 using umf_2.JsonModels;
+using umf_2.LinAlg;
 
-namespace umf_2;
+namespace umf_2.Fem;
 
 public class Slae
 {
