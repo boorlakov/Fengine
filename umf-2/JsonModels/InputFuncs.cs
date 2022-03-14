@@ -1,6 +1,6 @@
 namespace umf_2.JsonModels;
 
-public class InputFuncsModel
+public class InputFuncs
 {
     public string? Lambda { get; init; }
     public string? Gamma { get; init; }

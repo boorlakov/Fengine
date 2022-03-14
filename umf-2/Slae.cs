@@ -6,7 +6,7 @@ namespace umf_2;
 
 public class Slae
 {
-    public void Solve(AccuracyModel accuracy)
+    public void Solve(Accuracy accuracy)
     {
         ResVec = LinAlg.SlaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
         var residual = LinAlg.SlaeSolver.RelResidual(Matrix, ResVec, RhsVec);
@@ -23,7 +23,7 @@ public class Slae
         }
     }
 
-    public Slae(Grid grid, InputFuncsModel inputFuncs, double[] initApprox)
+    public Slae(Grid grid, InputFuncs inputFuncs, double[] initApprox)
     {
         ResVec = new double[grid.X.Length];
         initApprox.AsSpan().CopyTo(ResVec);
@@ -104,7 +104,7 @@ public class Slae
         Matrix = new Matrix(upper, center, lower);
     }
 
-    private string BuildRhsFunc(Grid grid, InputFuncsModel inputFuncs)
+    private string BuildRhsFunc(Grid grid, InputFuncs inputFuncs)
     {
         var uKString = BuildUk(grid);
         var rhsFuncCopy = inputFuncs.RhsFunc!;

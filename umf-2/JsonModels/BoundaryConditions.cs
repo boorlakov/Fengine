@@ -1,6 +1,6 @@
 namespace umf_2.JsonModels;
 
-public class BoundaryConditionsModel
+public class BoundaryConditions
 {
     public string Left { get; init; }
     public string LeftFunc { get; init; }

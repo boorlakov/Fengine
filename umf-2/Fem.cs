@@ -4,8 +4,8 @@ namespace umf_2;
 
 public static class Fem
 {
-    public static double[] SolveWithSimpleIteration(Grid grid, InputFuncsModel inputFuncs, AreaModel area,
-        BoundaryConditionsModel boundaryConds, AccuracyModel accuracy)
+    public static double[] SolveWithSimpleIteration(Grid grid, InputFuncs inputFuncs, Area area,
+        BoundaryConditions boundaryConds, Accuracy accuracy)
     {
         var initApprox = new double[grid.X.Length];
         var slae = new Slae(grid, inputFuncs, initApprox);
@@ -27,8 +27,8 @@ public static class Fem
     public static void ApplyBoundaryConditions(
         Matrix m,
         double[] rhs,
-        JsonModels.AreaModel area,
-        JsonModels.BoundaryConditionsModel boundaryConds
+        JsonModels.Area area,
+        JsonModels.BoundaryConditions boundaryConds
     )
     {
         switch (boundaryConds.Left)

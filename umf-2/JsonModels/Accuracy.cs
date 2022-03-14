@@ -1,6 +1,6 @@
 namespace umf_2.JsonModels;
 
-public class AccuracyModel
+public class Accuracy
 {
     public int MaxIter { get; init; }
     public double Eps { get; init; }

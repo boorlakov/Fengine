@@ -1,6 +1,6 @@
 namespace umf_2.JsonModels;
 
-public class AreaModel
+public class Area
 {
     public double LeftBorder { get; init; }
     public double RightBorder { get; init; }
