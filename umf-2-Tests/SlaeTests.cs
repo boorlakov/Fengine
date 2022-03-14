@@ -99,7 +99,6 @@ public class SlaeTests
         var slae = new Slae(matrix, vec);
         var expected = new[] {1.0, 1.0, 1.0};
 
-
         // Act
         slae.Solve(accuracy);
         var result = new double[slae.ResVec.Length];
