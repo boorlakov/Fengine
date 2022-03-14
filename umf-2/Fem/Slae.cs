@@ -9,17 +9,17 @@ public class Slae
 {
     public void Solve(Accuracy accuracy)
     {
-        ResVec = LinAlg.SlaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
-        var residual = LinAlg.SlaeSolver.RelResidual(Matrix, ResVec, RhsVec);
+        ResVec = SlaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
+        var residual = SlaeSolver.RelResidual(Matrix, ResVec, RhsVec);
         var iter = 1;
         var prevResVec = new double[ResVec.Length];
 
         while (iter <= accuracy.MaxIter && accuracy.Eps < residual &&
-               !LinAlg.SlaeSolver.CheckIsStagnate(prevResVec, ResVec, accuracy.Delta))
+               !SlaeSolver.CheckIsStagnate(prevResVec, ResVec, accuracy.Delta))
         {
             ResVec.AsSpan().CopyTo(prevResVec);
-            ResVec = LinAlg.SlaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
-            residual = LinAlg.SlaeSolver.RelResidual(Matrix, ResVec, RhsVec);
+            ResVec = SlaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
+            residual = SlaeSolver.RelResidual(Matrix, ResVec, RhsVec);
             iter++;
         }
     }

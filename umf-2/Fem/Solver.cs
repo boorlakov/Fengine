@@ -13,8 +13,8 @@ public static class Solver
         ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConds);
         slae.Solve(accuracy);
 
-        while (LinAlg.SlaeSolver.RelResidual(slae) > accuracy.Eps &&
-               LinAlg.SlaeSolver.RelTol(slae.ResVec, initApprox) > accuracy.Delta)
+        while (SlaeSolver.RelResidual(slae) > accuracy.Eps &&
+               SlaeSolver.RelTol(slae.ResVec, initApprox) > accuracy.Delta)
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
             slae = new Slae(grid, inputFuncs, initApprox);
@@ -28,8 +28,8 @@ public static class Solver
     public static void ApplyBoundaryConditions(
         Matrix m,
         double[] rhs,
-        JsonModels.Area area,
-        JsonModels.BoundaryConditions boundaryConds
+        Area area,
+        BoundaryConditions boundaryConds
     )
     {
         switch (boundaryConds.Left)
