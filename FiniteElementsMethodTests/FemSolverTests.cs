@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace FiniteElementsMethodTests;
 
 [TestFixture]
-public class SolverTests
+public class FemSolverTests
 {
     private static bool IsNearby(double lhs, double rhs, double eps)
     {
@@ -14,7 +14,7 @@ public class SolverTests
     }
 
     [Test]
-    public void FemSolverTest()
+    public void FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndNonUniformGrid_ShouldReturnCorrectResult()
     {
         // Arrange
         var area = new Area
