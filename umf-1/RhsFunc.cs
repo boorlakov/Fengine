@@ -6,5 +6,5 @@ namespace umf_1;
 /// </summary>
 public static class RhsFunc
 {
-    public static readonly Func<double, double, double> Eval = (x, y) => 0.0;
+    public static readonly Func<double, double, double> Eval = (x, y) => x;
 }

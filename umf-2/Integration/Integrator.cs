@@ -75,6 +75,8 @@ public static class Integrator
 
         var preRes = 0.0;
         var res = 0.0;
+        var calc = new Sprache.Calc.XtensibleCalculator();
+        var func = calc.ParseFunction(funcFromString).Compile();
 
         for (var i = 0; i < grid.Length - 1; i++)
         {
@@ -83,7 +85,7 @@ public static class Integrator
             for (var j = 0; j < 4; j++)
             {
                 var arg = t * ti[j] + c;
-                preRes += ci[j] * Utils.EvalFunc(funcFromString, arg);
+                preRes += ci[j] * func(Utils.MakeDict1D(arg));
             }
 
             res = preRes * t;
@@ -106,24 +108,6 @@ public static class Integrator
         for (var i = 0; i < integrationGrid.Length; i++)
         {
             integrationGrid[i] = leftBorder + i * step;
-        }
-
-        return integrationGrid;
-    }
-
-    /// <summary>
-    /// Makes Grid 0..1 with 0.1 step size.
-    /// For my work no need to make a generative algorithm. That's fine!
-    /// </summary>
-    /// <returns>integrationGrid from 0 to 1 with 0.1 step size</returns>
-    public static double[] Make0To1Grid()
-    {
-        var integrationGrid = new double[11];
-        var step = 0.0;
-
-        for (var i = 0; i < integrationGrid.Length; i++, step += 0.1)
-        {
-            integrationGrid[i] = step;
         }
 
         return integrationGrid;
