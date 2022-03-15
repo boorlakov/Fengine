@@ -1,6 +1,6 @@
-using umf_2.Fem;
+using FiniteElementsMethod.Fem;
 
-namespace umf_2.LinAlg;
+namespace FiniteElementsMethod.LinAlg;
 
 public static class SlaeSolver
 {

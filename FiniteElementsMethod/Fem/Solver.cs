@@ -1,7 +1,7 @@
-using umf_2.LinAlg;
-using umf_2.Models;
+using FiniteElementsMethod.LinAlg;
+using FiniteElementsMethod.Models;
 
-namespace umf_2.Fem;
+namespace FiniteElementsMethod.Fem;
 
 public static class Solver
 {

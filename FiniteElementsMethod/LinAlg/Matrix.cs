@@ -1,4 +1,4 @@
-namespace umf_2.LinAlg;
+namespace FiniteElementsMethod.LinAlg;
 
 public class Matrix
 {

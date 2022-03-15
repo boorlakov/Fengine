@@ -1,8 +1,8 @@
 using System;
+using FiniteElementsMethod.LinAlg;
 using NUnit.Framework;
-using umf_2.LinAlg;
 
-namespace umf_2_Tests;
+namespace FiniteElementsMethodTests;
 
 [TestFixture]
 public class GeneralOperationsTests

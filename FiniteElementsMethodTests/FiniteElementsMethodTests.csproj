@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>umf_2_Tests</RootNamespace>
+        <RootNamespace>FiniteElementsMethodTests</RootNamespace>
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\umf-2\umf-2.csproj"/>
+        <ProjectReference Include="..\FiniteElementsMethod\FiniteElementsMethod.csproj"/>
     </ItemGroup>
 
 </Project>

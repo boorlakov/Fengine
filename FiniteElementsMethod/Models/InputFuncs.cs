@@ -1,4 +1,4 @@
-namespace umf_2.Models;
+namespace FiniteElementsMethod.Models;
 
 public class InputFuncs
 {

@@ -1,9 +1,9 @@
 using System.Text;
-using umf_2.Integration;
-using umf_2.LinAlg;
-using umf_2.Models;
+using FiniteElementsMethod.Integration;
+using FiniteElementsMethod.LinAlg;
+using FiniteElementsMethod.Models;
 
-namespace umf_2.Fem;
+namespace FiniteElementsMethod.Fem;
 
 public class Slae
 {

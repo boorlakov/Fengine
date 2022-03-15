@@ -1,8 +1,8 @@
 using System;
+using FiniteElementsMethod.Integration;
 using NUnit.Framework;
-using umf_2.Integration;
 
-namespace umf_2_Tests;
+namespace FiniteElementsMethodTests;
 
 [TestFixture]
 public class IntegratorTests

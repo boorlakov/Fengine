@@ -1,8 +1,8 @@
 using System;
+using FiniteElementsMethod.Fem;
 using NUnit.Framework;
-using umf_2.Fem;
 
-namespace umf_2_Tests;
+namespace FiniteElementsMethodTests;
 
 [TestFixture]
 public class GridTests
@@ -16,7 +16,7 @@ public class GridTests
     public void GridCtor_WhenPassUniformRatio_ShouldReturnUniformGrid()
     {
         // Arrange
-        var area = new umf_2.Models.Area
+        var area = new FiniteElementsMethod.Models.Area
         {
             AmountPoints = 5,
             DischargeRatio = 1.0,
@@ -40,7 +40,7 @@ public class GridTests
     public void GridCtor_WhenPassNonUniformRatio_ShouldReturnNonUniformGrid()
     {
         // Arrange
-        var area = new umf_2.Models.Area
+        var area = new FiniteElementsMethod.Models.Area
         {
             AmountPoints = 3,
             DischargeRatio = 0.5,

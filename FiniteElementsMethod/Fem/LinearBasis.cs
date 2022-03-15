@@ -1,4 +1,4 @@
-namespace umf_2.Fem;
+namespace FiniteElementsMethod.Fem;
 
 public static class LinearBasis
 {

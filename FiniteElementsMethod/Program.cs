@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using umf_2.Fem;
+using FiniteElementsMethod.Fem;
 
-namespace umf_2;
+namespace FiniteElementsMethod;
 
 public static class Program
 {

@@ -1,10 +1,10 @@
 using System;
+using FiniteElementsMethod.Fem;
+using FiniteElementsMethod.LinAlg;
+using FiniteElementsMethod.Models;
 using NUnit.Framework;
-using umf_2.Fem;
-using umf_2.LinAlg;
-using umf_2.Models;
 
-namespace umf_2_Tests;
+namespace FiniteElementsMethodTests;
 
 [TestFixture]
 public class SlaeTests

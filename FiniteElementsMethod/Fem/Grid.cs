@@ -1,4 +1,4 @@
-namespace umf_2.Fem;
+namespace FiniteElementsMethod.Fem;
 
 public class Grid
 {

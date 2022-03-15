@@ -1,4 +1,4 @@
-namespace umf_2;
+namespace FiniteElementsMethod;
 
 public static class Utils
 {

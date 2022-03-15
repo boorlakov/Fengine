@@ -1,4 +1,4 @@
-namespace umf_2.Integration;
+namespace FiniteElementsMethod.Integration;
 
 public static class Integrator
 {
