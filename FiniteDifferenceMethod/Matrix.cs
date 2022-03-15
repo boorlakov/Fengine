@@ -1,4 +1,4 @@
-namespace Fdm;
+namespace FiniteDifferenceMethod;
 
 public class Matrix
 {

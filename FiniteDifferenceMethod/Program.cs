@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace Fdm;
+namespace FiniteDifferenceMethod;
 
 public static class Program
 {

@@ -1,4 +1,4 @@
-namespace Fdm;
+namespace FiniteDifferenceMethod;
 
 /// <summary>
 /// Right side of differential equation, named f
