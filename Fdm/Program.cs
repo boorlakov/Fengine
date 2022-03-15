@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace umf_1;
+namespace Fdm;
 
 public static class Program
 {
@@ -10,7 +10,8 @@ public static class Program
         var grid = new Grid(area!);
 
         var boundaryConditions =
-            JsonSerializer.Deserialize<Dictionary<string, string>>(File.ReadAllText("input_data/boundary_conditions.json"));
+            JsonSerializer.Deserialize<Dictionary<string, string>>(
+                File.ReadAllText("input_data/boundary_conditions.json"));
         var accuracy = JsonSerializer.Deserialize<SlaeAccuracyModel>(File.ReadAllText("input_data/accuracy.json"));
 
         var slae = new Slae(area!, grid, boundaryConditions!);

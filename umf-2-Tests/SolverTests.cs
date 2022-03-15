@@ -14,7 +14,7 @@ public class SolverTests
     }
 
     [Test]
-    public void SlaeTest()
+    public void FemSolverTest()
     {
         // Arrange
         var area = new Area

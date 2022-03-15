@@ -1,4 +1,4 @@
-namespace umf_1;
+namespace Fdm;
 
 /// <summary>
 /// Right side of differential equation, named f
