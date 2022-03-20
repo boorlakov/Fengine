@@ -9,11 +9,6 @@ namespace FiniteElementsMethodTests;
 [TestFixture]
 public class SlaeTests
 {
-    private static bool IsNearby(double lhs, double rhs, double eps)
-    {
-        return Math.Abs(lhs - rhs) < eps;
-    }
-
     [Test]
     public void Solve_WhenPass1DiagMatrix_ShouldReturnCorrectResVec()
     {
@@ -42,7 +37,7 @@ public class SlaeTests
         // Assert
         for (var i = 0; i < result.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result[i], expected[i], 1.0e-7));
+            Assert.AreEqual(result[i], expected[i], 1.0e-7);
         }
     }
 
@@ -74,7 +69,7 @@ public class SlaeTests
         // Assert
         for (var i = 0; i < result.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result[i], expected[i], 1.0e-7));
+            Assert.AreEqual(result[i], expected[i], 1.0e-7);
         }
     }
 
@@ -107,7 +102,7 @@ public class SlaeTests
         // Assert
         for (var i = 0; i < result.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result[i], expected[i], 1.0e-5));
+            Assert.AreEqual(result[i], expected[i], 1.0e-5);
         }
     }
 
@@ -137,6 +132,6 @@ public class SlaeTests
         var result = SlaeSolver.RelResidual(slae);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-5));
+        Assert.AreEqual(result, expected, 1.0e-5);
     }
 }

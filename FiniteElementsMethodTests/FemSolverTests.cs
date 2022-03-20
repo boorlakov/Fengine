@@ -1,4 +1,3 @@
-using System;
 using FiniteElementsMethod.Fem;
 using FiniteElementsMethod.Models;
 using NUnit.Framework;
@@ -8,11 +7,6 @@ namespace FiniteElementsMethodTests;
 [TestFixture]
 public class FemSolverTests
 {
-    private static bool IsNearby(double lhs, double rhs, double eps)
-    {
-        return Math.Abs(lhs - rhs) < eps;
-    }
-
     [Test]
     public void FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndNonUniformGrid_ShouldReturnCorrectResult()
     {
@@ -64,7 +58,7 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result[i], expected[i], 1.0e-7));
+            Assert.AreEqual(result[i], expected[i], 1.0e-7);
         }
     }
 }

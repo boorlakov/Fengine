@@ -7,11 +7,6 @@ namespace FiniteElementsMethodTests;
 [TestFixture]
 public class GeneralOperationsTests
 {
-    private static bool IsNearby(double lhs, double rhs, double eps)
-    {
-        return Math.Abs(lhs - rhs) < eps;
-    }
-
     [Test]
     public void Norm_WhenPassVec_ShouldReturnSqrtOfSqrVec()
     {
@@ -23,7 +18,7 @@ public class GeneralOperationsTests
         var result = GeneralOperations.Norm(vec);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -45,7 +40,7 @@ public class GeneralOperationsTests
         var result = GeneralOperations.Dot(i, matrix, vec);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -68,7 +63,7 @@ public class GeneralOperationsTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result[i], expected[i], 1.0e-7));
+            Assert.AreEqual(result[i], expected[i], 1.0e-7);
         }
     }
 }

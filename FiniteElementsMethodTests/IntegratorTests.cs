@@ -1,4 +1,3 @@
-using System;
 using FiniteElementsMethod.Integration;
 using NUnit.Framework;
 
@@ -7,11 +6,6 @@ namespace FiniteElementsMethodTests;
 [TestFixture]
 public class IntegratorTests
 {
-    private static bool IsNearby(double lhs, double rhs, double eps)
-    {
-        return Math.Abs(lhs - rhs) < eps;
-    }
-
     [Test]
     public void MakeGrid_WhenPass0To1_ShouldReturn11ElemsArrFrom0To1()
     {
@@ -27,7 +21,7 @@ public class IntegratorTests
         // Assert 
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result[i], expected[i], 1.0e-7));
+            Assert.AreEqual(result[i], expected[i], 1.0e-7);
         }
     }
 
@@ -44,7 +38,7 @@ public class IntegratorTests
         var result = Integrator.Integrate1D(grid, func);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -60,7 +54,7 @@ public class IntegratorTests
         var result = Integrator.Integrate1D(grid, func);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -76,7 +70,7 @@ public class IntegratorTests
         var result = Integrator.Integrate1D(grid, func);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -92,7 +86,7 @@ public class IntegratorTests
         var result = Integrator.Integrate1D(grid, func);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -108,7 +102,7 @@ public class IntegratorTests
         var result = Integrator.Integrate1D(grid, func);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -124,7 +118,7 @@ public class IntegratorTests
         var result = Integrator.Integrate1D(grid, func);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 
     [Test]
@@ -140,6 +134,6 @@ public class IntegratorTests
         var result = Integrator.Integrate1D(grid, func);
 
         // Assert
-        Assert.IsTrue(IsNearby(result, expected, 1.0e-7));
+        Assert.AreEqual(result, expected, 1.0e-7);
     }
 }

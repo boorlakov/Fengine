@@ -1,4 +1,3 @@
-using System;
 using FiniteElementsMethod.Fem;
 using NUnit.Framework;
 
@@ -7,11 +6,6 @@ namespace FiniteElementsMethodTests;
 [TestFixture]
 public class GridTests
 {
-    private static bool IsNearby(double lhs, double rhs, double eps)
-    {
-        return Math.Abs(lhs - rhs) < eps;
-    }
-
     [Test]
     public void GridCtor_WhenPassUniformRatio_ShouldReturnUniformGrid()
     {
@@ -32,7 +26,7 @@ public class GridTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result.X[i], expected[i], 1.0e-7));
+            Assert.AreEqual(result.X[i], expected[i], 1.0e-7);
         }
     }
 
@@ -56,7 +50,7 @@ public class GridTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.IsTrue(IsNearby(result.X[i], expected[i], 1.0e-7));
+            Assert.AreEqual(result.X[i], expected[i], 1.0e-7);
         }
     }
 }
