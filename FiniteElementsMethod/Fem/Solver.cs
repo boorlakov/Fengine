@@ -9,7 +9,7 @@ public static class Solver
         BoundaryConditions boundaryConds, Accuracy accuracy)
     {
         var initApprox = new double[grid.X.Length];
-        initApprox.AsSpan().Fill(1.0);
+        initApprox.AsSpan().Fill(2.0);
         var slae = new Slae(grid, inputFuncs, initApprox);
         ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConds);
         slae.Solve(accuracy);

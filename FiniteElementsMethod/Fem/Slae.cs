@@ -81,19 +81,28 @@ public class Slae
 
             #region buildRhs
 
+            var rhsF = new[]
+            {
+                $"({ResVec[i]} * (x - {grid.X[i]}) / ({step}))) ",
+                $"({ResVec[i + 1]} * ({grid.X[i + 1]} - x) / ({step})"
+            };
+
             var psi = new[]
             {
+                $"* ({grid.X[i + 1]} - x) / ({step})",
                 $"* (x - {grid.X[i]}) / ({step})",
-                $"* ({grid.X[i + 1]} - x) / ({step})"
+            };
+
+            var integrands = new[]
+            {
+                $"({rhsF[0]}{psi[0]} + {rhsF[1]}{psi[1]}) {psi[0]}",
+                $"({rhsF[0]}{psi[0]} + {rhsF[1]}{psi[1]}) {psi[1]}"
             };
 
             var integrationValues = new[]
             {
-                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
-                    string.Concat(rhsFuncString, psi[0])),
-
-                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]),
-                    string.Concat(rhsFuncString, psi[1]))
+                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]), integrands[0]),
+                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]), integrands[1])
             };
 
             RhsVec[i] += integrationValues[0];
