@@ -3,6 +3,7 @@
         xmlns:vm="using:Femer.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:csmath="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="Femer.Views.MainWindow"
         Icon="/Assets/Fem.ico"
@@ -10,7 +11,6 @@
 
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
-        WindowState="Maximized"
         SystemDecorations="Full">
 
     <Design.DataContext>
@@ -97,41 +97,30 @@
                     Functions settings
                 </Label>
 
-                <Label
+                <csmath:MathView
                     Grid.Row="1" Grid.Column="0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center">
-                    λ
-                </Label>
+                    LaTeX="\lambda" />
                 <TextBox
                     Grid.Row="1" Grid.Column="1"
                     Text="{Binding InputFuncs.Lambda}" />
 
-                <Label
+                <csmath:MathView
                     Grid.Row="2" Grid.Column="0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center">
-                    γ
-                </Label>
+                    LaTeX="\gamma" />
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
                     Text="{Binding InputFuncs.Gamma}" />
 
-                <Label Grid.Row="3" Grid.Column="0"
-                       HorizontalContentAlignment="Left"
-                       VerticalContentAlignment="Center">
-                    ƒ
-                </Label>
+                <csmath:MathView
+                    Grid.Row="3" Grid.Column="0"
+                    LaTeX="f"/>
                 <TextBox
                     Grid.Row="3" Grid.Column="1"
                     Text="{Binding InputFuncs.RhsFunc}" />
 
-                <Label
+                <csmath:MathView
                     Grid.Row="4" Grid.Column="0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center">
-                    u*
-                </Label>
+                    LaTeX="u^*"/>
                 <TextBox
                     Grid.Row="4" Grid.Column="1"
                     Text="{Binding InputFuncs.UStar}" />
@@ -190,12 +179,9 @@
                     Grid.Row="4" Grid.Column="1"
                     Text="{Binding BoundaryConditions.RightFunc}" />
 
-                <Label
+                <csmath:MathView
                     Grid.Row="5" Grid.Column="0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center">
-                    β
-                </Label>
+                    LaTeX="\beta" />
                 <TextBox
                     Grid.Row="5" Grid.Column="1"
                     Text="{Binding BoundaryConditions.Beta}" />
@@ -222,22 +208,16 @@
                     Grid.Row="1" Grid.Column="1"
                     Text="{Binding Accuracy.MaxIter}" />
 
-                <Label
+                <csmath:MathView
                     Grid.Row="2" Grid.Column="0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center">
-                    ɛ
-                </Label>
+                    LaTeX="\varepsilon"/>
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
                     Text="{Binding Accuracy.Eps}" />
 
-                <Label
+                <csmath:MathView
                     Grid.Row="3" Grid.Column="0"
-                    HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center">
-                    𝛿
-                </Label>
+                    LaTeX="\delta"/>
                 <TextBox
                     Grid.Row="3" Grid.Column="1"
                     Text="{Binding Accuracy.Delta}" />
