@@ -9,10 +9,6 @@ namespace Femer.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel()
-        {
-        }
-
         public void Solve()
         {
             var grid = new Grid(Area);
@@ -54,12 +50,12 @@ namespace Femer.ViewModels
 
         public Accuracy Accuracy { get; } = new();
 
-        private string result;
+        private string _result;
 
         public string Result
         {
-            get => result;
-            set => this.RaiseAndSetIfChanged(ref result, value);
+            get => _result;
+            set => this.RaiseAndSetIfChanged(ref _result, value);
         }
     }
 }
