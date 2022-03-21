@@ -1,4 +1,3 @@
-using System.Text;
 using FiniteElementsMethod.Integration;
 using FiniteElementsMethod.LinAlg;
 using FiniteElementsMethod.Models;
@@ -36,8 +35,8 @@ public class Slae
         var upper = new double[grid.X.Length - 1];
         var center = new double[grid.X.Length];
         var lower = new double[grid.X.Length - 1];
-
-        var rhsFuncString = BuildRhsFunc(grid, inputFuncs);
+        var rhsCalc = new Sprache.Calc.XtensibleCalculator();
+        var rhsFunc = rhsCalc.ParseFunction(inputFuncs.RhsFunc).Compile();
 
         for (var i = 0; i < grid.X.Length - 1; i++)
         {
@@ -81,32 +80,10 @@ public class Slae
 
             #region buildRhs
 
-            var rhsF = new[]
-            {
-                $"({ResVec[i]} * (x - {grid.X[i]}) / ({step}))) ",
-                $"({ResVec[i + 1]} * ({grid.X[i + 1]} - x) / ({step})"
-            };
-
-            var psi = new[]
-            {
-                $"* ({grid.X[i + 1]} - x) / ({step})",
-                $"* (x - {grid.X[i]}) / ({step})",
-            };
-
-            var integrands = new[]
-            {
-                $"({rhsF[0]}{psi[0]} + {rhsF[1]}{psi[1]}) {psi[0]}",
-                $"({rhsF[0]}{psi[0]} + {rhsF[1]}{psi[1]}) {psi[1]}"
-            };
-
-            var integrationValues = new[]
-            {
-                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]), integrands[0]),
-                Integrator.Integrate1D(Integrator.MakeGrid(grid.X[i], grid.X[i + 1]), integrands[1])
-            };
-
-            RhsVec[i] += integrationValues[0];
-            RhsVec[i + 1] += integrationValues[1];
+            RhsVec[i] += step * (rhsFunc(Utils.MakeDict2D(grid.X[i], ResVec[i])) * localMass[2][0][0] +
+                                 rhsFunc(Utils.MakeDict2D(grid.X[i + 1], ResVec[i + 1])) * localMass[2][0][1]);
+            RhsVec[i + 1] += step * (rhsFunc(Utils.MakeDict2D(grid.X[i], ResVec[i])) * localMass[2][1][0] +
+                                     rhsFunc(Utils.MakeDict2D(grid.X[i + 1], ResVec[i + 1])) * localMass[2][1][1]);
 
             #endregion
         }
@@ -119,32 +96,6 @@ public class Slae
         Matrix = matrix;
         ResVec = new double[rhsVec.Length];
         RhsVec = rhsVec;
-    }
-
-    private string BuildRhsFunc(Grid grid, InputFuncs inputFuncs)
-    {
-        var uKString = BuildUk(grid);
-        var rhsFuncCopy = inputFuncs.RhsFunc!;
-
-        return rhsFuncCopy.Replace("u", uKString);
-    }
-
-    private string BuildUk(Grid grid)
-    {
-        var sb = new StringBuilder();
-
-        for (var i = 0; i < grid.X.Length - 2; i++)
-        {
-            sb.Append(
-                $"({ResVec[i]} * (x - {grid.X[i]}) / ({grid.X[i + 1] - grid.X[i]})) + ");
-            sb.Append($"({ResVec[i + 1]} * ({grid.X[i + 1]} - x) / ({grid.X[i + 1] - grid.X[i]})) + ");
-        }
-
-        sb.Append(
-            $"({ResVec[grid.X.Length - 2]} * (x - {grid.X[^2]}) / ({grid.X[^1] - grid.X[^2]})) + ");
-        sb.Append(
-            $"({ResVec[grid.X.Length - 1]} * ({grid.X[^1]} - x) / ({grid.X[^1] - grid.X[^2]}))");
-        return sb.ToString();
     }
 
     private static double[][][] BuildLocalStiffness()
@@ -188,22 +139,27 @@ public class Slae
     {
         var grid = Integrator.MakeGrid(0.0, 1.0);
 
-        var localMass = new double[2][][];
+        var localMass = new double[3][][];
         localMass[0] = new double[2][];
         localMass[1] = new double[2][];
+        localMass[2] = new double[2][];
 
         var integralValues = new[]
         {
             Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
             Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
             Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x))
+            Integrator.Integrate1D(grid, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
+            Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
+            Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
+            Integrator.Integrate1D(grid, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
         };
 
         for (var i = 0; i < 2; i++)
         {
             localMass[0][i] = new double[2];
             localMass[1][i] = new double[2];
+            localMass[2][i] = new double[2];
 
             for (var j = 0; j <= i; j++)
             {
@@ -211,6 +167,7 @@ public class Slae
                 {
                     localMass[0][i][j] = integralValues[2 * i];
                     localMass[1][i][j] = integralValues[2 * i + 1];
+                    localMass[2][i][j] = integralValues[4 + 2 * i];
                 }
                 else
                 {
@@ -219,6 +176,9 @@ public class Slae
 
                     localMass[1][i][j] = integralValues[2 * i];
                     localMass[1][j][i] = localMass[1][i][j];
+
+                    localMass[2][i][j] = integralValues[4 + i];
+                    localMass[2][j][i] = localMass[2][i][j];
                 }
             }
         }
