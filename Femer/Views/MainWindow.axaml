@@ -7,8 +7,7 @@
         x:Class="Femer.Views.MainWindow"
         Icon="/Assets/Fem.ico"
         Title="Femer"
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent"
+
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
@@ -31,137 +30,217 @@
             Content="Solve"
             Click="Solve_OnClick" />
 
-        <Grid Grid.Row="1" ColumnDefinitions="*, *, *, *">
-            <Grid HorizontalAlignment="Center" Grid.Column="0" RowDefinitions="Auto, Auto, Auto, Auto, Auto"
-                  ColumnDefinitions="Auto, Auto">
-                <Label FontSize="20" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Area settings</Label>
-
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="1"
-                       Grid.Column="0">
-                    Left border
+        <Grid
+            Grid.Row="1" ColumnDefinitions="*, *, *, *">
+            <Grid
+                Grid.Column="0"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto"
+                HorizontalAlignment="Center">
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    FontSize="20" FontWeight="Bold"
+                    Grid.ColumnSpan="2">
+                    Area settings
                 </Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Area.LeftBorder}" />
 
                 <Label
+                    Grid.Row="1" Grid.Column="0"
                     HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    Grid.Row="2" Grid.Column="0">
+                    VerticalContentAlignment="Center">
+                    Left border
+                </Label>
+                <TextBox
+                    Grid.Row="1" Grid.Column="1"
+                    Text="{Binding Area.LeftBorder}" />
+
+                <Label
+                    Grid.Row="2" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center">
                     Right border
                 </Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Area.RightBorder}" />
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    Text="{Binding Area.RightBorder}" />
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="3"
-                       Grid.Column="0">
+                <Label
+                    Grid.Row="3" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center">
                     Discharge Ratio
                 </Label>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Area.DischargeRatio}" />
+                <TextBox
+                    Grid.Row="3" Grid.Column="1"
+                    Text="{Binding Area.DischargeRatio}" />
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="4"
-                       Grid.Column="0">
+                <Label
+                    Grid.Row="4" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center">
                     Amount of points
                 </Label>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding Area.AmountPoints}" />
+                <TextBox
+                    Grid.Row="4" Grid.Column="1"
+                    Text="{Binding Area.AmountPoints}" />
             </Grid>
 
-            <Grid HorizontalAlignment="Center" Grid.Column="1" RowDefinitions="Auto, Auto, Auto, Auto, Auto"
-                  ColumnDefinitions="Auto, Auto">
-                <Label FontSize="20" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Functions settings</Label>
+            <Grid
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto">
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    FontSize="20" FontWeight="Bold"
+                    Grid.ColumnSpan="2">
+                    Functions settings
+                </Label>
 
-                <Label HorizontalContentAlignment="Left"
-                       VerticalContentAlignment="Center"
-                       Grid.Row="1" Grid.Column="0">
+                <Label
+                    Grid.Row="1" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center">
                     λ
                 </Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding InputFuncs.Lambda}" />
+                <TextBox
+                    Grid.Row="1" Grid.Column="1"
+                    Text="{Binding InputFuncs.Lambda}" />
 
                 <Label
+                    Grid.Row="2" Grid.Column="0"
                     HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    Grid.Row="2" Grid.Column="0">
+                    VerticalContentAlignment="Center">
                     γ
                 </Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding InputFuncs.Gamma}" />
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    Text="{Binding InputFuncs.Gamma}" />
 
-                <Label HorizontalContentAlignment="Left"
-                       VerticalContentAlignment="Center"
-                       Grid.Row="3" Grid.Column="0">
+                <Label Grid.Row="3" Grid.Column="0"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center">
                     ƒ
                 </Label>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding InputFuncs.RhsFunc}" />
+                <TextBox
+                    Grid.Row="3" Grid.Column="1"
+                    Text="{Binding InputFuncs.RhsFunc}" />
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="4"
-                       Grid.Column="0">
+                <Label
+                    Grid.Row="4" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center">
                     u*
                 </Label>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding InputFuncs.UStar}" />
+                <TextBox
+                    Grid.Row="4" Grid.Column="1"
+                    Text="{Binding InputFuncs.UStar}" />
             </Grid>
 
-            <Grid HorizontalAlignment="Center" Grid.Column="2" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto"
-                  ColumnDefinitions="Auto, Auto">
-                <Label FontSize="20" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Boundary settings</Label>
+            <Grid
+                Grid.Column="2"
+                HorizontalAlignment="Center"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto">
+                <Label
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Grid.Row="0" Grid.Column="0"
+                    Grid.ColumnSpan="2">
+                    Boundary settings
+                </Label>
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="1"
-                       Grid.Column="0">
+                <Label
+                    Grid.Row="1" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center">
                     Left border
                 </Label>
-                <ComboBox Grid.Row="1" Grid.Column="1"
-                          SelectedItem="{Binding BoundaryConditions.Left}"
-                          Items="{Binding BoundaryConditionItems}" />
+                <ComboBox
+                    Grid.Row="1" Grid.Column="1"
+                    SelectedItem="{Binding BoundaryConditions.Left}"
+                    Items="{Binding BoundaryConditionItems}" />
 
                 <Label
+                    Grid.Row="2" Grid.Column="0"
                     HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    Grid.Row="2" Grid.Column="0">
+                    VerticalContentAlignment="Center">
                     Left border func
                 </Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding BoundaryConditions.LeftFunc}" />
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    Text="{Binding BoundaryConditions.LeftFunc}" />
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="3"
-                       Grid.Column="0">
+                <Label
+                    Grid.Row="3" Grid.Column="0"
+                    HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
                     Right border
                 </Label>
-                <ComboBox Grid.Row="3" Grid.Column="1"
-                          SelectedItem="{Binding BoundaryConditions.Right}"
-                          Items="{Binding BoundaryConditionItems}" />
+                <ComboBox
+                    Grid.Row="3" Grid.Column="1"
+                    SelectedItem="{Binding BoundaryConditions.Right}"
+                    Items="{Binding BoundaryConditionItems}" />
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="4"
-                       Grid.Column="0">
+                <Label
+                    Grid.Row="4" Grid.Column="0"
+                    HorizontalContentAlignment="Left" VerticalContentAlignment="Center">
                     Right border func
                 </Label>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding BoundaryConditions.RightFunc}" />
+                <TextBox
+                    Grid.Row="4" Grid.Column="1"
+                    Text="{Binding BoundaryConditions.RightFunc}" />
 
                 <Label
+                    Grid.Row="5" Grid.Column="0"
                     HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    Grid.Row="5" Grid.Column="0">
+                    VerticalContentAlignment="Center">
                     β
                 </Label>
-                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding BoundaryConditions.Beta}" />
+                <TextBox
+                    Grid.Row="5" Grid.Column="1"
+                    Text="{Binding BoundaryConditions.Beta}" />
             </Grid>
 
-            <Grid HorizontalAlignment="Center" Grid.Column="3" RowDefinitions="Auto, Auto, Auto, Auto, Auto"
-                  ColumnDefinitions="Auto, Auto">
-                <Label FontSize="20" FontWeight="Bold" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2">Accuracy setting</Label>
+            <Grid
+                Grid.Column="3"
+                HorizontalAlignment="Center"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto">
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    FontSize="20" FontWeight="Bold"
+                    Grid.ColumnSpan="2">
+                    Accuracy setting
+                </Label>
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="1"
-                       Grid.Column="0">
+                <Label Grid.Row="1" Grid.Column="0"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center">
                     Max iterations
                 </Label>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Accuracy.MaxIter}" />
+                <TextBox
+                    Grid.Row="1" Grid.Column="1"
+                    Text="{Binding Accuracy.MaxIter}" />
 
                 <Label
+                    Grid.Row="2" Grid.Column="0"
                     HorizontalContentAlignment="Left"
-                    VerticalContentAlignment="Center"
-                    Grid.Row="2" Grid.Column="0">
+                    VerticalContentAlignment="Center">
                     ɛ
                 </Label>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding Accuracy.Eps}" />
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    Text="{Binding Accuracy.Eps}" />
 
-                <Label HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Grid.Row="3"
-                       Grid.Column="0">
+                <Label
+                    Grid.Row="3" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center">
                     𝛿
                 </Label>
-                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding Accuracy.Delta}" />
+                <TextBox
+                    Grid.Row="3" Grid.Column="1"
+                    Text="{Binding Accuracy.Delta}" />
 
             </Grid>
 
@@ -170,8 +249,8 @@
         <TextBox
             Grid.Row="2"
             Text="{Binding Result}"
-            TextWrapping="Wrap" 
-            IsReadOnly="True"/>
+            TextWrapping="Wrap"
+            IsReadOnly="True" />
     </Grid>
 
 </Window>
