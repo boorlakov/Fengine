@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Text;
-using System.Windows.Input;
 using FiniteElementsMethod.Fem;
 using FiniteElementsMethod.Models;
 using ReactiveUI;
@@ -49,16 +48,11 @@ namespace Femer.ViewModels
             "Third"
         };
 
-        public ObservableCollection<Tuple<double, double>> ResultTable { get; } = new()
-        {
-            new Tuple<double, double>(0.0, 1.0)
-        };
+        public ObservableCollection<Tuple<double, double>> ResultTable { get; } = new();
 
         public BoundaryConditions BoundaryConditions { get; } = new();
 
         public Accuracy Accuracy { get; } = new();
-
-        public ICommand SolveCommand { get; }
 
         private string result;
 
