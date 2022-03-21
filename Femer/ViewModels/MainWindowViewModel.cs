@@ -13,7 +13,6 @@ namespace Femer.ViewModels
         {
             var grid = new Grid(Area);
 
-            // Act
             var res = Solver.SolveWithSimpleIteration(
                 grid,
                 InputFuncs,
@@ -21,6 +20,7 @@ namespace Femer.ViewModels
                 BoundaryConditions,
                 Accuracy
             );
+
             var sb = new StringBuilder();
 
             for (var i = 0; i < res.Length - 1; i++)

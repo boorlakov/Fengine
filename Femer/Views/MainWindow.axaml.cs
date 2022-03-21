@@ -1,3 +1,4 @@
+using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Femer.ViewModels;
@@ -14,7 +15,15 @@ namespace Femer.Views
         private void Solve_OnClick(object? sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as MainWindowViewModel;
-            viewModel.Solve();
+
+            try
+            {
+                viewModel.Solve();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
     }
 }
