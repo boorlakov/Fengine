@@ -25,7 +25,7 @@ namespace Femer.ViewModels
 
             for (var i = 0; i < res.Length - 1; i++)
             {
-                sb.Append($"{res[i]}, ");
+                sb.Append($"{res[i]}\n");
             }
 
             sb.Append($"{res[^1]}");

@@ -25,5 +25,9 @@ namespace Femer.Views
                 Console.WriteLine(exception.Message);
             }
         }
+        private void TextBox_OnCopyingToClipboard(object? sender, RoutedEventArgs e)
+        {
+            Console.WriteLine("Copied!");
+        }
     }
 }
