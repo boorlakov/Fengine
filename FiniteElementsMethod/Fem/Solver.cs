@@ -5,8 +5,13 @@ namespace FiniteElementsMethod.Fem;
 
 public static class Solver
 {
-    public static double[] SolveWithSimpleIteration(Grid grid, InputFuncs inputFuncs, Area area,
-        BoundaryConditions boundaryConds, Accuracy accuracy)
+    public static double[] SolveWithSimpleIteration(
+        Grid grid,
+        InputFuncs inputFuncs,
+        Area area,
+        BoundaryConditions boundaryConds,
+        Accuracy accuracy
+    )
     {
         var initApprox = new double[grid.X.Length];
         initApprox.AsSpan().Fill(2.0);

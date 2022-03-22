@@ -11,18 +11,18 @@ public class Grid
 
         if (Math.Abs(area.DischargeRatio - 1) > 1e-10)
         {
-            var sumKx = (1 - Math.Pow(area.DischargeRatio, area.AmountPoints - 1)) /
-                        (1 - area.DischargeRatio);
+            // Nonuniform case
+            var sumKx = (1 - Math.Pow(area.DischargeRatio, area.AmountPoints - 1)) / (1 - area.DischargeRatio);
             var hX = (area.RightBorder - area.LeftBorder) / sumKx;
 
             for (var i = 1; i < area.AmountPoints; i++)
             {
-                x[i] = area.LeftBorder +
-                       hX * (1 - Math.Pow(area.DischargeRatio, i)) / (1 - area.DischargeRatio);
+                x[i] = area.LeftBorder + hX * (1 - Math.Pow(area.DischargeRatio, i)) / (1 - area.DischargeRatio);
             }
         }
         else
         {
+            // Uniform case
             var hX = (area.RightBorder - area.LeftBorder) / (area.AmountPoints - 1);
 
             for (var i = 1; i < area.AmountPoints; i++)
