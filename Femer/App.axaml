@@ -8,6 +8,5 @@
 
     <Application.Styles>
         <FluentTheme Mode="Dark" />
-        <FluentTheme Mode="Light" />
     </Application.Styles>
 </Application>

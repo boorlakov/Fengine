@@ -12,10 +12,7 @@
         Title="Femer"
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
-        SystemDecorations="Full"
-
-        TransparencyLevelHint="AcrylicBlur"
-        Background="Transparent">
+        SystemDecorations="Full">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
