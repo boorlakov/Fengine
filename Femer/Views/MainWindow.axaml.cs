@@ -23,10 +23,14 @@ namespace Femer.Views
             {
                 SolveButton.IsEnabled = false;
                 SolveButton.Content = "In progress";
+
+                StatusLabel.Content = "✨ Doing magic...";
                 await Task.Run(() => viewModel.Solve(Dispatcher.UIThread));
+                StatusLabel.Content = "🤗 Solved!";
             }
             catch (Exception exception)
             {
+                StatusLabel.Content = $"⛔️ Error occured: {exception.Message}";
                 Console.WriteLine(exception.Message);
             }
             finally

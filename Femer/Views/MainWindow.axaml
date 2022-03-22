@@ -32,10 +32,11 @@
             <Label
                 FontSize="30"
                 FontWeight="Bold"
-                x:Name="StatusBar"
+
                 HorizontalContentAlignment="Center"
-                VerticalContentAlignment="Center"
-                Content="{Binding StatusBarContent}" />
+                VerticalContentAlignment="Center">
+                Equation
+            </Label>
             <csmath:MathView
                 FontSize="30"
                 HorizontalAlignment="Center"
@@ -303,27 +304,41 @@
                 IsReadOnly="True"
                 x:Name="ResultBox"
                 CopyingToClipboard="TextBox_OnCopyingToClipboard" />
-            <StackPanel
+            <Grid
                 Grid.Row="2"
-                Orientation="Horizontal">
-                <Button
-                    FontWeight="Bold"
-                    Content="Solve"
-                    x:Name="SolveButton"
-                    Click="Solve_OnClick" />
-                <Button
-                    HorizontalAlignment="Right"
-                    FontWeight="Bold"
-                    Content="Copy to Clipboard"
-                    Click="Button_CopyToClipboard_OnClick" />
+                ColumnDefinitions="*, *"
+                HorizontalAlignment="Stretch">
+                <StackPanel
+                    Grid.Column="0"
+                    Orientation="Horizontal">
+                    <Button
+                        FontWeight="Bold"
+                        Content="Solve"
+                        x:Name="SolveButton"
+                        Click="Solve_OnClick" />
+                    <Button
+                        HorizontalAlignment="Right"
+                        FontWeight="Bold"
+                        Content="Copy to Clipboard"
+                        Click="Button_CopyToClipboard_OnClick" />
+                    <Label
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        x:Name="CopyTextBlock"
+                        IsVisible="False">
+                        Copied!
+                    </Label>
+                </StackPanel>
                 <Label
+                    Grid.Column="1"
                     VerticalContentAlignment="Center"
+                    HorizontalAlignment="Right"
                     HorizontalContentAlignment="Center"
-                    x:Name="CopyTextBlock"
-                    IsVisible="False">
-                    Copied!
-                </Label>
-            </StackPanel>
+
+                    x:Name="StatusLabel"
+                    Content="{Binding StatusLabelContent}" />
+            </Grid>
+
 
         </Grid>
 

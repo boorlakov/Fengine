@@ -62,11 +62,11 @@ namespace Femer.ViewModels
             set => this.RaiseAndSetIfChanged(ref _result, value);
         }
 
-        private string _statusBarContent = "Equation";
+        private string _statusLabelContent = string.Empty;
 
-        public string StatusBarContent
+        public string StatusLabelContent
         {
-            get => _statusBarContent;
+            get => _statusLabelContent;
             set => this.RaiseAndSetIfChanged(ref _result, value);
         }
     }
