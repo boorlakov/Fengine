@@ -5,14 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:csmath="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
-        MinWidth="800"
+        MinWidth="1000"
         MinHeight="800"
         x:Class="Femer.Views.MainWindow"
         Icon="/Assets/Fem.ico"
         Title="Femer"
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
-        SystemDecorations="Full">
+        SystemDecorations="Full"
+
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent">
 
     <Design.DataContext>
         <vm:MainWindowViewModel />
@@ -21,16 +24,24 @@
     <Grid
         RowDefinitions="Auto, Auto, *">
 
-        <Button
+        <StackPanel
             Grid.Row="0"
-            Margin="0, 30,0, 0"
-            FontSize="30" FontWeight="Bold"
-            HorizontalAlignment="Stretch"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            x:Name="SolveButton"
-            Content="Solve"
-            Click="Solve_OnClick" />
+            Margin="0,30,0,10"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal">
+            <Label
+                FontSize="30"
+                FontWeight="Bold"
+                x:Name="StatusBar"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Content="{Binding StatusBarContent}" />
+            <csmath:MathView
+                FontSize="30"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                LaTeX="\text{ }\text{div}(\lambda\text{grad}u) + \gamma = f(u)" />
+        </StackPanel>
 
         <Grid
             Grid.Row="1" ColumnDefinitions="*, *, *, *">
@@ -56,6 +67,7 @@
                 <TextBox
                     Grid.Row="1" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding Area.LeftBorder}" />
 
                 <Label
@@ -68,6 +80,7 @@
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding Area.RightBorder}" />
 
                 <Label
@@ -80,6 +93,7 @@
                 <TextBox
                     Grid.Row="3" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding Area.DischargeRatio}" />
 
                 <Label
@@ -92,6 +106,7 @@
                 <TextBox
                     Grid.Row="4" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding Area.AmountPoints}" />
             </Grid>
 
@@ -114,6 +129,7 @@
                 <TextBox
                     Grid.Row="1" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding InputFuncs.Lambda}" />
 
                 <csmath:MathView
@@ -123,6 +139,7 @@
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding InputFuncs.Gamma}" />
 
                 <csmath:MathView
@@ -132,6 +149,7 @@
                 <TextBox
                     Grid.Row="3" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding InputFuncs.RhsFunc}" />
 
                 <csmath:MathView
@@ -141,6 +159,7 @@
                 <TextBox
                     Grid.Row="4" Grid.Column="1"
                     FontSize="16"
+                    Watermark="optional"
                     Text="{Binding InputFuncs.UStar}" />
             </Grid>
 
@@ -180,6 +199,7 @@
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding BoundaryConditions.LeftFunc}" />
 
                 <Label
@@ -205,6 +225,7 @@
                 <TextBox
                     Grid.Row="4" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding BoundaryConditions.RightFunc}" />
 
                 <csmath:MathView
@@ -214,6 +235,7 @@
                 <TextBox
                     Grid.Row="5" Grid.Column="1"
                     FontSize="16"
+                    Watermark="If third boundary condition"
                     Text="{Binding BoundaryConditions.Beta}" />
             </Grid>
 
@@ -226,7 +248,7 @@
                     Grid.Row="0" Grid.Column="0"
                     FontSize="20" FontWeight="Bold"
                     Grid.ColumnSpan="2">
-                    Accuracy setting
+                    Accuracy settings
                 </Label>
 
                 <Label Grid.Row="1" Grid.Column="0"
@@ -236,6 +258,7 @@
                 </Label>
                 <TextBox
                     Grid.Row="1" Grid.Column="1"
+                    Watermark="required"
                     Text="{Binding Accuracy.MaxIter}" />
 
                 <csmath:MathView
@@ -245,6 +268,7 @@
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding Accuracy.Eps}" />
 
                 <csmath:MathView
@@ -254,6 +278,7 @@
                 <TextBox
                     Grid.Row="3" Grid.Column="1"
                     FontSize="16"
+                    Watermark="required"
                     Text="{Binding Accuracy.Delta}" />
 
             </Grid>
@@ -278,10 +303,16 @@
                 IsReadOnly="True"
                 x:Name="ResultBox"
                 CopyingToClipboard="TextBox_OnCopyingToClipboard" />
-            <StackPanel 
+            <StackPanel
                 Grid.Row="2"
                 Orientation="Horizontal">
                 <Button
+                    FontWeight="Bold"
+                    Content="Solve"
+                    x:Name="SolveButton"
+                    Click="Solve_OnClick" />
+                <Button
+                    HorizontalAlignment="Right"
                     FontWeight="Bold"
                     Content="Copy to Clipboard"
                     Click="Button_CopyToClipboard_OnClick" />
@@ -293,7 +324,7 @@
                     Copied!
                 </Label>
             </StackPanel>
-            
+
         </Grid>
 
     </Grid>

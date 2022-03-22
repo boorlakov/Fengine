@@ -54,11 +54,19 @@ namespace Femer.ViewModels
 
         public Accuracy Accuracy { get; } = new();
 
-        private string _result;
+        private string _result = string.Empty;
 
         public string Result
         {
             get => _result;
+            set => this.RaiseAndSetIfChanged(ref _result, value);
+        }
+
+        private string _statusBarContent = "Equation";
+
+        public string StatusBarContent
+        {
+            get => _statusBarContent;
             set => this.RaiseAndSetIfChanged(ref _result, value);
         }
     }
