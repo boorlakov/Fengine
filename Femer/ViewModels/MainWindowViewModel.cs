@@ -44,7 +44,10 @@ namespace Femer.ViewModels
             "Third"
         };
 
-        public ObservableCollection<Tuple<double, double>> ResultTable { get; } = new();
+        public ObservableCollection<Tuple<double, double>> ResultTable { get; } = new()
+        {
+            new Tuple<double, double>(0.0, 0.0)
+        };
 
         public BoundaryConditions BoundaryConditions { get; } = new();
 

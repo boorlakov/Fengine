@@ -1,4 +1,6 @@
 using System;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Femer.ViewModels;
@@ -25,9 +27,16 @@ namespace Femer.Views
                 Console.WriteLine(exception.Message);
             }
         }
-        private void TextBox_OnCopyingToClipboard(object? sender, RoutedEventArgs e)
+        private async void TextBox_OnCopyingToClipboard(object? sender, RoutedEventArgs e)
         {
-            Console.WriteLine("Copied!");
+            CopyTextBlock.IsVisible = true;
+            await Task.Delay(3000);
+            CopyTextBlock.IsVisible = false;
+        }
+        private async void Button_CopyToClipboard_OnClick(object? sender, RoutedEventArgs e)
+        {
+            await Application.Current.Clipboard.SetTextAsync(ResultBox.Text);
+            TextBox_OnCopyingToClipboard(sender, e);
         }
     }
 }
