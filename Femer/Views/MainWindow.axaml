@@ -282,6 +282,7 @@
                 Grid.Row="2"
                 Orientation="Horizontal">
                 <Button
+                    FontWeight="Bold"
                     Content="Copy to Clipboard"
                     Click="Button_CopyToClipboard_OnClick" />
                 <Label
