@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Femer.ViewModels;
 
 namespace Femer.Views
@@ -14,17 +15,24 @@ namespace Femer.Views
             InitializeComponent();
         }
 
-        private void Solve_OnClick(object? sender, RoutedEventArgs e)
+        private async void Solve_OnClick(object? sender, RoutedEventArgs e)
         {
             var viewModel = DataContext as MainWindowViewModel;
 
             try
             {
-                viewModel.Solve();
+                SolveButton.IsEnabled = false;
+                SolveButton.Content = "In progress";
+                await Task.Run(() => viewModel.Solve(Dispatcher.UIThread));
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
+            }
+            finally
+            {
+                SolveButton.Content = "Solve";
+                SolveButton.IsEnabled = true;
             }
         }
         private async void TextBox_OnCopyingToClipboard(object? sender, RoutedEventArgs e)

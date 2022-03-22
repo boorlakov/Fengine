@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Text;
+using Avalonia.Threading;
 using FiniteElementsMethod.Fem;
 using FiniteElementsMethod.Models;
 using ReactiveUI;
@@ -9,7 +10,7 @@ namespace Femer.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public void Solve()
+        public void Solve(Dispatcher dispatcher)
         {
             var grid = new Grid(Area);
 
@@ -30,7 +31,7 @@ namespace Femer.ViewModels
 
             sb.Append($"{res[^1]}");
 
-            Result = sb.ToString();
+            dispatcher.InvokeAsync(() => Result = sb.ToString());
         }
 
         public Area Area { get; } = new();
