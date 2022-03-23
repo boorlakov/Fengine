@@ -1,5 +1,8 @@
 namespace FiniteElementsMethod.LinAlg;
 
+/// <summary>
+/// Class, holding general operations in linear algebra
+/// </summary>
 public static class GeneralOperations
 {
     /// <summary>
