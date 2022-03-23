@@ -2,5 +2,4 @@
 # Unless a later match takes precedence, @boorlakov will be requested for
 # review when someone opens a pull request.
 
-*       @boorlakov
-*       @poleley
+*       @boorlakov @poleley
