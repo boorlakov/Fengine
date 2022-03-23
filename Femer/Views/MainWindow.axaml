@@ -21,6 +21,7 @@
     <Grid
         RowDefinitions="Auto, Auto, *">
 
+        <!-- Equation title -->
         <StackPanel
             Grid.Row="0"
             Margin="0,30,0,10"
@@ -41,6 +42,7 @@
                 LaTeX="\text{ }-\text{div}(\lambda\text{grad}u) + \gamma u= f(u)" />
         </StackPanel>
 
+        <!-- Settings -->
         <Grid
             Grid.Row="1" ColumnDefinitions="*, *, *, *">
             <Grid
@@ -283,6 +285,7 @@
 
         </Grid>
 
+        <!-- Result, status and copy -->
         <Grid
             Grid.Row="2"
             Margin="30, 10, 30, 30"
@@ -338,7 +341,6 @@
 
 
         </Grid>
-
     </Grid>
 
 </Window>
