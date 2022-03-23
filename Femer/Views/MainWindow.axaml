@@ -320,6 +320,7 @@
                         HorizontalAlignment="Right"
                         FontWeight="Bold"
                         Content="Copy to Clipboard"
+                        x:Name="CopyButton"
                         Click="Button_CopyToClipboard_OnClick" />
                     <Label
                         VerticalContentAlignment="Center"

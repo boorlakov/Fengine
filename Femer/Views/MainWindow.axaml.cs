@@ -25,12 +25,12 @@ namespace Femer.Views
                 SolveButton.Content = "In progress";
 
                 StatusLabel.Content = "✨ Doing magic...";
-                await Task.Run(() => viewModel.Solve(Dispatcher.UIThread));
+                await Task.Run(() => viewModel!.Solve(Dispatcher.UIThread));
                 StatusLabel.Content = "🤗 Solved!";
             }
             catch (Exception exception)
             {
-                StatusLabel.Content = $"⛔️ Error occured: {exception.Message}";
+                StatusLabel.Content = $"⛔️ Error while solving occured: {exception.Message}";
                 Console.WriteLine(exception.Message);
             }
             finally
@@ -39,16 +39,38 @@ namespace Femer.Views
                 SolveButton.IsEnabled = true;
             }
         }
+
         private async void TextBox_OnCopyingToClipboard(object? sender, RoutedEventArgs e)
         {
             CopyTextBlock.IsVisible = true;
             await Task.Delay(3000);
             CopyTextBlock.IsVisible = false;
         }
+
         private async void Button_CopyToClipboard_OnClick(object? sender, RoutedEventArgs e)
         {
-            await Application.Current.Clipboard.SetTextAsync(ResultBox.Text);
-            TextBox_OnCopyingToClipboard(sender, e);
+            try
+            {
+                CopyButton.IsEnabled = false;
+
+                // Checking for null
+                if (Application.Current is {Clipboard: { }})
+                {
+                    await Application.Current.Clipboard.SetTextAsync(ResultBox.Text);
+                }
+                else
+                {
+                    StatusLabel.Content = "⛔️ Error while copy occured: Nothing to copy. Result is null";
+                }
+
+                TextBox_OnCopyingToClipboard(sender, e);
+                CopyButton.IsEnabled = true;
+            }
+            catch (Exception exception)
+            {
+                StatusLabel.Content = $"⛔️ Error while copy occured: {exception.Message}";
+                Console.WriteLine(exception.Message);
+            }
         }
     }
 }
