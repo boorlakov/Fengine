@@ -5,6 +5,9 @@ namespace FiniteElementsMethod;
 
 public static class Program
 {
+    /// <summary>
+    /// Example of using FiniteElementsMethod API
+    /// </summary>
     public static void Main()
     {
         var area = JsonSerializer.Deserialize<Models.Area>(File.ReadAllText("input/area.json"))!;
