@@ -27,7 +27,7 @@ public static class SlaeSolver
     }
 
     /// <summary>
-    ///  Checks if iteration method is stagnating or not
+    /// Checks if iteration method is stagnating or not
     /// </summary>
     /// <param name="prevVec">Previous value of a vector</param>
     /// <param name="vec">Current value of a vector</param>
