@@ -48,7 +48,7 @@ public static class Integrator
     }
 
     /// <summary>
-    /// Integrates a 1 dimensional functionFromString of given grid
+    /// Integrates a 1 dimensional function (in string form) of given grid
     /// </summary>
     /// <param name="grid"> Array grid </param>
     /// <param name="funcFromString"> Function to integrate. Note: must have 1-dimension </param>
@@ -95,7 +95,7 @@ public static class Integrator
     }
 
     /// <summary>
-    /// Makes grid with 11 points in it
+    /// Makes 1D grid with 11 points in it
     /// </summary>
     /// <param name="leftBorder">Left border point</param>
     /// <param name="rightBorder">Right border point</param>
