@@ -39,8 +39,7 @@ public static class GeneralOperations
     /// <returns>Dot product of a specified row i in matrix by vector</returns>
     public static double Dot(int i, Matrix matrix, double[] vec)
     {
-        var res = 0.0;
-        res += matrix.Center[i] * vec[i];
+        var res = matrix.Center[i] * vec[i];
 
         if (i >= 0 && i < matrix.Size - 1)
         {
