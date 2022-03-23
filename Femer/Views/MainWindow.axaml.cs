@@ -64,12 +64,15 @@ namespace Femer.Views
                 }
 
                 TextBox_OnCopyingToClipboard(sender, e);
-                CopyButton.IsEnabled = true;
             }
             catch (Exception exception)
             {
                 StatusLabel.Content = $"⛔️ Error while copy occured: {exception.Message}";
                 Console.WriteLine(exception.Message);
+            }
+            finally
+            {
+                CopyButton.IsEnabled = true;
             }
         }
     }
