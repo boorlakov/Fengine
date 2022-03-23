@@ -46,33 +46,33 @@ public class Slae
 
             #region center
 
-            center[i] += (Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i]) * localStiffness[0][0][0] +
-                          Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i + 1]) * localStiffness[1][0][0]) / step +
-                         (Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i]) * localMass[0][0][0] +
-                          Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i + 1]) * localMass[1][0][0]) * step;
+            center[i] += (Utils.EvalFunc(inputFuncs.Lambda, grid.X[i]) * localStiffness[0][0][0] +
+                          Utils.EvalFunc(inputFuncs.Lambda, grid.X[i + 1]) * localStiffness[1][0][0]) / step +
+                         (Utils.EvalFunc(inputFuncs.Gamma, grid.X[i]) * localMass[0][0][0] +
+                          Utils.EvalFunc(inputFuncs.Gamma, grid.X[i + 1]) * localMass[1][0][0]) * step;
 
-            center[i + 1] += (Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i]) * localStiffness[0][1][1] +
-                              Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i + 1]) * localStiffness[1][1][1]) / step +
-                             (Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i]) * localMass[0][1][1] +
-                              Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i + 1]) * localMass[1][1][1]) * step;
+            center[i + 1] += (Utils.EvalFunc(inputFuncs.Lambda, grid.X[i]) * localStiffness[0][1][1] +
+                              Utils.EvalFunc(inputFuncs.Lambda, grid.X[i + 1]) * localStiffness[1][1][1]) / step +
+                             (Utils.EvalFunc(inputFuncs.Gamma, grid.X[i]) * localMass[0][1][1] +
+                              Utils.EvalFunc(inputFuncs.Gamma, grid.X[i + 1]) * localMass[1][1][1]) * step;
 
             #endregion
 
             #region upper
 
-            upper[i] += (Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i]) * localStiffness[0][0][1] +
-                         Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i + 1]) * localStiffness[1][0][1]) / step +
-                        (Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i]) * localMass[0][0][1] +
-                         Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i + 1]) * localMass[1][0][1]) * step;
+            upper[i] += (Utils.EvalFunc(inputFuncs.Lambda, grid.X[i]) * localStiffness[0][0][1] +
+                         Utils.EvalFunc(inputFuncs.Lambda, grid.X[i + 1]) * localStiffness[1][0][1]) / step +
+                        (Utils.EvalFunc(inputFuncs.Gamma, grid.X[i]) * localMass[0][0][1] +
+                         Utils.EvalFunc(inputFuncs.Gamma, grid.X[i + 1]) * localMass[1][0][1]) * step;
 
             #endregion
 
             #region lower
 
-            lower[i] += (Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i]) * localStiffness[0][1][0] +
-                         Utils.EvalFunc(inputFuncs.Lambda!, grid.X[i + 1]) * localStiffness[1][1][0]) / step +
-                        (Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i]) * localMass[0][1][0] +
-                         Utils.EvalFunc(inputFuncs.Gamma!, grid.X[i + 1]) * localMass[1][1][0]) * step;
+            lower[i] += (Utils.EvalFunc(inputFuncs.Lambda, grid.X[i]) * localStiffness[0][1][0] +
+                         Utils.EvalFunc(inputFuncs.Lambda, grid.X[i + 1]) * localStiffness[1][1][0]) / step +
+                        (Utils.EvalFunc(inputFuncs.Gamma, grid.X[i]) * localMass[0][1][0] +
+                         Utils.EvalFunc(inputFuncs.Gamma, grid.X[i + 1]) * localMass[1][1][0]) * step;
 
             #endregion
 
