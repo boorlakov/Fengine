@@ -1,9 +1,19 @@
 namespace FiniteElementsMethod.Fem;
 
+/// <summary>
+/// 1D grid class. Can be uniform or non-uniform due to given discharge ratio
+/// </summary>
 public class Grid
 {
+    /// <summary>
+    /// Value of points in X axis
+    /// </summary>
     public double[] X { get; }
 
+    /// <summary>
+    /// Grid constructor. Can be uniform or non-uniform due to given discharge ratio
+    /// </summary>
+    /// <param name="area">Given area settings</param>
     public Grid(Models.Area area)
     {
         var x = new double[area.AmountPoints];
