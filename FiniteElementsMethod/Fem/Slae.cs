@@ -108,8 +108,8 @@ public class Slae
 
         var integralValues = new[]
         {
-            Integrator.Integrate1D(grid, LinearBasis.Func[0]),
-            Integrator.Integrate1D(grid, LinearBasis.Func[1])
+            Integrator.Integrate1D(grid, Basis.Linear.Func[0]),
+            Integrator.Integrate1D(grid, Basis.Linear.Func[1])
         };
 
         for (var i = 0; i < 2; i++)
@@ -146,13 +146,17 @@ public class Slae
 
         var integralValues = new[]
         {
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
-            Integrator.Integrate1D(grid, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
+            Integrator.Integrate1D(grid,
+                x => Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x)),
+            Integrator.Integrate1D(grid,
+                x => Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x) * Basis.Linear.Func[1](x)),
+            Integrator.Integrate1D(grid,
+                x => Basis.Linear.Func[0](x) * Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x)),
+            Integrator.Integrate1D(grid,
+                x => Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x)),
+            Integrator.Integrate1D(grid, x => Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x)),
+            Integrator.Integrate1D(grid, x => Basis.Linear.Func[0](x) * Basis.Linear.Func[1](x)),
+            Integrator.Integrate1D(grid, x => Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x)),
         };
 
         for (var i = 0; i < 2; i++)
