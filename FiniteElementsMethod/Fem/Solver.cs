@@ -9,14 +9,14 @@ public static class Solver
         Grid grid,
         InputFuncs inputFuncs,
         Area area,
-        BoundaryConditions boundaryConds,
+        BoundaryConditions boundaryConditions,
         Accuracy accuracy
     )
     {
         var initApprox = new double[grid.X.Length];
         initApprox.AsSpan().Fill(2.0);
         var slae = new Slae(grid, inputFuncs, initApprox);
-        ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConds);
+        ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
         slae.Solve(accuracy);
 
         while (SlaeSolver.RelResidual(slae) > accuracy.Eps &&
@@ -24,7 +24,7 @@ public static class Solver
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
             slae = new Slae(grid, inputFuncs, initApprox);
-            ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConds);
+            ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
         }
 
@@ -35,38 +35,42 @@ public static class Solver
         Matrix m,
         double[] rhs,
         Area area,
-        BoundaryConditions boundaryConds
+        BoundaryConditions boundaryConditions
     )
     {
-        switch (boundaryConds.Left)
+        switch (boundaryConditions.Left)
         {
             case "First":
                 m.Center[0] = 1.0;
                 m.Upper[0] = 0.0;
-                rhs[0] = Utils.EvalFunc(boundaryConds.LeftFunc, area.LeftBorder);
+                rhs[0] = Utils.EvalFunc(boundaryConditions.LeftFunc, area.LeftBorder);
                 break;
             case "Second":
-                rhs[0] += Utils.EvalFunc(boundaryConds.LeftFunc, area.LeftBorder);
+                rhs[0] += Utils.EvalFunc(boundaryConditions.LeftFunc, area.LeftBorder);
                 break;
             case "Third":
-                m.Center[0] += boundaryConds.Beta;
-                rhs[0] += boundaryConds.Beta * Utils.EvalFunc(boundaryConds.LeftFunc, area.LeftBorder);
+                m.Center[0] += boundaryConditions.Beta;
+                m.Center[1] += boundaryConditions.Beta;
+                rhs[0] += boundaryConditions.Beta * Utils.EvalFunc(boundaryConditions.LeftFunc, area.LeftBorder);
+                rhs[1] += boundaryConditions.Beta * Utils.EvalFunc(boundaryConditions.LeftFunc, area.LeftBorder);
                 break;
         }
 
-        switch (boundaryConds.Right)
+        switch (boundaryConditions.Right)
         {
             case "First":
                 m.Center[^1] = 1.0;
                 m.Lower[^1] = 0.0;
-                rhs[^1] = Utils.EvalFunc(boundaryConds.RightFunc, area.RightBorder);
+                rhs[^1] = Utils.EvalFunc(boundaryConditions.RightFunc, area.RightBorder);
                 break;
             case "Second":
-                rhs[^1] += Utils.EvalFunc(boundaryConds.RightFunc, area.RightBorder);
+                rhs[^1] += Utils.EvalFunc(boundaryConditions.RightFunc, area.RightBorder);
                 break;
             case "Third":
-                m.Center[^1] += boundaryConds.Beta;
-                rhs[^1] += boundaryConds.Beta * Utils.EvalFunc(boundaryConds.RightFunc, area.RightBorder);
+                m.Center[^1] += boundaryConditions.Beta;
+                m.Center[^2] += boundaryConditions.Beta;
+                rhs[^1] += boundaryConditions.Beta * Utils.EvalFunc(boundaryConditions.RightFunc, area.RightBorder);
+                rhs[^2] += boundaryConditions.Beta * Utils.EvalFunc(boundaryConditions.RightFunc, area.RightBorder);
                 break;
         }
     }
