@@ -9,8 +9,8 @@ public static class Basis
     {
         public static readonly Func<double, double>[] Func =
         {
+            x => 1.0 - x,
             x => x,
-            x => 1.0 - x
         };
     }
 }
