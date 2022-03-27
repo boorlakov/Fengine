@@ -6,11 +6,11 @@ namespace FiniteElementsMethod.LinAlg;
 public class Matrix
 {
     // Matrix example
-    // +- -+
+    // +---+
     // |cu |
     // |lcu|
     // | lc|
-    // +- -+        
+    // +---+        
     //
     // u - upper
     // c - center
