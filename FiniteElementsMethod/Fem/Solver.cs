@@ -43,7 +43,6 @@ public static class Solver
             case "First":
                 m.Center[0] = 1.0;
                 m.Upper[0] = 0.0;
-                m.Lower[0] = 0.0;
                 rhs[0] = Utils.EvalFunc(boundaryConds.LeftFunc, area.LeftBorder);
                 break;
             case "Second":
@@ -59,7 +58,6 @@ public static class Solver
         {
             case "First":
                 m.Center[^1] = 1.0;
-                m.Upper[^1] = 0.0;
                 m.Lower[^1] = 0.0;
                 rhs[^1] = Utils.EvalFunc(boundaryConds.RightFunc, area.RightBorder);
                 break;
