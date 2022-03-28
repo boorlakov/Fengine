@@ -3,7 +3,7 @@ using FiniteElementsMethod.Models;
 
 namespace FiniteElementsMethod.Fem;
 
-public struct Statistics
+public class Statistics
 {
     public int Iterations;
     public double Residual;
@@ -52,7 +52,7 @@ public static class Solver
 
         var error = GeneralOperations.Norm(absError) / GeneralOperations.Norm(u);
             
-        Statistics stat = new Statistics()
+        var stat = new Statistics()
         {
             Iterations = iter,
             Residual = SlaeSolver.RelResidual(slae),
