@@ -3,9 +3,17 @@ using FiniteElementsMethod.Models;
 
 namespace FiniteElementsMethod.Fem;
 
+public struct Statistics
+{
+    public int Iterations;
+    public double Residual;
+    public double Error;
+    public double[] Result;
+}
+
 public static class Solver
 {
-    public static double[] SolveWithSimpleIteration(
+    public static Statistics SolveWithSimpleIteration(
         Grid grid,
         InputFuncs inputFuncs,
         Area area,
@@ -13,6 +21,7 @@ public static class Solver
         Accuracy accuracy
     )
     {
+        var iter = 1;
         var initApprox = new double[grid.X.Length];
         initApprox.AsSpan().Fill(2.0);
         var slae = new Slae(grid, inputFuncs, initApprox);
@@ -26,9 +35,33 @@ public static class Solver
             slae = new Slae(grid, inputFuncs, initApprox);
             ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
+            iter++;
+        }
+        
+        var funcCalc = new Sprache.Calc.XtensibleCalculator();
+        var uStar = funcCalc.ParseFunction(inputFuncs.UStar).Compile();
+
+        var absError = new double[] { };
+        var u = new double[] { };
+
+        for (var i = 0; i < slae.ResVec.Length; i++)
+        {
+            u[i] = uStar(Utils.MakeDict1D(grid.X[i]));
+            absError[i] = u[i] - slae.ResVec[i];
         }
 
-        return slae.ResVec;
+        var error = GeneralOperations.Norm(absError) / GeneralOperations.Norm(u);
+            
+        Statistics stat = new Statistics()
+        {
+            Iterations = iter,
+            Residual = SlaeSolver.RelResidual(slae),
+            Error = error,
+            Result = slae.ResVec
+        };
+
+
+        return stat;
     }
 
     private static void ApplyBoundaryConditions(
