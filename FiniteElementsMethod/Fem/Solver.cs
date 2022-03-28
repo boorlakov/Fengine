@@ -59,8 +59,7 @@ public static class Solver
             Error = error,
             Result = slae.ResVec
         };
-
-
+        
         return stat;
     }
 
