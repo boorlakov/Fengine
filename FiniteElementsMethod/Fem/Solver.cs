@@ -41,8 +41,8 @@ public static class Solver
         var funcCalc = new Sprache.Calc.XtensibleCalculator();
         var uStar = funcCalc.ParseFunction(inputFuncs.UStar).Compile();
 
-        var absError = new double[] { };
-        var u = new double[] { };
+        var absError = new double[slae.ResVec.Length];
+        var u = new double[slae.ResVec.Length];
 
         for (var i = 0; i < slae.ResVec.Length; i++)
         {

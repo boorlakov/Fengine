@@ -59,7 +59,7 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result[i], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Result[i], expected[i], 1.0e-7);
         }
     }
 
@@ -116,7 +116,7 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result[i], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Result[i], expected[i], 1.0e-7);
         }
     }
 
@@ -172,7 +172,7 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result[i], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Result[i], expected[i], 1.0e-7);
         }
     }
 
@@ -232,7 +232,7 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result[i], expected[i], 1.0e-2);
+            Assert.AreEqual(result.Result[i], expected[i], 1.0e-2);
         }
     }
 }

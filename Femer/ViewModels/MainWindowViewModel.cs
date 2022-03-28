@@ -24,12 +24,17 @@ namespace Femer.ViewModels
 
             var sb = new StringBuilder();
 
-            for (var i = 0; i < res.Length - 1; i++)
+            for (var i = 0; i < res.Result.Length - 1; i++)
             {
-                sb.Append($"{res[i]}\n");
+                sb.Append($"{res.Result[i]}\n");
             }
 
-            sb.Append($"{res[^1]}");
+            sb.Append($"{res.Result[^1]}");
+
+            sb.Append("\n");
+            sb.Append($"Iterations: {res.Iterations}\n");
+            sb.Append($"Residual: {res.Residual}\n");
+            sb.Append($"Error: {res.Error}\n");
 
             dispatcher.InvokeAsync(() => Result = sb.ToString());
         }
