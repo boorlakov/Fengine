@@ -59,7 +59,7 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Result[i], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Values[i], expected[i], 1.0e-7);
         }
     }
 
@@ -116,7 +116,64 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Result[i], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Values[i], expected[i], 1.0e-7);
+        }
+    }
+
+    [Test]
+    public void
+        FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndThirdBoundaryRightConditions_ShouldReturnCorrectResult()
+    {
+        // Arrange
+        var area = new Area
+        {
+            LeftBorder = 0.0,
+            RightBorder = 1.0,
+            DischargeRatio = 1.0,
+            AmountPoints = 11
+        };
+
+        var inputFuncs = new InputFuncs
+        {
+            Lambda = "1",
+            Gamma = "1",
+            RhsFunc = "u",
+            UStar = "x+2"
+        };
+
+        var boundaryConditions = new BoundaryConditions
+        {
+            Left = "First",
+            LeftFunc = "2",
+            Right = "Third",
+            RightFunc = "5",
+            Beta = 0.5
+        };
+
+        var accuracy = new Accuracy
+        {
+            Eps = 1.0e-10,
+            Delta = 1.0e-10,
+            MaxIter = 1000
+        };
+
+        var grid = new Grid(area);
+
+        var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
+
+        // Act
+        var result = Solver.SolveWithSimpleIteration(
+            grid,
+            inputFuncs,
+            area,
+            boundaryConditions,
+            accuracy
+        );
+
+        // Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            Assert.AreEqual(result.Values[i], expected[i], 1.0e-7);
         }
     }
 
@@ -172,7 +229,63 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Result[i], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Values[i], expected[i], 1.0e-7);
+        }
+    }
+
+    [Test]
+    public void
+        FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndSecondBoundaryRightConditions_ShouldReturnCorrectResult()
+    {
+        // Arrange
+        var area = new Area
+        {
+            LeftBorder = 0.0,
+            RightBorder = 1.0,
+            DischargeRatio = 1.0,
+            AmountPoints = 11
+        };
+
+        var inputFuncs = new InputFuncs
+        {
+            Lambda = "1",
+            Gamma = "1",
+            RhsFunc = "u",
+            UStar = "x+2"
+        };
+
+        var boundaryConditions = new BoundaryConditions
+        {
+            Left = "First",
+            LeftFunc = "2",
+            Right = "Second",
+            RightFunc = "1"
+        };
+
+        var accuracy = new Accuracy
+        {
+            Eps = 1.0e-10,
+            Delta = 1.0e-10,
+            MaxIter = 1000
+        };
+
+        var grid = new Grid(area);
+
+        var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
+
+        // Act
+        var result = Solver.SolveWithSimpleIteration(
+            grid,
+            inputFuncs,
+            area,
+            boundaryConditions,
+            accuracy
+        );
+
+        // Assert
+        for (var i = 0; i < expected.Length; i++)
+        {
+            Assert.AreEqual(result.Values[i], expected[i], 1.0e-7);
         }
     }
 
@@ -232,7 +345,7 @@ public class FemSolverTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Result[i], expected[i], 1.0e-2);
+            Assert.AreEqual(result.Values[i], expected[i], 1.0e-2);
         }
     }
 }

@@ -24,12 +24,12 @@ namespace Femer.ViewModels
 
             var sb = new StringBuilder();
 
-            for (var i = 0; i < res.Result.Length - 1; i++)
+            for (var i = 0; i < res.Values.Length - 1; i++)
             {
-                sb.Append($"{res.Result[i]}\n");
+                sb.Append($"{res.Values[i]}\n");
             }
 
-            sb.Append($"{res.Result[^1]}");
+            sb.Append($"{res.Values[^1]}");
 
             sb.Append("\n");
             sb.Append($"Iterations: {res.Iterations}\n");

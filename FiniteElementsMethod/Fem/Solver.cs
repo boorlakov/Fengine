@@ -8,7 +8,7 @@ public class Statistics
     public int Iterations;
     public double Residual;
     public double Error;
-    public double[] Result;
+    public double[] Values;
 }
 
 public static class Solver
@@ -37,7 +37,7 @@ public static class Solver
             slae.Solve(accuracy);
             iter++;
         }
-        
+
         var funcCalc = new Sprache.Calc.XtensibleCalculator();
         var uStar = funcCalc.ParseFunction(inputFuncs.UStar).Compile();
 
@@ -51,15 +51,15 @@ public static class Solver
         }
 
         var error = GeneralOperations.Norm(absError) / GeneralOperations.Norm(u);
-            
+
         var stat = new Statistics()
         {
             Iterations = iter,
             Residual = SlaeSolver.RelResidual(slae),
             Error = error,
-            Result = slae.ResVec
+            Values = slae.ResVec
         };
-        
+
         return stat;
     }
 

@@ -60,7 +60,7 @@ namespace Femer.Views
                 }
                 else
                 {
-                    StatusLabel.Content = "⛔️ Error while copy occured: Nothing to copy. Result is null";
+                    StatusLabel.Content = "⛔️ Error while copy occured: Nothing to copy. Values is null";
                 }
 
                 TextBox_OnCopyingToClipboard(sender, e);
