@@ -293,7 +293,7 @@
             <Label
                 Grid.Row="0"
                 FontSize="20" FontWeight="Bold">
-                Values
+                Result
             </Label>
             <TextBox
                 Grid.Row="1"
