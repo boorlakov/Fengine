@@ -50,6 +50,9 @@ namespace Femer.ViewModels
             sb.Append($"Residual: {res.Residual}\n");
             sb.Append($"Error: {res.Error}\n");
 
+            sb.Append($"Auto Relax: {Accuracy.AutoRelax}\n");
+            sb.Append($"Relax Ratio: {res.RelaxRatio}");
+
             dispatcher.InvokeAsync(() => Result = sb.ToString());
         }
 

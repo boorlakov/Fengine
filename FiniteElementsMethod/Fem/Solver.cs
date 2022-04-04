@@ -1,3 +1,4 @@
+using System.Reflection.PortableExecutable;
 using FiniteElementsMethod.LinAlg;
 using FiniteElementsMethod.Models;
 
@@ -9,6 +10,7 @@ public class Statistics
     public double Residual;
     public double Error;
     public double[] Values;
+    public double RelaxRatio;
 }
 
 public static class Solver
@@ -21,22 +23,32 @@ public static class Solver
         Accuracy accuracy
     )
     {
-        var iter = 1;
+        var iter = 0;
+        var coef = 0.0;
         var initApprox = new double[grid.X.Length];
+        var relaxRatio = accuracy.RelaxRatio;
         initApprox.AsSpan().Fill(2.0);
         var slae = new Slae(grid, inputFuncs, initApprox);
         ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
         slae.Solve(accuracy);
 
-        while (SlaeSolver.RelResidual(slae) > accuracy.Eps &&
-               !SlaeSolver.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta))
+        do
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
             slae = new Slae(grid, inputFuncs, initApprox);
             ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
+
+            if (accuracy.AutoRelax)
+            {
+                relaxRatio = RelaxRatio(slae.ResVec, grid, inputFuncs, initApprox, accuracy, area, boundaryConditions);
+            }
+
+            coef = relaxRatio;
+            initApprox = UpdateApprox(slae.ResVec, initApprox, relaxRatio);
             iter++;
-        }
+        } while (iter < accuracy.MaxIter && SlaeSolver.RelResidual(slae) > accuracy.Eps &&
+                  !SlaeSolver.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
 
         var funcCalc = new Sprache.Calc.XtensibleCalculator();
         var uStar = funcCalc.ParseFunction(inputFuncs.UStar).Compile();
@@ -57,10 +69,88 @@ public static class Solver
             Iterations = iter,
             Residual = SlaeSolver.RelResidual(slae),
             Error = error,
-            Values = slae.ResVec
+            Values = slae.ResVec,
+            RelaxRatio = coef
         };
 
         return stat;
+    }
+
+    private static double RelaxRatio(
+        double[] resVec, 
+        Grid grid, 
+        InputFuncs inputFuncs, 
+        double[] prevResVec,
+        Accuracy accuracy,
+        Area area, 
+        BoundaryConditions boundaryConditions
+        )
+    {
+        var gold = (Math.Pow(5, 0.5) - 1.0) / 2.0;
+        var left = .0;
+        var right = 1.0;
+        var xLeft = (1 - gold);
+        var xRight = gold;
+        var fLeft = ResidualFunc(resVec, grid, inputFuncs, xLeft, prevResVec, area, boundaryConditions);
+        var fRight = ResidualFunc(resVec, grid, inputFuncs, xRight, prevResVec, area, boundaryConditions);
+
+        while (Math.Abs(right - left) > accuracy.Eps)
+        {
+            if (fLeft > fRight)
+            {
+                left = xLeft;
+                xLeft = xRight;
+                fLeft = fRight;
+                xRight = left + gold * (right - left);
+                fRight = ResidualFunc(resVec, grid, inputFuncs, xRight, prevResVec, area, boundaryConditions);
+            }
+            else
+            {
+                right = xRight;
+                xRight = xLeft;
+                fRight = fLeft;
+                xLeft = left + (1.0 - gold) * (right - left);
+                fLeft = ResidualFunc(resVec, grid, inputFuncs, xLeft, prevResVec, area, boundaryConditions);
+            }
+        }
+
+        return (left + right) / 2.0;
+    }
+
+    private static double ResidualFunc(
+        double[] resVec,
+        Grid grid,
+        InputFuncs inputFuncs,
+        double x,
+        double[] prevResVec,
+        Area area,
+        BoundaryConditions boundaryConditions
+        )
+    {
+        var approx = new double[prevResVec.Length];
+        for (int i = 0; i < approx.Length; i++)
+        {
+            approx[i] = x * resVec[i] + (1.0 - x) * prevResVec[i];
+        }
+
+        var slae = new Slae(grid, inputFuncs, approx);
+        ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
+        return SlaeSolver.RelResidual(slae.Matrix, approx, slae.RhsVec);
+    }
+
+    private static double[] UpdateApprox(
+        double[] resVec,
+        double[] approx,
+        double relaxRatio
+    )
+    {
+        var newApprox = new double[resVec.Length];
+        for (int i = 0; i < resVec.Length; i++)
+        {
+            newApprox[i] = relaxRatio * resVec[i] + (1.0 - relaxRatio) * approx[i];
+        }
+
+        return newApprox;
     }
 
     private static void ApplyBoundaryConditions(

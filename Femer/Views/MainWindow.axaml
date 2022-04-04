@@ -242,7 +242,7 @@
             <Grid
                 Grid.Column="3"
                 HorizontalAlignment="Center"
-                RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto"
                 ColumnDefinitions="Auto, Auto">
                 <Label
                     Grid.Row="0" Grid.Column="0"
@@ -280,7 +280,25 @@
                     FontSize="16"
                     Watermark="required"
                     Text="{Binding Accuracy.Delta}" />
-
+                
+                <Label Grid.Row="4" Grid.Column="0"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center">
+                    Auto Relax Ratio 
+                </Label>
+                <CheckBox IsChecked="{Binding Accuracy.AutoRelax}" Grid.Row="4" Grid.Column="1">
+                </CheckBox>
+                
+                <Label Grid.Row="5" Grid.Column="0"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center">
+                    Relax Ratio 
+                </Label>
+                <TextBox
+                    Grid.Row="5" Grid.Column="1"
+                    FontSize="18"
+                    Text="{Binding Accuracy.RelaxRatio}" />
+                
             </Grid>
 
         </Grid>

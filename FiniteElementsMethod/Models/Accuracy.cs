@@ -19,4 +19,8 @@ public class Accuracy
     /// Parameter for checking stagnation status
     /// </summary>
     public double Delta { get; init; }
+    
+    public bool AutoRelax { get; init; }
+    
+    public double RelaxRatio { get; init; }
 }
