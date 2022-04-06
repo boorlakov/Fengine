@@ -2,9 +2,9 @@ name: .NET
 
 on:
   push:
-    branches: [ main, boorlakov-actions-poc ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, boorlakov-actions-poc ]
+    branches: [ main ]
 
 jobs:
   build:
