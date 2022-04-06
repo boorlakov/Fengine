@@ -23,6 +23,13 @@ public class Slae
         }
     }
 
+    public Slae()
+    {
+        Matrix = null;
+        ResVec = null;
+        RhsVec = null;
+    }
+
     public Slae(Grid grid, InputFuncs inputFuncs, double[] initApprox)
     {
         ResVec = new double[grid.X.Length];

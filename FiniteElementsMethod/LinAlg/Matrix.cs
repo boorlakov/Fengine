@@ -44,4 +44,13 @@ public class Matrix
 
         Size = center.Length;
     }
+
+    public Matrix()
+    {
+        Upper = null;
+        Center = null;
+        Lower = null;
+
+        Size = -1;
+    }
 }

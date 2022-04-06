@@ -1,4 +1,3 @@
-using System.Reflection.PortableExecutable;
 using FiniteElementsMethod.LinAlg;
 using FiniteElementsMethod.Models;
 
@@ -26,11 +25,9 @@ public static class Solver
         var iter = 0;
         var coef = 0.0;
         var initApprox = new double[grid.X.Length];
+
         var relaxRatio = accuracy.RelaxRatio;
-        initApprox.AsSpan().Fill(2.0);
-        var slae = new Slae(grid, inputFuncs, initApprox);
-        ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
-        slae.Solve(accuracy);
+        var slae = new Slae();
 
         do
         {
@@ -47,8 +44,10 @@ public static class Solver
             coef = relaxRatio;
             initApprox = UpdateApprox(slae.ResVec, initApprox, relaxRatio);
             iter++;
+
+            Console.WriteLine($"\r[LOGGER/INFO] RelRes = {SlaeSolver.RelResidual(slae):G10} | Iter: {iter}");
         } while (iter < accuracy.MaxIter && SlaeSolver.RelResidual(slae) > accuracy.Eps &&
-                  !SlaeSolver.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
+                 !SlaeSolver.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
 
         var funcCalc = new Sprache.Calc.XtensibleCalculator();
         var uStar = funcCalc.ParseFunction(inputFuncs.UStar).Compile();
@@ -77,14 +76,14 @@ public static class Solver
     }
 
     private static double RelaxRatio(
-        double[] resVec, 
-        Grid grid, 
-        InputFuncs inputFuncs, 
+        double[] resVec,
+        Grid grid,
+        InputFuncs inputFuncs,
         double[] prevResVec,
         Accuracy accuracy,
-        Area area, 
+        Area area,
         BoundaryConditions boundaryConditions
-        )
+    )
     {
         var gold = (Math.Pow(5, 0.5) - 1.0) / 2.0;
         var left = .0;
@@ -125,9 +124,10 @@ public static class Solver
         double[] prevResVec,
         Area area,
         BoundaryConditions boundaryConditions
-        )
+    )
     {
         var approx = new double[prevResVec.Length];
+
         for (int i = 0; i < approx.Length; i++)
         {
             approx[i] = x * resVec[i] + (1.0 - x) * prevResVec[i];
@@ -145,6 +145,7 @@ public static class Solver
     )
     {
         var newApprox = new double[resVec.Length];
+
         for (int i = 0; i < resVec.Length; i++)
         {
             newApprox[i] = relaxRatio * resVec[i] + (1.0 - relaxRatio) * approx[i];
