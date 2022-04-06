@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiniteDifferenceMethod", "FiniteDifferenceMethod\FiniteDifferenceMethod.csproj", "{3860300B-736C-46D6-8B24-D20B85C93981}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiniteElementsMethod", "FiniteElementsMethod\FiniteElementsMethod.csproj", "{83E56F7F-D7DF-453D-8A30-0BF4D3D74C2F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiniteElementsMethodTests", "FiniteElementsMethodTests\FiniteElementsMethodTests.csproj", "{16CE9CCD-80F2-4172-BB23-E97E3FCAE1AA}"
@@ -14,10 +12,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3860300B-736C-46D6-8B24-D20B85C93981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3860300B-736C-46D6-8B24-D20B85C93981}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3860300B-736C-46D6-8B24-D20B85C93981}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3860300B-736C-46D6-8B24-D20B85C93981}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83E56F7F-D7DF-453D-8A30-0BF4D3D74C2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{83E56F7F-D7DF-453D-8A30-0BF4D3D74C2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83E56F7F-D7DF-453D-8A30-0BF4D3D74C2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
