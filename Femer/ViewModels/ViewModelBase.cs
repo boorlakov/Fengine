@@ -1,8 +1,7 @@
 ﻿using ReactiveUI;
 
-namespace Femer.ViewModels
+namespace Femer.ViewModels;
+
+public class ViewModelBase : ReactiveObject
 {
-    public class ViewModelBase : ReactiveObject
-    {
-    }
 }

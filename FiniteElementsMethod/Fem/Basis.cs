@@ -1,7 +1,7 @@
 namespace FiniteElementsMethod.Fem;
 
 /// <summary>
-/// Basis class that is essential for decomposition in basis func
+///     Basis class that is essential for decomposition in basis func
 /// </summary>
 public static class Basis
 {
@@ -10,7 +10,7 @@ public static class Basis
         public static readonly Func<double, double>[] Func =
         {
             x => 1.0 - x,
-            x => x,
+            x => x
         };
     }
 }

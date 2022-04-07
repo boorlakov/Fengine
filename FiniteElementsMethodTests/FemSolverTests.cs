@@ -1,5 +1,8 @@
 using System;
 using FiniteElementsMethod.Fem;
+using FiniteElementsMethod.Fem.Mesh;
+using FiniteElementsMethod.Integration;
+using FiniteElementsMethod.LinAlg;
 using FiniteElementsMethod.Models;
 using NUnit.Framework;
 
@@ -8,6 +11,15 @@ namespace FiniteElementsMethodTests;
 [TestFixture]
 public class FemSolverTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        var slaeSolver = new SlaeSolver();
+        var integrator = new IntegratorG4();
+        _solver = new Solver(slaeSolver, integrator);
+    }
+    private Solver _solver;
+
     [Test]
     public void FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndUniformGrid_ShouldReturnCorrectResult()
     {
@@ -43,12 +55,12 @@ public class FemSolverTests
             MaxIter = 1000
         };
 
-        var grid = new Grid(area);
+        var grid = new Cartesian1DMesh(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = Solver.SolveWithSimpleIteration(
+        var result = _solver.SolveWithSimpleIteration(
             grid,
             inputFuncs,
             area,
@@ -100,12 +112,12 @@ public class FemSolverTests
             MaxIter = 1000
         };
 
-        var grid = new Grid(area);
+        var grid = new Cartesian1DMesh(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = Solver.SolveWithSimpleIteration(
+        var result = _solver.SolveWithSimpleIteration(
             grid,
             inputFuncs,
             area,
@@ -157,12 +169,12 @@ public class FemSolverTests
             MaxIter = 1000
         };
 
-        var grid = new Grid(area);
+        var grid = new Cartesian1DMesh(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = Solver.SolveWithSimpleIteration(
+        var result = _solver.SolveWithSimpleIteration(
             grid,
             inputFuncs,
             area,
@@ -213,12 +225,12 @@ public class FemSolverTests
             MaxIter = 1000
         };
 
-        var grid = new Grid(area);
+        var grid = new Cartesian1DMesh(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = Solver.SolveWithSimpleIteration(
+        var result = _solver.SolveWithSimpleIteration(
             grid,
             inputFuncs,
             area,
@@ -269,12 +281,12 @@ public class FemSolverTests
             MaxIter = 1000
         };
 
-        var grid = new Grid(area);
+        var grid = new Cartesian1DMesh(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = Solver.SolveWithSimpleIteration(
+        var result = _solver.SolveWithSimpleIteration(
             grid,
             inputFuncs,
             area,
@@ -324,17 +336,17 @@ public class FemSolverTests
             MaxIter = 10000
         };
 
-        var grid = new Grid(area);
+        var grid = new Cartesian1DMesh(area);
 
         var expected = new double[11];
 
         for (var i = 0; i < expected.Length; i++)
         {
-            expected[i] = Math.Sin(grid.X[i]);
+            expected[i] = Math.Sin(grid.Nodes[i].Coordinates["x"]);
         }
 
         // Act
-        var result = Solver.SolveWithSimpleIteration(
+        var result = _solver.SolveWithSimpleIteration(
             grid,
             inputFuncs,
             area,

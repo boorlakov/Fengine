@@ -1,19 +1,22 @@
 namespace FiniteElementsMethod.LinAlg;
 
 /// <summary>
-/// Class, holding general operations in linear algebra
+///     Class, holding general operations in linear algebra
 /// </summary>
 public static class GeneralOperations
 {
     /// <summary>
-    /// Euclidean norm of a vector 
+    ///     Euclidean norm of a vector
     /// </summary>
     /// <param name="x">Vector, represented by double values</param>
     /// <returns>Euclidean norm of a given x</returns>
-    public static double Norm(IEnumerable<double> x) => Math.Sqrt(x.Sum(t => t * t));
+    public static double Norm(IEnumerable<double> x)
+    {
+        return Math.Sqrt(x.Sum(t => t * t));
+    }
 
     /// <summary>
-    /// Multiplication matrix by vector 
+    ///     Multiplication matrix by vector
     /// </summary>
     /// <param name="matrix">Given matrix in 3-diagonal format</param>
     /// <param name="vec">Vector, represented by double values</param>
@@ -31,7 +34,7 @@ public static class GeneralOperations
     }
 
     /// <summary>
-    /// Dot product of a specified row in matrix by vector
+    ///     Dot product of a specified row in matrix by vector
     /// </summary>
     /// <param name="i">Row, along which the product is produced</param>
     /// <param name="matrix">3-diagonal matrix</param>

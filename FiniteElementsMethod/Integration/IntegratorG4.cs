@@ -1,14 +1,19 @@
+using Sprache.Calc;
+
 namespace FiniteElementsMethod.Integration;
 
-public static class Integrator
+/// <summary>
+///     Integrator by Gauss (4-points)
+/// </summary>
+public class IntegratorG4 : IIntegrator
 {
     /// <summary>
-    /// Integrates a 1 dimensional functionFromString of given grid
+    ///     Integrates a 1 dimensional functionFromString of given grid
     /// </summary>
     /// <param name="grid"> Array grid </param>
     /// <param name="function"> Function to integrate. Note: must have 1-dimension </param>
     /// <returns> Value of the definite integral </returns>
-    public static double Integrate1D(double[] grid, Func<double, double> function)
+    public double Integrate1D(double[] grid, Func<double, double> function)
     {
         var ti = new[]
         {
@@ -48,12 +53,12 @@ public static class Integrator
     }
 
     /// <summary>
-    /// Integrates a 1 dimensional function (in string form) of given grid
+    ///     Integrates a 1 dimensional function (in string form) of given grid
     /// </summary>
     /// <param name="grid"> Array grid </param>
     /// <param name="funcFromString"> Function to integrate. Note: must have 1-dimension </param>
     /// <returns> Value of the definite integral </returns>
-    public static double Integrate1D(double[] grid, string funcFromString)
+    public double Integrate1D(double[] grid, string funcFromString)
     {
         var ti = new[]
         {
@@ -75,7 +80,7 @@ public static class Integrator
 
         var preRes = 0.0;
         var res = 0.0;
-        var calc = new Sprache.Calc.XtensibleCalculator();
+        var calc = new XtensibleCalculator();
         var func = calc.ParseFunction(funcFromString).Compile();
 
         for (var i = 0; i < grid.Length - 1; i++)
@@ -92,24 +97,5 @@ public static class Integrator
         }
 
         return res;
-    }
-
-    /// <summary>
-    /// Makes 1D grid with 11 points in it
-    /// </summary>
-    /// <param name="leftBorder">Left border point</param>
-    /// <param name="rightBorder">Right border point</param>
-    /// <returns>integrationGrid from leftBorder to rightBorder with 11 points in it</returns>
-    public static double[] MakeGrid(double leftBorder, double rightBorder)
-    {
-        var integrationGrid = new double[11];
-        var step = (rightBorder - leftBorder) / 10.0;
-
-        for (var i = 0; i < integrationGrid.Length; i++)
-        {
-            integrationGrid[i] = leftBorder + i * step;
-        }
-
-        return integrationGrid;
     }
 }
