@@ -3,7 +3,7 @@ using Fengine.LinAlg.Matrix;
 
 namespace Fengine.LinAlg;
 
-public class Utils
+public static class Utils
 {
     /// <summary>
     ///     Checks if iteration method is stagnating or not
