@@ -148,7 +148,7 @@ public class Slae
 
     private double[][][] BuildLocalStiffness()
     {
-        var mesh = _integrator.Create1DIntegrationMesh(0.0, 1.0);
+        var mesh = Utils.Create1DIntegrationMesh(0.0, 1.0);
 
         var localStiffness = new double[2][][];
         localStiffness[0] = new double[2][];
@@ -185,7 +185,7 @@ public class Slae
 
     private double[][][] BuildLocalMass()
     {
-        var mesh = _integrator.Create1DIntegrationMesh(0.0, 1.0);
+        var mesh = Utils.Create1DIntegrationMesh(0.0, 1.0);
 
         var localMass = new double[3][][];
         localMass[0] = new double[2][];

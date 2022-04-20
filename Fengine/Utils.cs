@@ -40,4 +40,23 @@ public static class Utils
     {
         return new Dictionary<string, double> {{"x", x}, {"u", u}};
     }
+
+    /// <summary>
+    ///     Makes 1D grid with 11 points in it
+    /// </summary>
+    /// <param name="leftBorder">Left border point</param>
+    /// <param name="rightBorder">Right border point</param>
+    /// <returns>integrationGrid from leftBorder to rightBorder with 11 points in it</returns>
+    public static double[] Create1DIntegrationMesh(double leftBorder, double rightBorder)
+    {
+        var integrationGrid = new double[11];
+        var step = (rightBorder - leftBorder) / 10.0;
+
+        for (var i = 0; i < integrationGrid.Length; i++)
+        {
+            integrationGrid[i] = leftBorder + i * step;
+        }
+
+        return integrationGrid;
+    }
 }

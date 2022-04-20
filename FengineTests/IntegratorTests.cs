@@ -1,3 +1,4 @@
+using Fengine;
 using Fengine.Integration;
 using NUnit.Framework;
 
@@ -11,6 +12,7 @@ public class IntegratorTests
     {
         _integrator = new IntegratorG4();
     }
+
     private IIntegrator _integrator;
 
     [Test]
@@ -23,7 +25,7 @@ public class IntegratorTests
         var expected = new[] {0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0};
 
         // Act
-        var result = _integrator.Create1DIntegrationMesh(leftBorder, rightBorder);
+        var result = Utils.Create1DIntegrationMesh(leftBorder, rightBorder);
 
         // Assert 
         for (var i = 0; i < expected.Length; i++)
@@ -36,7 +38,7 @@ public class IntegratorTests
     public void Integrate1D_WhenPassConst_ShouldReturnRectangleArea()
     {
         // Arrange
-        var grid = _integrator.Create1DIntegrationMesh(0.0, 2.0);
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
         var func = (double x) => 1.0;
 
         const double expected = 2.0;
@@ -52,7 +54,7 @@ public class IntegratorTests
     public void Integrate1D_WhenPassLinear_ShouldReturnTriangleArea()
     {
         // Arrange
-        var grid = _integrator.Create1DIntegrationMesh(0.0, 2.0);
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
         var func = (double x) => x;
 
         const double expected = 2.0;
@@ -68,7 +70,7 @@ public class IntegratorTests
     public void Integrate1D_WhenPassCube_ShouldReturnArea()
     {
         // Arrange
-        var grid = _integrator.Create1DIntegrationMesh(0.0, 2.0);
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
         var func = (double x) => x * x * x;
 
         const double expected = 4.0;
@@ -84,7 +86,7 @@ public class IntegratorTests
     public void Integrate1DWithStringFunc_WhenPassConst_ShouldReturnRectangleArea()
     {
         // Arrange
-        var grid = _integrator.Create1DIntegrationMesh(0.0, 2.0);
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
         const string func = "1.0";
 
         const double expected = 2.0;
@@ -100,7 +102,7 @@ public class IntegratorTests
     public void Integrate1DWithStringFunc_WhenPassLinear_ShouldReturnTriangleArea()
     {
         // Arrange
-        var grid = _integrator.Create1DIntegrationMesh(0.0, 2.0);
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
         const string func = "x";
 
         const double expected = 2.0;
@@ -116,7 +118,7 @@ public class IntegratorTests
     public void Integrate1DWithStringFunc_WhenPassCube_ShouldReturnArea()
     {
         // Arrange
-        var grid = _integrator.Create1DIntegrationMesh(0.0, 2.0);
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
         const string func = "x * x * x";
 
         const double expected = 4.0;
@@ -132,7 +134,7 @@ public class IntegratorTests
     public void Integrate1DWithStringFunc_WhenPassPowCube_ShouldReturnArea()
     {
         // Arrange
-        var grid = _integrator.Create1DIntegrationMesh(0.0, 2.0);
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
         const string func = "Pow(x, 3)";
 
         const double expected = 4.0;
