@@ -2,7 +2,7 @@ using Fengine;
 using Fengine.Integration;
 using NUnit.Framework;
 
-namespace FiniteElementsMethodTests;
+namespace FengineTests;
 
 [TestFixture]
 public class IntegratorTests

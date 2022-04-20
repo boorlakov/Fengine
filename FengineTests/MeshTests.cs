@@ -2,7 +2,7 @@ using Fengine.Fem.Mesh;
 using Fengine.Models;
 using NUnit.Framework;
 
-namespace FiniteElementsMethodTests;
+namespace FengineTests;
 
 [TestFixture]
 public class MeshTests

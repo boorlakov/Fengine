@@ -6,7 +6,7 @@ using Fengine.LinAlg;
 using Fengine.Models;
 using NUnit.Framework;
 
-namespace FiniteElementsMethodTests;
+namespace FengineTests;
 
 [TestFixture]
 public class FemSolverTests

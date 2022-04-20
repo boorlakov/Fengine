@@ -2,7 +2,7 @@ using System;
 using Fengine.LinAlg;
 using NUnit.Framework;
 
-namespace FiniteElementsMethodTests;
+namespace FengineTests;
 
 [TestFixture]
 public class GeneralOperationsTests
