@@ -1,7 +1,8 @@
 using System;
-using Fengine.Fem;
 using Fengine.Fem.Mesh;
+using Fengine.Fem.Solver;
 using Fengine.Integration;
+using Fengine.LinAlg.Matrix;
 using Fengine.LinAlg.SlaeSolver;
 using Fengine.Models;
 using NUnit.Framework;
@@ -16,9 +17,10 @@ public class FemSolverTests
     {
         var slaeSolver = new SlaeSolverGs();
         var integrator = new IntegratorG4();
-        _solver = new Solver(slaeSolver, integrator);
+        var matrixType = new Matrix3Diag();
+        _femSolverWithSimpleIteration = new FemSolverWithSimpleIteration(slaeSolver, integrator, matrixType);
     }
-    private Solver _solver;
+    private FemSolverWithSimpleIteration _femSolverWithSimpleIteration;
 
     [Test]
     public void FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndUniformGrid_ShouldReturnCorrectResult()
@@ -60,7 +62,7 @@ public class FemSolverTests
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _solver.SolveWithSimpleIteration(
+        var result = _femSolverWithSimpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -117,7 +119,7 @@ public class FemSolverTests
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _solver.SolveWithSimpleIteration(
+        var result = _femSolverWithSimpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -174,7 +176,7 @@ public class FemSolverTests
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _solver.SolveWithSimpleIteration(
+        var result = _femSolverWithSimpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -230,7 +232,7 @@ public class FemSolverTests
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _solver.SolveWithSimpleIteration(
+        var result = _femSolverWithSimpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -286,7 +288,7 @@ public class FemSolverTests
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _solver.SolveWithSimpleIteration(
+        var result = _femSolverWithSimpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -346,7 +348,7 @@ public class FemSolverTests
         }
 
         // Act
-        var result = _solver.SolveWithSimpleIteration(
+        var result = _femSolverWithSimpleIteration.Solve(
             grid,
             inputFuncs,
             area,

@@ -1,4 +1,4 @@
-using Fengine.Fem;
+using Fengine.Fem.Slae;
 using Fengine.LinAlg.Matrix;
 using Fengine.Models;
 
@@ -15,7 +15,7 @@ public class SlaeSolverGs : ISlaeSolver
     /// <param name="slae"></param>
     /// <param name="accuracy"></param>
     /// <returns></returns>
-    public double[] Solve(Slae slae, Accuracy accuracy)
+    public double[] Solve(ISlae slae, Accuracy accuracy)
     {
         slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.7, slae.RhsVec);
         var residual = Utils.RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
@@ -42,7 +42,7 @@ public class SlaeSolverGs : ISlaeSolver
     /// <param name="w">Relaxation parameter</param>
     /// <param name="f">Right part (f) of the slae</param>
     /// <returns>New approximation x</returns>
-    private static double[] Iterate(double[] x, Matrix3Diag matrix3Diag, double w, double[] f)
+    private static double[] Iterate(double[] x, IMatrix matrix3Diag, double w, double[] f)
     {
         for (var i = 0; i < x.Length; i++)
         {

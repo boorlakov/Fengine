@@ -32,7 +32,7 @@ public class SlaeTests
         var matrix = new Matrix3Diag(upper, center, lower);
 
         var vec = new[] {4.0, 6.0, 8.0};
-        var slae = new Slae(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
         var expected = new[] {2.0, 3.0, 4.0};
         var accuracy = new Accuracy
         {
@@ -70,7 +70,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Slae(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
         var expected = new[] {1.0, 1.0, 1.0};
 
         // Act
@@ -103,7 +103,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Slae(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
         var expected = new[] {1.0, 1.0, 1.0};
 
         // Act
@@ -136,7 +136,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Slae(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
         var expected = 1.0e-5;
 
         // Act

@@ -1,5 +1,6 @@
 using Fengine.Fem.Basis;
 using Fengine.Fem.Mesh;
+using Fengine.Fem.Slae;
 using Fengine.Integration;
 using Fengine.LinAlg.Matrix;
 using Fengine.LinAlg.SlaeSolver;
@@ -8,32 +9,36 @@ using Sprache.Calc;
 
 namespace Fengine.Fem;
 
-public class Slae
+public class Slae1DEllipticLinearFNonLinear : ISlae
 {
     private readonly IIntegrator _integrator;
-    private readonly SlaeSolverGs _slaeSolver;
+    private readonly ISlaeSolver _slaeSolver;
 
-    public readonly Matrix3Diag Matrix;
-    public readonly double[] RhsVec;
-    public double[] ResVec;
+    public IMatrix Matrix { get; set; }
+    public double[] RhsVec { get; set; }
+    public double[] ResVec { get; set; }
 
-    public Slae()
+    public Slae1DEllipticLinearFNonLinear()
     {
-        Matrix = null;
-        ResVec = null;
-        RhsVec = null;
+        Matrix = null!;
+        ResVec = null!;
+        RhsVec = null!;
+        _integrator = null!;
+        _slaeSolver = null!;
     }
 
-    public Slae(
+    public Slae1DEllipticLinearFNonLinear(
         IMesh cartesian1DMesh,
         InputFuncs inputFuncs,
         double[] initApprox,
-        SlaeSolverGs slaeSolver,
-        IIntegrator integrator
+        ISlaeSolver slaeSolver,
+        IIntegrator integrator,
+        IMatrix matrix
     )
     {
         _slaeSolver = slaeSolver;
         _integrator = integrator;
+        Matrix = matrix;
 
         ResVec = new double[cartesian1DMesh.Nodes.Length];
         initApprox.AsSpan().CopyTo(ResVec);
@@ -55,26 +60,24 @@ public class Slae
         {
             var step = cartesian1DMesh.Nodes[i + 1].Coordinates["x"] - cartesian1DMesh.Nodes[i].Coordinates["x"];
 
-            BuildMatrix(i, cartesian1DMesh, center, lambda, localStiffness, step, gamma, localMass, upper, lower);
+            BuildMatrix(i, step, cartesian1DMesh, localStiffness, localMass, lambda, gamma, upper, center, lower);
 
-            BuildRhs(i, cartesian1DMesh, step, rhsFunc, localMass);
+            BuildRhs(i, step, cartesian1DMesh, rhsFunc, localMass);
         }
 
         Matrix = new Matrix3Diag(upper, center, lower);
     }
 
-    private static void BuildMatrix(
-        int i,
-        IMesh cartesian1DMesh,
-        double[] center,
-        Func<Dictionary<string, double>, double> lambda,
-        double[][][] localStiffness,
+    private static void BuildMatrix(int i,
         double step,
-        Func<Dictionary<string, double>, double> gamma,
+        IMesh cartesian1DMesh,
+        double[][][] localStiffness,
         double[][][] localMass,
+        Func<Dictionary<string, double>, double> lambda,
+        Func<Dictionary<string, double>, double> gamma,
         double[] upper,
-        double[] lower
-    )
+        double[] center,
+        double[] lower)
     {
         center[i] +=
             (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][0] +
@@ -106,13 +109,11 @@ public class Slae
                     step;
     }
 
-    private void BuildRhs(
-        int i,
-        IMesh cartesian1DMesh,
+    private void BuildRhs(int i,
         double step,
+        IMesh cartesian1DMesh,
         Func<Dictionary<string, double>, double> rhsFunc,
-        double[][][] localMass
-    )
+        double[][][] localMass)
     {
         RhsVec[i] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
                              localMass[2][0][0] +
@@ -124,10 +125,10 @@ public class Slae
                                      ResVec[i + 1])) * localMass[2][1][1]);
     }
 
-    public Slae(
+    public Slae1DEllipticLinearFNonLinear(
         Matrix3Diag matrix,
         double[] rhsVec,
-        SlaeSolverGs slaeSolver,
+        ISlaeSolver slaeSolver,
         IIntegrator integrator
     )
     {
@@ -196,6 +197,7 @@ public class Slae
                 x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
             _integrator.Integrate1D(mesh,
                 x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
+
             _integrator.Integrate1D(mesh, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
             _integrator.Integrate1D(mesh, x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
             _integrator.Integrate1D(mesh, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x))

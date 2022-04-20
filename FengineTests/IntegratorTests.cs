@@ -145,4 +145,68 @@ public class IntegratorTests
         // Assert
         Assert.AreEqual(result, expected, 1.0e-7);
     }
+
+    [Test]
+    public void Integrate1DWithParsedFunc_WhenPassConst_ShouldReturnRectangleArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        const string func = "1.0";
+
+        const double expected = 2.0;
+
+        // Act
+        var result = _integrator.Integrate1D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    [Test]
+    public void Integrate1DWithParsedFunc_WhenPassLinear_ShouldReturnTriangleArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        const string func = "x";
+
+        const double expected = 2.0;
+
+        // Act
+        var result = _integrator.Integrate1D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    [Test]
+    public void Integrate1DWithParsedFunc_WhenPassCube_ShouldReturnArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        const string func = "x * x * x";
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate1D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    [Test]
+    public void Integrate1DWithParsedFunc_WhenPassPowCube_ShouldReturnArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        const string func = "Pow(x, 3)";
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate1D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
 }

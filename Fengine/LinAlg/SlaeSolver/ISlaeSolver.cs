@@ -1,9 +1,9 @@
-using Fengine.Fem;
+using Fengine.Fem.Slae;
 using Fengine.Models;
 
 namespace Fengine.LinAlg.SlaeSolver;
 
 public interface ISlaeSolver
 {
-    double[] Solve(Slae slae, Accuracy accuracy);
+    double[] Solve(ISlae slae, Accuracy accuracy);
 }

@@ -23,7 +23,7 @@ public static class GeneralOperations
     /// <param name="m">Given matrix in 3-diagonal format</param>
     /// <param name="vec">Vector, represented by double values</param>
     /// <returns>Multiplication result m by vector</returns>
-    public static double[] MatMul(Matrix3Diag m, double[] vec)
+    public static double[] MatMul(IMatrix m, double[] vec)
     {
         var res = new double[vec.Length];
 
@@ -42,7 +42,7 @@ public static class GeneralOperations
     /// <param name="m">3-diagonal matrix</param>
     /// <param name="vec">Vector, represented by double values</param>
     /// <returns>Dot product of a specified row i in m by vector</returns>
-    public static double Dot(int i, Matrix3Diag m, double[] vec)
+    public static double Dot(int i, IMatrix m, double[] vec)
     {
         var res = m.Data["center"][i] * vec[i];
 

@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Threading;
 using Fengine;
-using Fengine.Fem;
 using Fengine.Fem.Mesh;
+using Fengine.Fem.Solver;
 using Fengine.Models;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
@@ -14,7 +14,7 @@ namespace Femer.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private readonly Solver _solver;
+    private readonly FemSolverWithSimpleIteration _femSolverWithSimpleIteration;
 
     private string _result = string.Empty;
 
@@ -26,7 +26,8 @@ public class MainWindowViewModel : ViewModelBase
             .ConfigureServices()
             .BuildServiceProvider();
 
-        _solver = serviceProvider.GetService<Solver>() ?? throw new InvalidOperationException();
+        _femSolverWithSimpleIteration = serviceProvider.GetService<FemSolverWithSimpleIteration>() ??
+                                        throw new InvalidOperationException();
     }
 
     public Area Area { get; } = new();
@@ -65,7 +66,7 @@ public class MainWindowViewModel : ViewModelBase
     {
         var mesh = new Cartesian1DMesh(Area);
 
-        var res = _solver.SolveWithSimpleIteration(
+        var res = _femSolverWithSimpleIteration.Solve(
             mesh,
             InputFuncs,
             Area,

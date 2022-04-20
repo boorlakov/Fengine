@@ -27,15 +27,15 @@ public static class Utils
     /// <summary>
     ///     Relative residual (||f - Ax|| / ||f||) of slae Ax = f
     /// </summary>
-    /// <param name="matrix3Diag">Given weights. A part in slae</param>
+    /// <param name="m">Given weights. A part in slae</param>
     /// <param name="x">Given approximation. x part in slae</param>
     /// <param name="f">Right part (f) of the slae</param>
     /// <returns>Relative residual value</returns>
-    public static double RelResidual(Matrix3Diag matrix3Diag, double[] x, double[] f)
+    public static double RelResidual(IMatrix m, double[] x, double[] f)
     {
         var diff = new double[f.Length];
 
-        var innerProd = GeneralOperations.MatMul(matrix3Diag, x);
+        var innerProd = GeneralOperations.MatMul(m, x);
 
         for (var i = 0; i < f.Length; i++)
         {
@@ -48,19 +48,20 @@ public static class Utils
     /// <summary>
     ///     Relative residual (||f - Ax|| / ||f||) of slae Ax = f
     /// </summary>
-    /// <param name="slae">Given slae</param>
+    /// <param name="slae1DEllipticLinearFNonLinear">Given slae</param>
     /// <returns>Relative residual value</returns>
-    public static double RelResidual(Slae slae)
+    public static double RelResidual(Slae1DEllipticLinearFNonLinear slae1DEllipticLinearFNonLinear)
     {
-        var diff = new double[slae.RhsVec.Length];
+        var diff = new double[slae1DEllipticLinearFNonLinear.RhsVec.Length];
 
-        var innerProd = GeneralOperations.MatMul(slae.Matrix, slae.ResVec);
+        var innerProd =
+            GeneralOperations.MatMul(slae1DEllipticLinearFNonLinear.Matrix, slae1DEllipticLinearFNonLinear.ResVec);
 
-        for (var i = 0; i < slae.RhsVec.Length; i++)
+        for (var i = 0; i < slae1DEllipticLinearFNonLinear.RhsVec.Length; i++)
         {
-            diff[i] = slae.RhsVec[i] - innerProd[i];
+            diff[i] = slae1DEllipticLinearFNonLinear.RhsVec[i] - innerProd[i];
         }
 
-        return GeneralOperations.Norm(diff) / GeneralOperations.Norm(slae.RhsVec);
+        return GeneralOperations.Norm(diff) / GeneralOperations.Norm(slae1DEllipticLinearFNonLinear.RhsVec);
     }
 }
