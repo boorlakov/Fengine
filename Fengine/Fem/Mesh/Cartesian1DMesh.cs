@@ -13,11 +13,11 @@ public class Cartesian1DMesh : IMesh
     /// <param name="area">Given area settings</param>
     public Cartesian1DMesh(Area area)
     {
-        var nodes = new Node[area.AmountPoints];
+        var nodes = new IMesh.Node[area.AmountPoints];
 
         for (var i = 0; i < nodes.Length; i++)
         {
-            nodes[i] = new Node();
+            nodes[i] = new IMesh.Node();
         }
 
         nodes[0].Coordinates.Add("x", area.LeftBorder);
@@ -48,5 +48,5 @@ public class Cartesian1DMesh : IMesh
         Nodes = nodes;
     }
 
-    public Node[] Nodes { get; init; }
+    public IMesh.Node[] Nodes { get; init; }
 }
