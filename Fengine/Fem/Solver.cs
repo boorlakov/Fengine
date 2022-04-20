@@ -45,7 +45,7 @@ public class Solver
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
             slae = new Slae(cartesian1DMesh, inputFuncs, initApprox, _slaeSolver, _integrator);
-            ApplyBoundaryConditions(slae.Matrix3Diag, slae.RhsVec, area, boundaryConditions);
+            ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
 
             if (accuracy.AutoRelax)
@@ -163,8 +163,8 @@ public class Solver
         }
 
         var slae = new Slae(cartesian1DMesh, inputFuncs, approx, _slaeSolver, _integrator);
-        ApplyBoundaryConditions(slae.Matrix3Diag, slae.RhsVec, area, boundaryConditions);
-        return LinAlg.Utils.RelResidual(slae.Matrix3Diag, approx, slae.RhsVec);
+        ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
+        return LinAlg.Utils.RelResidual(slae.Matrix, approx, slae.RhsVec);
     }
 
     private static double[] UpdateApprox(

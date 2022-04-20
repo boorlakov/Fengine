@@ -1,11 +1,11 @@
 namespace Fengine.LinAlg;
 
 /// <summary>
-///     Matrix3Diag class represented in 3-diagonal format
+///     Matrix class represented in 3-diagonal format
 /// </summary>
 public class Matrix3Diag : IMatrix
 {
-    // Matrix3Diag example
+    // Matrix example
     // +---+
     // |cu |
     // |lcu|

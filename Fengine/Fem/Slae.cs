@@ -12,13 +12,13 @@ public class Slae
     private readonly IIntegrator _integrator;
     private readonly SlaeSolver _slaeSolver;
 
-    public readonly Matrix3Diag Matrix3Diag;
+    public readonly Matrix3Diag Matrix;
     public readonly double[] RhsVec;
     public double[] ResVec;
 
     public Slae()
     {
-        Matrix3Diag = null;
+        Matrix = null;
         ResVec = null;
         RhsVec = null;
     }
@@ -113,17 +113,17 @@ public class Slae
             #endregion
         }
 
-        Matrix3Diag = new Matrix3Diag(upper, center, lower);
+        Matrix = new Matrix3Diag(upper, center, lower);
     }
 
     public Slae(
-        Matrix3Diag matrix3Diag,
+        Matrix3Diag matrix,
         double[] rhsVec,
         SlaeSolver slaeSolver,
         IIntegrator integrator
     )
     {
-        Matrix3Diag = matrix3Diag;
+        Matrix = matrix;
         ResVec = new double[rhsVec.Length];
         RhsVec = rhsVec;
         _slaeSolver = slaeSolver;

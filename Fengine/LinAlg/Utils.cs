@@ -53,7 +53,7 @@ public class Utils
     {
         var diff = new double[slae.RhsVec.Length];
 
-        var innerProd = GeneralOperations.MatMul(slae.Matrix3Diag, slae.ResVec);
+        var innerProd = GeneralOperations.MatMul(slae.Matrix, slae.ResVec);
 
         for (var i = 0; i < slae.RhsVec.Length; i++)
         {

@@ -16,8 +16,8 @@ public class SlaeSolver
     /// <returns></returns>
     public double[] Solve(Slae slae, Accuracy accuracy)
     {
-        slae.ResVec = Iterate(slae.ResVec, slae.Matrix3Diag, 1.7, slae.RhsVec);
-        var residual = Utils.RelResidual(slae.Matrix3Diag, slae.ResVec, slae.RhsVec);
+        slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.7, slae.RhsVec);
+        var residual = Utils.RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
         var iter = 1;
         var prevResVec = new double[slae.ResVec.Length];
 
@@ -25,8 +25,8 @@ public class SlaeSolver
                !Utils.CheckIsStagnate(prevResVec, slae.ResVec, accuracy.Delta))
         {
             slae.ResVec.AsSpan().CopyTo(prevResVec);
-            slae.ResVec = Iterate(slae.ResVec, slae.Matrix3Diag, 1.0, slae.RhsVec);
-            residual = Utils.RelResidual(slae.Matrix3Diag, slae.ResVec, slae.RhsVec);
+            slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.0, slae.RhsVec);
+            residual = Utils.RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
             iter++;
         }
 
