@@ -55,66 +55,73 @@ public class Slae
         {
             var step = cartesian1DMesh.Nodes[i + 1].Coordinates["x"] - cartesian1DMesh.Nodes[i].Coordinates["x"];
 
-            #region matrixBuild
+            BuildMatrix(i, cartesian1DMesh, center, lambda, localStiffness, step, gamma, localMass, upper, lower);
 
-            #region center
-
-            center[i] +=
-                (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][0] +
-                 lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localStiffness[1][0][0]) /
-                step +
-                (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][0][0] +
-                 gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][0][0]) * step;
-
-            center[i + 1] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) *
-                              localStiffness[0][1][1] +
-                              lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
-                              localStiffness[1][1][1]) / step +
-                             (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][1][1] +
-                              gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
-                              localMass[1][1][1]) * step;
-
-            #endregion
-
-            #region upper
-
-            upper[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][1] +
-                         lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
-                         localStiffness[1][0][1]) / step +
-                        (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][0][1] +
-                         gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][0][1]) *
-                        step;
-
-            #endregion
-
-            #region lower
-
-            lower[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][1][0] +
-                         gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
-                         localStiffness[1][1][0]) / step +
-                        (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][1][0] +
-                         gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][1][0]) *
-                        step;
-
-            #endregion
-
-            #endregion
-
-            #region buildRhs
-
-            RhsVec[i] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
-                                 localMass[2][0][0] +
-                                 rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"],
-                                     ResVec[i + 1])) * localMass[2][0][1]);
-            RhsVec[i + 1] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
-                                     localMass[2][1][0] +
-                                     rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"],
-                                         ResVec[i + 1])) * localMass[2][1][1]);
-
-            #endregion
+            BuildRhs(i, cartesian1DMesh, step, rhsFunc, localMass);
         }
 
         Matrix = new Matrix3Diag(upper, center, lower);
+    }
+
+    private static void BuildMatrix(
+        int i,
+        IMesh cartesian1DMesh,
+        double[] center,
+        Func<Dictionary<string, double>, double> lambda,
+        double[][][] localStiffness,
+        double step,
+        Func<Dictionary<string, double>, double> gamma,
+        double[][][] localMass,
+        double[] upper,
+        double[] lower
+    )
+    {
+        center[i] +=
+            (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][0] +
+             lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localStiffness[1][0][0]) /
+            step +
+            (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][0][0] +
+             gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][0][0]) * step;
+
+        center[i + 1] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) *
+                          localStiffness[0][1][1] +
+                          lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+                          localStiffness[1][1][1]) / step +
+                         (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][1][1] +
+                          gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+                          localMass[1][1][1]) * step;
+
+        upper[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][1] +
+                     lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+                     localStiffness[1][0][1]) / step +
+                    (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][0][1] +
+                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][0][1]) *
+                    step;
+
+        lower[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][1][0] +
+                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+                     localStiffness[1][1][0]) / step +
+                    (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][1][0] +
+                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][1][0]) *
+                    step;
+    }
+
+    private void BuildRhs(
+        int i,
+        IMesh cartesian1DMesh,
+        double step,
+        Func<Dictionary<string, double>, double> rhsFunc,
+        double[][][] localMass
+    )
+    {
+        RhsVec[i] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
+                             localMass[2][0][0] +
+                             rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"],
+                                 ResVec[i + 1])) * localMass[2][0][1]);
+        RhsVec[i + 1] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
+                                 localMass[2][1][0] +
+                                 rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"],
+                                     ResVec[i + 1])) * localMass[2][1][1]);
     }
 
     public Slae(
