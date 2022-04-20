@@ -139,7 +139,7 @@ public class SlaeTests
 
         // Act
         slae.Solve(accuracy);
-        var result = _slaeSolver.RelResidual(slae);
+        var result = Utils.RelResidual(slae);
 
         // Assert
         Assert.AreEqual(result, expected, 1.0e-5);

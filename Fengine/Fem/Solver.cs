@@ -58,9 +58,9 @@ public class Solver
             initApprox = UpdateApprox(slae.ResVec, initApprox, relaxRatio);
             iter++;
 
-            Console.Write($"\r[INFO] RelRes = {_slaeSolver.RelResidual(slae):G10} | Iter: {iter}");
-        } while (iter < accuracy.MaxIter && _slaeSolver.RelResidual(slae) > accuracy.Eps &&
-                 !_slaeSolver.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
+            Console.Write($"\r[INFO] RelRes = {LinAlg.Utils.RelResidual(slae):G10} | Iter: {iter}");
+        } while (iter < accuracy.MaxIter && LinAlg.Utils.RelResidual(slae) > accuracy.Eps &&
+                 !LinAlg.Utils.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
 
         var funcCalc = new XtensibleCalculator();
         var uStar = funcCalc.ParseFunction(inputFuncs.UStar).Compile();
@@ -79,7 +79,7 @@ public class Solver
         var stat = new Statistics
         {
             Iterations = iter,
-            Residual = _slaeSolver.RelResidual(slae),
+            Residual = LinAlg.Utils.RelResidual(slae),
             Error = error,
             Values = slae.ResVec,
             RelaxRatio = coef
@@ -114,8 +114,15 @@ public class Solver
                 xLeft = xRight;
                 fLeft = fRight;
                 xRight = left + gold * (right - left);
-                fRight = ResidualFunc(resVec, cartesian1DMesh, inputFuncs, xRight, prevResVec, area,
-                    boundaryConditions);
+                fRight = ResidualFunc(
+                    resVec,
+                    cartesian1DMesh,
+                    inputFuncs,
+                    xRight,
+                    prevResVec,
+                    area,
+                    boundaryConditions
+                );
             }
             else
             {
@@ -123,7 +130,15 @@ public class Solver
                 xRight = xLeft;
                 fRight = fLeft;
                 xLeft = left + (1.0 - gold) * (right - left);
-                fLeft = ResidualFunc(resVec, cartesian1DMesh, inputFuncs, xLeft, prevResVec, area, boundaryConditions);
+                fLeft = ResidualFunc(
+                    resVec,
+                    cartesian1DMesh,
+                    inputFuncs,
+                    xLeft,
+                    prevResVec,
+                    area,
+                    boundaryConditions
+                );
             }
         }
 
@@ -149,7 +164,7 @@ public class Solver
 
         var slae = new Slae(cartesian1DMesh, inputFuncs, approx, _slaeSolver, _integrator);
         ApplyBoundaryConditions(slae.Matrix3Diag, slae.RhsVec, area, boundaryConditions);
-        return _slaeSolver.RelResidual(slae.Matrix3Diag, approx, slae.RhsVec);
+        return LinAlg.Utils.RelResidual(slae.Matrix3Diag, approx, slae.RhsVec);
     }
 
     private static double[] UpdateApprox(
