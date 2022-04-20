@@ -2,6 +2,7 @@ using System;
 using Fengine.Fem;
 using Fengine.Integration;
 using Fengine.LinAlg;
+using Fengine.LinAlg.Matrix;
 using Fengine.LinAlg.SlaeSolver;
 using Fengine.Models;
 using NUnit.Framework;

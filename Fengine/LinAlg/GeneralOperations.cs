@@ -1,3 +1,5 @@
+using Fengine.LinAlg.Matrix;
+
 namespace Fengine.LinAlg;
 
 /// <summary>

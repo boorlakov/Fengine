@@ -1,4 +1,5 @@
 using Fengine.Fem;
+using Fengine.LinAlg.Matrix;
 using Fengine.Models;
 
 namespace Fengine.LinAlg.SlaeSolver;

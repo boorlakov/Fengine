@@ -1,6 +1,7 @@
 using Fengine.Fem.Mesh;
 using Fengine.Integration;
 using Fengine.LinAlg;
+using Fengine.LinAlg.Matrix;
 using Fengine.LinAlg.SlaeSolver;
 using Fengine.Models;
 using Sprache.Calc;

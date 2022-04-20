@@ -1,5 +1,6 @@
 using System;
 using Fengine.LinAlg;
+using Fengine.LinAlg.Matrix;
 using NUnit.Framework;
 
 namespace FengineTests;
