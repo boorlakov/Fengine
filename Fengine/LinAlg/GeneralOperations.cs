@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.LinAlg;
+namespace Fengine.LinAlg;
 
 /// <summary>
 ///     Class, holding general operations in linear algebra

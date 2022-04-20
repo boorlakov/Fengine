@@ -1,9 +1,9 @@
-﻿namespace FiniteElementsMethod;
+﻿namespace Fengine;
 
 public static class Program
 {
     /// <summary>
-    ///     Example of using FiniteElementsMethod API
+    ///     Example of using Fengine API
     /// </summary>
     public static void Main()
     {

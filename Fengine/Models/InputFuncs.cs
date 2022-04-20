@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Models;
+namespace Fengine.Models;
 
 /// <summary>
 ///     Input functions of solving equation. -div(\lambda(x) * grad(u)) + \gamma(x) * u = f(u)

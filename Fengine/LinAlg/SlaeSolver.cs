@@ -1,6 +1,6 @@
-using FiniteElementsMethod.Fem;
+using Fengine.Fem;
 
-namespace FiniteElementsMethod.LinAlg;
+namespace Fengine.LinAlg;
 
 /// <summary>
 ///     Class for holding methods of solving systems of linear equations

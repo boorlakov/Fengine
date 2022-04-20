@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Models;
+namespace Fengine.Models;
 
 /// <summary>
 ///     Accuracy model for given essential info about solving slae & other iteration processes

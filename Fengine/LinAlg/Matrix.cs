@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.LinAlg;
+namespace Fengine.LinAlg;
 
 /// <summary>
 ///     Matrix class represented in 3-diagonal format

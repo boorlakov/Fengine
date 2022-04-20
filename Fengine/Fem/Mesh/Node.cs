@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Fem.Mesh;
+namespace Fengine.Fem.Mesh;
 
 public class Node
 {
@@ -12,5 +12,5 @@ public class Node
         Coordinates = coordinates;
     }
 
-    public Dictionary<string, double> Coordinates { get; set; } = new();
+    public Dictionary<string, double> Coordinates { get; set; }
 }

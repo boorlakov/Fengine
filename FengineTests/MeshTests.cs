@@ -1,5 +1,5 @@
-using FiniteElementsMethod.Fem.Mesh;
-using FiniteElementsMethod.Models;
+using Fengine.Fem.Mesh;
+using Fengine.Models;
 using NUnit.Framework;
 
 namespace FiniteElementsMethodTests;

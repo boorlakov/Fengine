@@ -1,5 +1,5 @@
 using System;
-using FiniteElementsMethod.LinAlg;
+using Fengine.LinAlg;
 using NUnit.Framework;
 
 namespace FiniteElementsMethodTests;

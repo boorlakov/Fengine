@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Models;
+namespace Fengine.Models;
 
 /// <summary>
 ///     1D area description, that essential for constructing grid in solving process.

@@ -1,6 +1,6 @@
-using FiniteElementsMethod.Fem;
-using FiniteElementsMethod.Integration;
-using FiniteElementsMethod.LinAlg;
+using Fengine.Fem;
+using Fengine.Integration;
+using Fengine.LinAlg;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Femer;

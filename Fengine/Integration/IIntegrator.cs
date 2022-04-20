@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Integration;
+namespace Fengine.Integration;
 
 public interface IIntegrator
 {

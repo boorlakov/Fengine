@@ -1,10 +1,10 @@
-using FiniteElementsMethod.Fem.Mesh;
-using FiniteElementsMethod.Integration;
-using FiniteElementsMethod.LinAlg;
-using FiniteElementsMethod.Models;
+using Fengine.Fem.Mesh;
+using Fengine.Integration;
+using Fengine.LinAlg;
+using Fengine.Models;
 using Sprache.Calc;
 
-namespace FiniteElementsMethod.Fem;
+namespace Fengine.Fem;
 
 public class Slae
 {

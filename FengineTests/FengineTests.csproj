@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\FiniteElementsMethod\FiniteElementsMethod.csproj"/>
+        <ProjectReference Include="..\Fengine\Fengine.csproj"/>
     </ItemGroup>
 
 </Project>

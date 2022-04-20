@@ -1,6 +1,6 @@
-using FiniteElementsMethod.Models;
+using Fengine.Models;
 
-namespace FiniteElementsMethod.Fem.Mesh;
+namespace Fengine.Fem.Mesh;
 
 /// <summary>
 ///     1D grid class. Can be uniform or non-uniform due to given discharge ratio

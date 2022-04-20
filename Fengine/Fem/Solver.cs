@@ -1,10 +1,10 @@
-using FiniteElementsMethod.Fem.Mesh;
-using FiniteElementsMethod.Integration;
-using FiniteElementsMethod.LinAlg;
-using FiniteElementsMethod.Models;
+using Fengine.Fem.Mesh;
+using Fengine.Integration;
+using Fengine.LinAlg;
+using Fengine.Models;
 using Sprache.Calc;
 
-namespace FiniteElementsMethod.Fem;
+namespace Fengine.Fem;
 
 public class Statistics
 {
@@ -58,7 +58,7 @@ public class Solver
             initApprox = UpdateApprox(slae.ResVec, initApprox, relaxRatio);
             iter++;
 
-            Console.WriteLine($"\r[LOGGER/INFO] RelRes = {_slaeSolver.RelResidual(slae):G10} | Iter: {iter}");
+            Console.Write($"\r[INFO] RelRes = {_slaeSolver.RelResidual(slae):G10} | Iter: {iter}");
         } while (iter < accuracy.MaxIter && _slaeSolver.RelResidual(slae) > accuracy.Eps &&
                  !_slaeSolver.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
 

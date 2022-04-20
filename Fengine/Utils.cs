@@ -1,6 +1,6 @@
 using Sprache.Calc;
 
-namespace FiniteElementsMethod;
+namespace Fengine;
 
 /// <summary>
 ///     Class with useful utilities

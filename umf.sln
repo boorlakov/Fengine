@@ -1,8 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiniteElementsMethod", "FiniteElementsMethod\FiniteElementsMethod.csproj", "{83E56F7F-D7DF-453D-8A30-0BF4D3D74C2F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fengine", "Fengine\Fengine.csproj", "{83E56F7F-D7DF-453D-8A30-0BF4D3D74C2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FiniteElementsMethodTests", "FiniteElementsMethodTests\FiniteElementsMethodTests.csproj", "{16CE9CCD-80F2-4172-BB23-E97E3FCAE1AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FengineTests", "FengineTests\FengineTests.csproj", "{16CE9CCD-80F2-4172-BB23-E97E3FCAE1AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Femer", "Femer\Femer.csproj", "{D32ED58A-298E-41B5-9016-BD36815EA950}"
 EndProject

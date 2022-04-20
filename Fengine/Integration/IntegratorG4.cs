@@ -1,6 +1,6 @@
 using Sprache.Calc;
 
-namespace FiniteElementsMethod.Integration;
+namespace Fengine.Integration;
 
 /// <summary>
 ///     Integrator by Gauss (4-points)

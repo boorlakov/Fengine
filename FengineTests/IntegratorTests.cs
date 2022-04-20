@@ -1,4 +1,4 @@
-using FiniteElementsMethod.Integration;
+using Fengine.Integration;
 using NUnit.Framework;
 
 namespace FiniteElementsMethodTests;

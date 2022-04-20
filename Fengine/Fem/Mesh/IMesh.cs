@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Fem.Mesh;
+namespace Fengine.Fem.Mesh;
 
 public interface IMesh
 {

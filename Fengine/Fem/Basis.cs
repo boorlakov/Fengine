@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Fem;
+namespace Fengine.Fem;
 
 /// <summary>
 ///     Basis class that is essential for decomposition in basis func

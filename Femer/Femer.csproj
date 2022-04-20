@@ -32,6 +32,6 @@
         <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4"/>
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\FiniteElementsMethod\FiniteElementsMethod.csproj"/>
+        <ProjectReference Include="..\Fengine\Fengine.csproj"/>
     </ItemGroup>
 </Project>

@@ -2,10 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Threading;
-using FiniteElementsMethod;
-using FiniteElementsMethod.Fem;
-using FiniteElementsMethod.Fem.Mesh;
-using FiniteElementsMethod.Models;
+using Fengine;
+using Fengine.Fem;
+using Fengine.Fem.Mesh;
+using Fengine.Models;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Sprache.Calc;

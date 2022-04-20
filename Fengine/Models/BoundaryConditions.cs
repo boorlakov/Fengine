@@ -1,4 +1,4 @@
-namespace FiniteElementsMethod.Models;
+namespace Fengine.Models;
 
 /// <summary>
 ///     Boundary condition setting class. Support all types of conditions
