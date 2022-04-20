@@ -42,7 +42,7 @@ public class SlaeSolverGs : ISlaeSolver
     /// <param name="w">Relaxation parameter</param>
     /// <param name="f">Right part (f) of the slae</param>
     /// <returns>New approximation x</returns>
-    private double[] Iterate(double[] x, Matrix3Diag matrix3Diag, double w, double[] f)
+    private static double[] Iterate(double[] x, Matrix3Diag matrix3Diag, double w, double[] f)
     {
         for (var i = 0; i < x.Length; i++)
         {
