@@ -2,7 +2,7 @@ using System;
 using Fengine.Fem;
 using Fengine.Fem.Mesh;
 using Fengine.Integration;
-using Fengine.LinAlg;
+using Fengine.LinAlg.SlaeSolver;
 using Fengine.Models;
 using NUnit.Framework;
 
@@ -14,7 +14,7 @@ public class FemSolverTests
     [SetUp]
     public void SetUp()
     {
-        var slaeSolver = new SlaeSolver();
+        var slaeSolver = new SlaeSolverGs();
         var integrator = new IntegratorG4();
         _solver = new Solver(slaeSolver, integrator);
     }

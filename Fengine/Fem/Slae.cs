@@ -2,6 +2,7 @@ using Fengine.Fem.Basis;
 using Fengine.Fem.Mesh;
 using Fengine.Integration;
 using Fengine.LinAlg;
+using Fengine.LinAlg.SlaeSolver;
 using Fengine.Models;
 using Sprache.Calc;
 
@@ -10,7 +11,7 @@ namespace Fengine.Fem;
 public class Slae
 {
     private readonly IIntegrator _integrator;
-    private readonly SlaeSolver _slaeSolver;
+    private readonly SlaeSolverGs _slaeSolver;
 
     public readonly Matrix3Diag Matrix;
     public readonly double[] RhsVec;
@@ -27,7 +28,7 @@ public class Slae
         IMesh cartesian1DMesh,
         InputFuncs inputFuncs,
         double[] initApprox,
-        SlaeSolver slaeSolver,
+        SlaeSolverGs slaeSolver,
         IIntegrator integrator
     )
     {
@@ -119,7 +120,7 @@ public class Slae
     public Slae(
         Matrix3Diag matrix,
         double[] rhsVec,
-        SlaeSolver slaeSolver,
+        SlaeSolverGs slaeSolver,
         IIntegrator integrator
     )
     {

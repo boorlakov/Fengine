@@ -1,12 +1,12 @@
 using Fengine.Fem;
 using Fengine.Models;
 
-namespace Fengine.LinAlg;
+namespace Fengine.LinAlg.SlaeSolver;
 
 /// <summary>
 ///     Class for holding methods of solving systems of linear equations
 /// </summary>
-public class SlaeSolver
+public class SlaeSolverGs : ISlaeSolver
 {
     /// <summary>
     /// Gauss-Seidel solve method 

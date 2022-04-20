@@ -1,6 +1,6 @@
 using Fengine.Fem;
 using Fengine.Integration;
-using Fengine.LinAlg;
+using Fengine.LinAlg.SlaeSolver;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Femer;
@@ -11,7 +11,7 @@ public class DependencyInjectionModule
     {
         var services = new ServiceCollection();
         services.AddTransient<Solver>();
-        services.AddTransient<SlaeSolver>();
+        services.AddTransient<SlaeSolverGs>();
         services.AddTransient<IIntegrator, IntegratorG4>();
         return services;
     }

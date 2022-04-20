@@ -1,6 +1,7 @@
 using Fengine.Fem.Mesh;
 using Fengine.Integration;
 using Fengine.LinAlg;
+using Fengine.LinAlg.SlaeSolver;
 using Fengine.Models;
 using Sprache.Calc;
 
@@ -18,11 +19,11 @@ public class Statistics
 public class Solver
 {
     private readonly IIntegrator _integrator;
-    private readonly SlaeSolver _slaeSolver;
+    private readonly SlaeSolverGs _slaeSolverGs;
 
-    public Solver(SlaeSolver slaeSolver, IIntegrator integrator)
+    public Solver(SlaeSolverGs slaeSolverGs, IIntegrator integrator)
     {
-        _slaeSolver = slaeSolver;
+        _slaeSolverGs = slaeSolverGs;
         _integrator = integrator;
     }
 
@@ -44,7 +45,7 @@ public class Solver
         do
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
-            slae = new Slae(cartesian1DMesh, inputFuncs, initApprox, _slaeSolver, _integrator);
+            slae = new Slae(cartesian1DMesh, inputFuncs, initApprox, _slaeSolverGs, _integrator);
             ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
 
@@ -162,7 +163,7 @@ public class Solver
             approx[i] = x * resVec[i] + (1.0 - x) * prevResVec[i];
         }
 
-        var slae = new Slae(cartesian1DMesh, inputFuncs, approx, _slaeSolver, _integrator);
+        var slae = new Slae(cartesian1DMesh, inputFuncs, approx, _slaeSolverGs, _integrator);
         ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
         return LinAlg.Utils.RelResidual(slae.Matrix, approx, slae.RhsVec);
     }
