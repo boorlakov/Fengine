@@ -1,3 +1,4 @@
+using Fengine.Fem.Basis;
 using Fengine.Fem.Mesh;
 using Fengine.Integration;
 using Fengine.LinAlg;
