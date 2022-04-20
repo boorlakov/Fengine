@@ -1,4 +1,5 @@
 using Fengine.Fem;
+using Fengine.Models;
 
 namespace Fengine.LinAlg;
 
@@ -7,6 +8,25 @@ namespace Fengine.LinAlg;
 /// </summary>
 public class SlaeSolver
 {
+    public double[] Solve(Slae slae, Accuracy accuracy)
+    {
+        slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.7, slae.RhsVec);
+        var residual = RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
+        var iter = 1;
+        var prevResVec = new double[slae.ResVec.Length];
+
+        while (iter <= accuracy.MaxIter && accuracy.Eps < residual &&
+               !CheckIsStagnate(prevResVec, slae.ResVec, accuracy.Delta))
+        {
+            slae.ResVec.AsSpan().CopyTo(prevResVec);
+            slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.0, slae.RhsVec);
+            residual = RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
+            iter++;
+        }
+
+        return slae.ResVec;
+    }
+
     /// <summary>
     ///     1 iteration of Gauss-Seidel iteration method of solving Ax = f
     /// </summary>

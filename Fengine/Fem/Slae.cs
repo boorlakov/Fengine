@@ -129,22 +129,7 @@ public class Slae
         _integrator = integrator;
     }
 
-    public void Solve(Accuracy accuracy)
-    {
-        ResVec = _slaeSolver.Iterate(ResVec, Matrix, 1.7, RhsVec);
-        var residual = _slaeSolver.RelResidual(Matrix, ResVec, RhsVec);
-        var iter = 1;
-        var prevResVec = new double[ResVec.Length];
-
-        while (iter <= accuracy.MaxIter && accuracy.Eps < residual &&
-               !_slaeSolver.CheckIsStagnate(prevResVec, ResVec, accuracy.Delta))
-        {
-            ResVec.AsSpan().CopyTo(prevResVec);
-            ResVec = _slaeSolver.Iterate(ResVec, Matrix, 1.0, RhsVec);
-            residual = _slaeSolver.RelResidual(Matrix, ResVec, RhsVec);
-            iter++;
-        }
-    }
+    public double[] Solve(Accuracy accuracy) => _slaeSolver.Solve(this, accuracy);
 
     private double[][][] BuildLocalStiffness()
     {
@@ -156,8 +141,8 @@ public class Slae
 
         var integralValues = new[]
         {
-            _integrator.Integrate1D(mesh, Basis.Linear.Func[0]),
-            _integrator.Integrate1D(mesh, Basis.Linear.Func[1])
+            _integrator.Integrate1D(mesh, LinearBasis.Func[0]),
+            _integrator.Integrate1D(mesh, LinearBasis.Func[1])
         };
 
         for (var i = 0; i < 2; i++)
@@ -195,16 +180,16 @@ public class Slae
         var integralValues = new[]
         {
             _integrator.Integrate1D(mesh,
-                x => Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x)),
+                x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
             _integrator.Integrate1D(mesh,
-                x => Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x) * Basis.Linear.Func[1](x)),
+                x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
             _integrator.Integrate1D(mesh,
-                x => Basis.Linear.Func[0](x) * Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x)),
+                x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
             _integrator.Integrate1D(mesh,
-                x => Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x)),
-            _integrator.Integrate1D(mesh, x => Basis.Linear.Func[0](x) * Basis.Linear.Func[0](x)),
-            _integrator.Integrate1D(mesh, x => Basis.Linear.Func[0](x) * Basis.Linear.Func[1](x)),
-            _integrator.Integrate1D(mesh, x => Basis.Linear.Func[1](x) * Basis.Linear.Func[1](x))
+                x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
+            _integrator.Integrate1D(mesh, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
+            _integrator.Integrate1D(mesh, x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
+            _integrator.Integrate1D(mesh, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x))
         };
 
         for (var i = 0; i < 2; i++)
