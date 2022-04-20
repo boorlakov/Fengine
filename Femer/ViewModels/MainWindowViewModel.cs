@@ -26,8 +26,9 @@ public class MainWindowViewModel : ViewModelBase
             .ConfigureServices()
             .BuildServiceProvider();
 
-        _femSolverWithSimpleIteration = serviceProvider.GetService<FemSolverWithSimpleIteration>() ??
-                                        throw new InvalidOperationException();
+        _femSolverWithSimpleIteration = serviceProvider
+                                            .GetService<FemSolverWithSimpleIteration>()
+                                        ?? throw new InvalidOperationException();
     }
 
     public Area Area { get; } = new();

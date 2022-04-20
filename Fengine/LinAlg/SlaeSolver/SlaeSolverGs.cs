@@ -38,16 +38,16 @@ public class SlaeSolverGs : ISlaeSolver
     ///     1 iteration of Gauss-Seidel iteration method of solving Ax = f
     /// </summary>
     /// <param name="x">Given approximation. x part in slae</param>
-    /// <param name="matrix3Diag">Given weights. A part in slae</param>
+    /// <param name="m">Given weights. A part in slae</param>
     /// <param name="w">Relaxation parameter</param>
     /// <param name="f">Right part (f) of the slae</param>
     /// <returns>New approximation x</returns>
-    private static double[] Iterate(double[] x, IMatrix matrix3Diag, double w, double[] f)
+    private static double[] Iterate(double[] x, IMatrix m, double w, double[] f)
     {
         for (var i = 0; i < x.Length; i++)
         {
-            var sum = GeneralOperations.Dot(i, matrix3Diag, x);
-            x[i] += w * (f[i] - sum) / matrix3Diag.Data["center"][i];
+            var sum = GeneralOperations.Dot(i, m, x);
+            x[i] += w * (f[i] - sum) / m.Data["center"][i];
         }
 
         return x;

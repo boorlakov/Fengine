@@ -28,7 +28,7 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
     }
 
     public Slae1DEllipticLinearFNonLinear(
-        IMesh cartesian1DMesh,
+        IMesh mesh,
         InputFuncs inputFuncs,
         double[] initApprox,
         ISlaeSolver slaeSolver,
@@ -40,29 +40,29 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         _integrator = integrator;
         Matrix = matrix;
 
-        ResVec = new double[cartesian1DMesh.Nodes.Length];
+        ResVec = new double[mesh.Nodes.Length];
         initApprox.AsSpan().CopyTo(ResVec);
-        RhsVec = new double[cartesian1DMesh.Nodes.Length];
+        RhsVec = new double[mesh.Nodes.Length];
 
         var localStiffness = BuildLocalStiffness();
         var localMass = BuildLocalMass();
 
-        var upper = new double[cartesian1DMesh.Nodes.Length - 1];
-        var center = new double[cartesian1DMesh.Nodes.Length];
-        var lower = new double[cartesian1DMesh.Nodes.Length - 1];
+        var upper = new double[mesh.Nodes.Length - 1];
+        var center = new double[mesh.Nodes.Length];
+        var lower = new double[mesh.Nodes.Length - 1];
 
         var funcCalc = new XtensibleCalculator();
         var rhsFunc = funcCalc.ParseFunction(inputFuncs.RhsFunc).Compile();
         var lambda = funcCalc.ParseFunction(inputFuncs.Lambda).Compile();
         var gamma = funcCalc.ParseFunction(inputFuncs.Gamma).Compile();
 
-        for (var i = 0; i < cartesian1DMesh.Nodes.Length - 1; i++)
+        for (var i = 0; i < mesh.Nodes.Length - 1; i++)
         {
-            var step = cartesian1DMesh.Nodes[i + 1].Coordinates["x"] - cartesian1DMesh.Nodes[i].Coordinates["x"];
+            var step = mesh.Nodes[i + 1].Coordinates["x"] - mesh.Nodes[i].Coordinates["x"];
 
-            BuildMatrix(i, step, cartesian1DMesh, localStiffness, localMass, lambda, gamma, upper, center, lower);
+            BuildMatrix(i, step, mesh, localStiffness, localMass, lambda, gamma, upper, center, lower);
 
-            BuildRhs(i, step, cartesian1DMesh, rhsFunc, localMass);
+            BuildRhs(i, step, mesh, rhsFunc, localMass);
         }
 
         Matrix = new Matrix3Diag(upper, center, lower);
