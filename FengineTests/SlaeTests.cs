@@ -27,7 +27,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 0.0};
 
-        var matrix = new Matrix(upper, center, lower);
+        var matrix = new Matrix3Diag(upper, center, lower);
 
         var vec = new[] {4.0, 6.0, 8.0};
         var slae = new Slae(matrix, vec, _slaeSolver, _integrator);
@@ -59,7 +59,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 2.0};
 
-        var matrix = new Matrix(upper, center, lower);
+        var matrix = new Matrix3Diag(upper, center, lower);
 
         var vec = new[] {3.0, 2.0, 4.0};
         var accuracy = new Accuracy
@@ -91,7 +91,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new Matrix(upper, center, lower);
+        var matrix = new Matrix3Diag(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 
@@ -124,7 +124,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new Matrix(upper, center, lower);
+        var matrix = new Matrix3Diag(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 

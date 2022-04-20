@@ -45,7 +45,7 @@ public class Solver
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
             slae = new Slae(cartesian1DMesh, inputFuncs, initApprox, _slaeSolver, _integrator);
-            ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
+            ApplyBoundaryConditions(slae.Matrix3Diag, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
 
             if (accuracy.AutoRelax)
@@ -148,8 +148,8 @@ public class Solver
         }
 
         var slae = new Slae(cartesian1DMesh, inputFuncs, approx, _slaeSolver, _integrator);
-        ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
-        return _slaeSolver.RelResidual(slae.Matrix, approx, slae.RhsVec);
+        ApplyBoundaryConditions(slae.Matrix3Diag, slae.RhsVec, area, boundaryConditions);
+        return _slaeSolver.RelResidual(slae.Matrix3Diag, approx, slae.RhsVec);
     }
 
     private static double[] UpdateApprox(
@@ -169,7 +169,7 @@ public class Solver
     }
 
     private static void ApplyBoundaryConditions(
-        Matrix m,
+        Matrix3Diag m,
         double[] rhs,
         Area area,
         BoundaryConditions boundaryConditions
@@ -178,15 +178,15 @@ public class Solver
         switch (boundaryConditions.Left)
         {
             case "First":
-                m.Center[0] = 1.0;
-                m.Upper[0] = 0.0;
+                m.Data["center"][0] = 1.0;
+                m.Data["upper"][0] = 0.0;
                 rhs[0] = Utils.EvalFunc(boundaryConditions.LeftFunc, area.LeftBorder);
                 break;
             case "Second":
                 rhs[0] += Utils.EvalFunc(boundaryConditions.LeftFunc, area.LeftBorder);
                 break;
             case "Third":
-                m.Center[0] += boundaryConditions.Beta;
+                m.Data["center"][0] += boundaryConditions.Beta;
                 rhs[0] += boundaryConditions.Beta * Utils.EvalFunc(boundaryConditions.LeftFunc, area.LeftBorder);
                 break;
         }
@@ -194,15 +194,15 @@ public class Solver
         switch (boundaryConditions.Right)
         {
             case "First":
-                m.Center[^1] = 1.0;
-                m.Lower[^1] = 0.0;
+                m.Data["center"][^1] = 1.0;
+                m.Data["lower"][^1] = 0.0;
                 rhs[^1] = Utils.EvalFunc(boundaryConditions.RightFunc, area.RightBorder);
                 break;
             case "Second":
                 rhs[^1] += Utils.EvalFunc(boundaryConditions.RightFunc, area.RightBorder);
                 break;
             case "Third":
-                m.Center[^1] += boundaryConditions.Beta;
+                m.Data["center"][^1] += boundaryConditions.Beta;
                 rhs[^1] += boundaryConditions.Beta * Utils.EvalFunc(boundaryConditions.RightFunc, area.RightBorder);
                 break;
         }

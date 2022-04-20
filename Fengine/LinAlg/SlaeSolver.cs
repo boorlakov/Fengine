@@ -10,8 +10,8 @@ public class SlaeSolver
 {
     public double[] Solve(Slae slae, Accuracy accuracy)
     {
-        slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.7, slae.RhsVec);
-        var residual = RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
+        slae.ResVec = Iterate(slae.ResVec, slae.Matrix3Diag, 1.7, slae.RhsVec);
+        var residual = RelResidual(slae.Matrix3Diag, slae.ResVec, slae.RhsVec);
         var iter = 1;
         var prevResVec = new double[slae.ResVec.Length];
 
@@ -19,8 +19,8 @@ public class SlaeSolver
                !CheckIsStagnate(prevResVec, slae.ResVec, accuracy.Delta))
         {
             slae.ResVec.AsSpan().CopyTo(prevResVec);
-            slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.0, slae.RhsVec);
-            residual = RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
+            slae.ResVec = Iterate(slae.ResVec, slae.Matrix3Diag, 1.0, slae.RhsVec);
+            residual = RelResidual(slae.Matrix3Diag, slae.ResVec, slae.RhsVec);
             iter++;
         }
 
@@ -31,16 +31,16 @@ public class SlaeSolver
     ///     1 iteration of Gauss-Seidel iteration method of solving Ax = f
     /// </summary>
     /// <param name="x">Given approximation. x part in slae</param>
-    /// <param name="matrix">Given weights. A part in slae</param>
+    /// <param name="matrix3Diag">Given weights. A part in slae</param>
     /// <param name="w">Relaxation parameter</param>
     /// <param name="f">Right part (f) of the slae</param>
     /// <returns>New approximation x</returns>
-    public double[] Iterate(double[] x, Matrix matrix, double w, double[] f)
+    public double[] Iterate(double[] x, Matrix3Diag matrix3Diag, double w, double[] f)
     {
         for (var i = 0; i < x.Length; i++)
         {
-            var sum = GeneralOperations.Dot(i, matrix, x);
-            x[i] += w * (f[i] - sum) / matrix.Center[i];
+            var sum = GeneralOperations.Dot(i, matrix3Diag, x);
+            x[i] += w * (f[i] - sum) / matrix3Diag.Data["center"][i];
         }
 
         return x;
@@ -68,15 +68,15 @@ public class SlaeSolver
     /// <summary>
     ///     Relative residual (||f - Ax|| / ||f||) of slae Ax = f
     /// </summary>
-    /// <param name="matrix">Given weights. A part in slae</param>
+    /// <param name="matrix3Diag">Given weights. A part in slae</param>
     /// <param name="x">Given approximation. x part in slae</param>
     /// <param name="f">Right part (f) of the slae</param>
     /// <returns>Relative residual value</returns>
-    public double RelResidual(Matrix matrix, double[] x, double[] f)
+    public double RelResidual(Matrix3Diag matrix3Diag, double[] x, double[] f)
     {
         var diff = new double[f.Length];
 
-        var innerProd = GeneralOperations.MatMul(matrix, x);
+        var innerProd = GeneralOperations.MatMul(matrix3Diag, x);
 
         for (var i = 0; i < f.Length; i++)
         {
@@ -95,7 +95,7 @@ public class SlaeSolver
     {
         var diff = new double[slae.RhsVec.Length];
 
-        var innerProd = GeneralOperations.MatMul(slae.Matrix, slae.ResVec);
+        var innerProd = GeneralOperations.MatMul(slae.Matrix3Diag, slae.ResVec);
 
         for (var i = 0; i < slae.RhsVec.Length; i++)
         {
