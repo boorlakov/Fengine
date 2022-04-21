@@ -42,11 +42,6 @@ public class MainWindowViewModel : ViewModelBase
         "Third"
     };
 
-    public ObservableCollection<Tuple<double, double>> ResultTable { get; } = new()
-    {
-        new Tuple<double, double>(0.0, 0.0)
-    };
-
     public BoundaryConditions BoundaryConditions { get; } = new();
 
     public Accuracy Accuracy { get; } = new();
