@@ -1,13 +1,12 @@
 using Fengine.Backend.Fem.Basis;
 using Fengine.Backend.Fem.Mesh;
-using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinAlg.Matrix;
 using Fengine.Backend.LinAlg.SlaeSolver;
 using Fengine.Backend.Models;
 using Sprache.Calc;
 
-namespace Fengine.Backend.Fem;
+namespace Fengine.Backend.Fem.Slae;
 
 public class Slae1DEllipticLinearFNonLinear : ISlae
 {
@@ -65,7 +64,7 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
             BuildRhs(i, step, mesh, rhsFunc, localMass);
         }
 
-        Matrix = new Matrix3Diag(upper, center, lower);
+        Matrix = new Matrix3Diagonal(upper, center, lower);
     }
 
     private static void BuildMatrix(int i,
@@ -77,7 +76,8 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         Func<Dictionary<string, double>, double> gamma,
         double[] upper,
         double[] center,
-        double[] lower)
+        double[] lower
+    )
     {
         center[i] +=
             (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][0] +
@@ -113,7 +113,8 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         double step,
         IMesh cartesian1DMesh,
         Func<Dictionary<string, double>, double> rhsFunc,
-        double[][][] localMass)
+        double[][][] localMass
+    )
     {
         RhsVec[i] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
                              localMass[2][0][0] +
@@ -126,7 +127,7 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
     }
 
     public Slae1DEllipticLinearFNonLinear(
-        Matrix3Diag matrix,
+        Matrix3Diagonal matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,
         IIntegrator integrator
@@ -139,7 +140,10 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         _integrator = integrator;
     }
 
-    public double[] Solve(Accuracy accuracy) => _slaeSolver.Solve(this, accuracy);
+    public double[] Solve(Accuracy accuracy)
+    {
+        return _slaeSolver.Solve(this, accuracy);
+    }
 
     private double[][][] BuildLocalStiffness()
     {

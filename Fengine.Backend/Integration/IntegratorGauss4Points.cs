@@ -5,9 +5,9 @@ namespace Fengine.Backend.Integration;
 /// <summary>
 ///     Integrator by Gauss (4-points)
 /// </summary>
-public class IntegratorG4 : IIntegrator
+public class IntegratorGauss4Points : IIntegrator
 {
-    private double[] _ti =
+    private readonly double[] _ti =
     {
         -0.8611363116,
         -0.3399810436,
@@ -15,7 +15,7 @@ public class IntegratorG4 : IIntegrator
         0.8611363116
     };
 
-    private double[] _ci =
+    private readonly double[] _ci =
     {
         0.3478548451,
         0.6521451549,

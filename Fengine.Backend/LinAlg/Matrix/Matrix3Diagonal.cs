@@ -3,7 +3,7 @@ namespace Fengine.Backend.LinAlg.Matrix;
 /// <summary>
 ///     Matrix class represented in 3-diagonal format
 /// </summary>
-public class Matrix3Diag : IMatrix
+public class Matrix3Diagonal : IMatrix
 {
     // Matrix example
     // +---+
@@ -16,7 +16,7 @@ public class Matrix3Diag : IMatrix
     // c - center
     // l - lower
 
-    public Matrix3Diag(double[] upper, double[] center, double[] lower)
+    public Matrix3Diagonal(double[] upper, double[] center, double[] lower)
     {
         Data.Add("upper", upper);
         Data.Add("center", center);
@@ -24,10 +24,8 @@ public class Matrix3Diag : IMatrix
         Size = Data["center"].Length;
     }
 
-    public Matrix3Diag()
+    public Matrix3Diagonal()
     {
-        Data = null;
-
         Size = -1;
     }
 

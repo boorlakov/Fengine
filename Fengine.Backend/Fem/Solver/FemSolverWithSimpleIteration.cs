@@ -1,4 +1,5 @@
 using Fengine.Backend.Fem.Mesh;
+using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinAlg;
 using Fengine.Backend.LinAlg.Matrix;

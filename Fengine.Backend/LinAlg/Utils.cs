@@ -1,4 +1,4 @@
-using Fengine.Backend.Fem;
+using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.LinAlg.Matrix;
 
 namespace Fengine.Backend.LinAlg;

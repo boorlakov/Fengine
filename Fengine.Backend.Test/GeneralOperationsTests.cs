@@ -30,7 +30,7 @@ public class GeneralOperationsTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {3.0, 3.0};
 
-        var matrix = new Matrix3Diag(upper, center, lower);
+        var matrix = new Matrix3Diagonal(upper, center, lower);
 
         const int i = 1;
         var vec = new[] {1.0, 1.0, 1.0};
@@ -52,7 +52,7 @@ public class GeneralOperationsTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {3.0, 3.0};
 
-        var matrix = new Matrix3Diag(upper, center, lower);
+        var matrix = new Matrix3Diagonal(upper, center, lower);
 
         var vec = new[] {1.0, 1.0, 1.0};
 

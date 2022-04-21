@@ -15,9 +15,9 @@ public class FemSolverTests
     [SetUp]
     public void SetUp()
     {
-        var slaeSolver = new SlaeSolverGs();
-        var integrator = new IntegratorG4();
-        var matrixType = new Matrix3Diag();
+        var slaeSolver = new SlaeSolverGaussSeidel();
+        var integrator = new IntegratorGauss4Points();
+        var matrixType = new Matrix3Diagonal();
         _femSolverWithSimpleIteration = new FemSolverWithSimpleIteration(slaeSolver, integrator, matrixType);
     }
     private FemSolverWithSimpleIteration _femSolverWithSimpleIteration;

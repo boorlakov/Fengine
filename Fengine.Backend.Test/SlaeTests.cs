@@ -1,5 +1,5 @@
 using System;
-using Fengine.Backend.Fem;
+using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinAlg.Matrix;
 using Fengine.Backend.LinAlg.SlaeSolver;
@@ -14,10 +14,10 @@ public class SlaeTests
     [SetUp]
     public void SetUp()
     {
-        _slaeSolverGs = new SlaeSolverGs();
-        _integrator = new IntegratorG4();
+        _slaeSolverGaussSeidel = new SlaeSolverGaussSeidel();
+        _integrator = new IntegratorGauss4Points();
     }
-    private SlaeSolverGs _slaeSolverGs;
+    private SlaeSolverGaussSeidel _slaeSolverGaussSeidel;
     private IIntegrator _integrator;
 
     [Test]
@@ -28,10 +28,10 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 0.0};
 
-        var matrix = new Matrix3Diag(upper, center, lower);
+        var matrix = new Matrix3Diagonal(upper, center, lower);
 
         var vec = new[] {4.0, 6.0, 8.0};
-        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGaussSeidel, _integrator);
         var expected = new[] {2.0, 3.0, 4.0};
         var accuracy = new Accuracy
         {
@@ -60,7 +60,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 2.0};
 
-        var matrix = new Matrix3Diag(upper, center, lower);
+        var matrix = new Matrix3Diagonal(upper, center, lower);
 
         var vec = new[] {3.0, 2.0, 4.0};
         var accuracy = new Accuracy
@@ -69,7 +69,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGaussSeidel, _integrator);
         var expected = new[] {1.0, 1.0, 1.0};
 
         // Act
@@ -92,7 +92,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new Matrix3Diag(upper, center, lower);
+        var matrix = new Matrix3Diagonal(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 
@@ -102,7 +102,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGaussSeidel, _integrator);
         var expected = new[] {1.0, 1.0, 1.0};
 
         // Act
@@ -125,7 +125,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new Matrix3Diag(upper, center, lower);
+        var matrix = new Matrix3Diagonal(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 
@@ -135,7 +135,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGs, _integrator);
+        var slae = new Slae1DEllipticLinearFNonLinear(matrix, vec, _slaeSolverGaussSeidel, _integrator);
         var expected = 1.0e-5;
 
         // Act

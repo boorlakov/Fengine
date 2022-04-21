@@ -17,15 +17,17 @@ public class MainWindowViewModel : ViewModelBase
 
     private string _result = string.Empty;
 
+    private readonly ServiceProvider _serviceProvider;
+
     private readonly string _statusLabelContent = string.Empty;
 
     public MainWindowViewModel()
     {
-        var serviceProvider = DependencyInjectionModule
+        _serviceProvider = DependencyInjectionModule
             .ConfigureServices()
             .BuildServiceProvider();
 
-        _femSolverWithSimpleIteration = serviceProvider.GetService<FemSolverWithSimpleIteration>()
+        _femSolverWithSimpleIteration = _serviceProvider.GetService<FemSolverWithSimpleIteration>()
                                         ?? throw new InvalidOperationException();
     }
 
