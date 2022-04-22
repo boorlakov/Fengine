@@ -5,7 +5,6 @@ using Avalonia.Threading;
 using Fengine.Backend.DataModels;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Fem.Solver;
-using Fengine.Backend.Models;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Sprache.Calc;

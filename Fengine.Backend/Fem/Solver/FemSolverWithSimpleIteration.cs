@@ -5,7 +5,6 @@ using Fengine.Backend.Integration;
 using Fengine.Backend.LinAlg;
 using Fengine.Backend.LinAlg.Matrix;
 using Fengine.Backend.LinAlg.SlaeSolver;
-using Fengine.Backend.Models;
 using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Solver;

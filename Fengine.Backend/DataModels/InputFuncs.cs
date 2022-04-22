@@ -1,4 +1,4 @@
-namespace Fengine.Backend.Models;
+namespace Fengine.Backend.DataModels;
 
 /// <summary>
 ///     Input functions of solving equation. -div(\lambda(x) * grad(u)) + \gamma(x) * u = f(u)

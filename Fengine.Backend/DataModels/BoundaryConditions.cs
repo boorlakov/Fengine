@@ -1,4 +1,4 @@
-namespace Fengine.Backend.Models;
+namespace Fengine.Backend.DataModels;
 
 /// <summary>
 ///     Boundary condition setting class. Support all types of conditions

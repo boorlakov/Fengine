@@ -6,7 +6,6 @@ using Fengine.Backend.Fem.Solver;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinAlg.Matrix;
 using Fengine.Backend.LinAlg.SlaeSolver;
-using Fengine.Backend.Models;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
