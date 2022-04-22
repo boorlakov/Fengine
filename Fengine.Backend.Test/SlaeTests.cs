@@ -1,9 +1,9 @@
 using System;
+using Fengine.Backend.DataModels;
 using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinAlg.Matrix;
 using Fengine.Backend.LinAlg.SlaeSolver;
-using Fengine.Backend.Models;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;

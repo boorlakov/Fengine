@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Threading;
+using Fengine.Backend.DataModels;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Fem.Solver;
 using Fengine.Backend.Models;

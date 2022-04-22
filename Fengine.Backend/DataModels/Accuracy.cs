@@ -1,4 +1,4 @@
-namespace Fengine.Backend.Models;
+namespace Fengine.Backend.DataModels;
 
 /// <summary>
 ///     Accuracy model for given essential info about solving slae & other iteration processes

@@ -1,5 +1,5 @@
+using Fengine.Backend.DataModels;
 using Fengine.Backend.LinAlg.Matrix;
-using Fengine.Backend.Models;
 
 namespace Fengine.Backend.Fem.Slae;
 
