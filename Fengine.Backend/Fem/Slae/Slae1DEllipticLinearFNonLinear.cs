@@ -67,7 +67,8 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         Matrix = new Matrix3Diagonal(upper, center, lower);
     }
 
-    private static void BuildMatrix(int i,
+    private static void BuildMatrix(
+        int i,
         double step,
         IMesh cartesian1DMesh,
         double[][][] localStiffness,
@@ -116,7 +117,8 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
                     step;
     }
 
-    private void BuildRhs(int i,
+    private void BuildRhs(
+        int i,
         double step,
         IMesh cartesian1DMesh,
         Func<Dictionary<string, double>, double> rhsFunc,

@@ -22,18 +22,7 @@ public static class DependencyInjectionModule
             .AddTransient<IIntegrator, IntegratorGauss4Points>()
             .AddTransient<IMesh, Cartesian1DMesh>()
             .AddTransient<ISlaeSolver, SlaeSolverGaussSeidel>()
-            .AddTransient<ISlae, Slae1DEllipticLinearFNonLinear>
-            (
-                // x => new Slae1DEllipticLinearFNonLinear
-                // (
-                //     x.GetRequiredService<IMesh>(),
-                //     x.GetRequiredService<InputFuncs>(),
-                //     Array.Empty<double>(),
-                //     x.GetRequiredService<ISlaeSolver>(),
-                //     x.GetRequiredService<IIntegrator>(),
-                //     x.GetRequiredService<IMatrix>()
-                // )
-            )
+            .AddTransient<ISlae, Slae1DEllipticLinearFNonLinear>()
             .AddTransient<IFemSolver, FemSolverWithSimpleIteration>
             (
                 x => new FemSolverWithSimpleIteration
