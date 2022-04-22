@@ -86,7 +86,7 @@ public class FemSolverWithSimpleIteration : IFemSolver
 
         for (var i = 0; i < slae.ResVec.Length; i++)
         {
-            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coords[IMesh.Axis.X]));
+            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coordinates[IMesh.Axis.X]));
             absError[i] = u[i] - slae.ResVec[i];
         }
 

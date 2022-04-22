@@ -27,7 +27,7 @@ public class MeshTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Nodes[i].Coords[IMesh.Axis.X], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Nodes[i].Coordinates[IMesh.Axis.X], expected[i], 1.0e-7);
         }
     }
 
@@ -51,7 +51,7 @@ public class MeshTests
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Nodes[i].Coords[IMesh.Axis.X], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Nodes[i].Coordinates[IMesh.Axis.X], expected[i], 1.0e-7);
         }
     }
 }

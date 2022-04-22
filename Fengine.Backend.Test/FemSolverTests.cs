@@ -352,7 +352,7 @@ public class FemSolverTests
 
         for (var i = 0; i < expected.Length; i++)
         {
-            expected[i] = Math.Sin(grid.Nodes[i].Coords[IMesh.Axis.X]);
+            expected[i] = Math.Sin(grid.Nodes[i].Coordinates[IMesh.Axis.X]);
         }
 
         // Act

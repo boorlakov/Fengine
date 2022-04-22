@@ -15,7 +15,7 @@ public interface IMesh
 
     public class Node
     {
-        public double[] Coords { get; set; } = new double[6];
+        public double[] Coordinates { get; set; } = new double[6];
     }
 
     Node[] Nodes { get; init; }

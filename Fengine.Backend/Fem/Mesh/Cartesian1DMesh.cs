@@ -20,7 +20,7 @@ public class Cartesian1DMesh : IMesh
             nodes[i] = new IMesh.Node();
         }
 
-        nodes[0].Coords[IMesh.Axis.X] = area.LeftBorder;
+        nodes[0].Coordinates[IMesh.Axis.X] = area.LeftBorder;
 
         if (Math.Abs(area.DischargeRatio - 1) > 1e-10)
         {
@@ -30,9 +30,9 @@ public class Cartesian1DMesh : IMesh
 
             for (var i = 1; i < area.AmountPoints; i++)
             {
-                nodes[i].Coords[IMesh.Axis.X] = area.LeftBorder +
-                                                stepX * (1 - Math.Pow(area.DischargeRatio, i)) /
-                                                (1 - area.DischargeRatio);
+                nodes[i].Coordinates[IMesh.Axis.X] = area.LeftBorder +
+                                                     stepX * (1 - Math.Pow(area.DischargeRatio, i)) /
+                                                     (1 - area.DischargeRatio);
             }
         }
         else
@@ -42,7 +42,7 @@ public class Cartesian1DMesh : IMesh
 
             for (var i = 1; i < area.AmountPoints; i++)
             {
-                nodes[i].Coords[IMesh.Axis.X] = area.LeftBorder + i * stepX;
+                nodes[i].Coordinates[IMesh.Axis.X] = area.LeftBorder + i * stepX;
             }
         }
 
