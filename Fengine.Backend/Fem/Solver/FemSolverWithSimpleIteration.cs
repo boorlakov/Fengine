@@ -12,18 +12,20 @@ namespace Fengine.Backend.Fem.Solver;
 public class FemSolverWithSimpleIteration : IFemSolver
 {
     private readonly IIntegrator _integrator;
+    private readonly ISlae _slae;
     private readonly ISlaeSolver _slaeSolver;
     private readonly IMatrix _matrix;
 
     public FemSolverWithSimpleIteration(
         ISlaeSolver slaeSolver,
         IIntegrator integrator,
-        IMatrix matrix
-    )
+        IMatrix matrix,
+        ISlae slae)
     {
         _slaeSolver = slaeSolver;
         _integrator = integrator;
         _matrix = matrix;
+        _slae = slae;
     }
 
     public Statistics Solve(
@@ -84,7 +86,7 @@ public class FemSolverWithSimpleIteration : IFemSolver
 
         for (var i = 0; i < slae.ResVec.Length; i++)
         {
-            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coordinates["x"]));
+            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coords[IMesh.Axis.X]));
             absError[i] = u[i] - slae.ResVec[i];
         }
 

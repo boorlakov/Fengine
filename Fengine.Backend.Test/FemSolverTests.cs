@@ -1,5 +1,6 @@
 using System;
 using Fengine.Backend.Fem.Mesh;
+using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Fem.Solver;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinAlg.Matrix;
@@ -18,8 +19,15 @@ public class FemSolverTests
         var slaeSolver = new SlaeSolverGaussSeidel();
         var integrator = new IntegratorGauss4Points();
         var matrixType = new Matrix3Diagonal();
-        _femSolverWithSimpleIteration = new FemSolverWithSimpleIteration(slaeSolver, integrator, matrixType);
+        var slaeType = new Slae1DEllipticLinearFNonLinear();
+        _femSolverWithSimpleIteration = new FemSolverWithSimpleIteration(
+            slaeSolver,
+            integrator,
+            matrixType,
+            slaeType
+        );
     }
+
     private FemSolverWithSimpleIteration _femSolverWithSimpleIteration;
 
     [Test]
@@ -344,7 +352,7 @@ public class FemSolverTests
 
         for (var i = 0; i < expected.Length; i++)
         {
-            expected[i] = Math.Sin(grid.Nodes[i].Coordinates["x"]);
+            expected[i] = Math.Sin(grid.Nodes[i].Coords[IMesh.Axis.X]);
         }
 
         // Act

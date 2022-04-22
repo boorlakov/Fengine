@@ -57,7 +57,7 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
 
         for (var i = 0; i < mesh.Nodes.Length - 1; i++)
         {
-            var step = mesh.Nodes[i + 1].Coordinates["x"] - mesh.Nodes[i].Coordinates["x"];
+            var step = mesh.Nodes[i + 1].Coords[IMesh.Axis.X] - mesh.Nodes[i].Coords[IMesh.Axis.X];
 
             BuildMatrix(i, step, mesh, localStiffness, localMass, lambda, gamma, upper, center, lower);
 
@@ -80,32 +80,32 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
     )
     {
         center[i] +=
-            (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][0] +
-             lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localStiffness[1][0][0]) /
+            (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) * localStiffness[0][0][0] +
+             lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) * localStiffness[1][0][0]) /
             step +
-            (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][0][0] +
-             gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][0][0]) * step;
+            (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) * localMass[0][0][0] +
+             gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) * localMass[1][0][0]) * step;
 
-        center[i + 1] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) *
+        center[i + 1] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) *
                           localStiffness[0][1][1] +
-                          lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+                          lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) *
                           localStiffness[1][1][1]) / step +
-                         (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][1][1] +
-                          gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+                         (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) * localMass[0][1][1] +
+                          gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) *
                           localMass[1][1][1]) * step;
 
-        upper[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][0][1] +
-                     lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+        upper[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) * localStiffness[0][0][1] +
+                     lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) *
                      localStiffness[1][0][1]) / step +
-                    (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][0][1] +
-                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][0][1]) *
+                    (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) * localMass[0][0][1] +
+                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) * localMass[1][0][1]) *
                     step;
 
-        lower[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localStiffness[0][1][0] +
-                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) *
+        lower[i] += (lambda(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) * localStiffness[0][1][0] +
+                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) *
                      localStiffness[1][1][0]) / step +
-                    (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates["x"])) * localMass[0][1][0] +
-                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"])) * localMass[1][1][0]) *
+                    (gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X])) * localMass[0][1][0] +
+                     gamma(Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X])) * localMass[1][1][0]) *
                     step;
     }
 
@@ -116,18 +116,18 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         double[][][] localMass
     )
     {
-        RhsVec[i] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
+        RhsVec[i] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X], ResVec[i])) *
                              localMass[2][0][0] +
-                             rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"],
+                             rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X],
                                  ResVec[i + 1])) * localMass[2][0][1]);
-        RhsVec[i + 1] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates["x"], ResVec[i])) *
+        RhsVec[i + 1] += step * (rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coords[IMesh.Axis.X], ResVec[i])) *
                                  localMass[2][1][0] +
-                                 rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coordinates["x"],
+                                 rhsFunc(Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coords[IMesh.Axis.X],
                                      ResVec[i + 1])) * localMass[2][1][1]);
     }
 
     public Slae1DEllipticLinearFNonLinear(
-        Matrix3Diagonal matrix,
+        IMatrix matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,
         IIntegrator integrator

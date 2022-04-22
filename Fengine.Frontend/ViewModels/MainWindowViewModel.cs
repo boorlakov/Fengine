@@ -83,7 +83,7 @@ public class MainWindowViewModel : ViewModelBase
 
         for (var i = 0; i < res.Values.Length; i++)
         {
-            sb.Append($"\t{uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coordinates["x"]))}\n");
+            sb.Append($"\t{uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coords[IMesh.Axis.X]))}\n");
         }
 
         sb.Append("\n|u - u*|:\n");
@@ -91,7 +91,7 @@ public class MainWindowViewModel : ViewModelBase
         for (var i = 0; i < res.Values.Length; i++)
         {
             sb.Append(
-                $"\t{Math.Abs(res.Values[i] - uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coordinates["x"])))}\n");
+                $"\t{Math.Abs(res.Values[i] - uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coords[IMesh.Axis.X])))}\n");
         }
 
         sb.Append($"\nIterations: {res.Iterations}\n");
