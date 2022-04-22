@@ -70,7 +70,7 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
     private static void BuildMatrix(
         int i,
         double step,
-        IMesh cartesian1DMesh,
+        IMesh mesh,
         double[][][] localStiffness,
         double[][][] localMass,
         Func<Dictionary<string, double>, double> evalLambda,
@@ -80,8 +80,8 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         double[] lower
     )
     {
-        var point = Utils.MakeDict1D(cartesian1DMesh.Nodes[i].Coordinates[IMesh.Axis.X]);
-        var nextPoint = Utils.MakeDict1D(cartesian1DMesh.Nodes[i + 1].Coordinates[IMesh.Axis.X]);
+        var point = Utils.MakeDict1D(mesh.Nodes[i].Coordinates[IMesh.Axis.X]);
+        var nextPoint = Utils.MakeDict1D(mesh.Nodes[i + 1].Coordinates[IMesh.Axis.X]);
 
         center[i] +=
             (evalLambda(point) * localStiffness[0][0][0] + evalLambda(nextPoint) * localStiffness[1][0][0]) /
@@ -103,13 +103,13 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
     private void BuildRhs(
         int i,
         double step,
-        IMesh cartesian1DMesh,
+        IMesh mesh,
         Func<Dictionary<string, double>, double> evalRhsFunc,
         double[][][] localMass
     )
     {
-        var point = Utils.MakeDict2D(cartesian1DMesh.Nodes[i].Coordinates[IMesh.Axis.X], ResVec[i]);
-        var nextPoint = Utils.MakeDict2D(cartesian1DMesh.Nodes[i + 1].Coordinates[IMesh.Axis.X], ResVec[i + 1]);
+        var point = Utils.MakeDict2D(mesh.Nodes[i].Coordinates[IMesh.Axis.X], ResVec[i]);
+        var nextPoint = Utils.MakeDict2D(mesh.Nodes[i + 1].Coordinates[IMesh.Axis.X], ResVec[i + 1]);
 
         RhsVec[i] += step * (evalRhsFunc(point) * localMass[2][0][0] + evalRhsFunc(nextPoint) * localMass[2][0][1]);
         RhsVec[i + 1] += step * (evalRhsFunc(point) * localMass[2][1][0] + evalRhsFunc(nextPoint) * localMass[2][1][1]);
