@@ -33,6 +33,8 @@ public class IntegratorTests
         }
     }
 
+    #region 1D Integration tests
+
     [Test]
     public void Integrate1D_WhenPassConst_ShouldReturnRectangleArea()
     {
@@ -208,4 +210,107 @@ public class IntegratorTests
         // Assert
         Assert.AreEqual(result, expected, 1.0e-7);
     }
+
+    #endregion
+
+    #region 2D Integration tests
+
+    [Test]
+    public void Integrate2D_WhenPassConstString_ShouldReturnRectangleArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        const string func = "1.0";
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate2D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    [Test]
+    public void Integrate2D_WhenPassLinearString_ShouldReturnTriangleArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        const string func = "x";
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate2D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    [Test]
+    public void Integrate2D_WhenPassBilinearString_ShouldReturnArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        const string func = "x * u";
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate2D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+
+    [Test]
+    public void Integrate2D_WhenPassConst_ShouldReturnRectangleArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        var func = (double x, double y) => 1.0;
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate2D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    [Test]
+    public void Integrate2D_WhenPassLinear_ShouldReturnTriangleArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        var func = (double x, double y) => x;
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate2D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    [Test]
+    public void Integrate2D_WhenPassBilinear_ShouldReturnArea()
+    {
+        // Arrange
+        var grid = Utils.Create1DIntegrationMesh(0.0, 2.0);
+        var func = (double x, double y) => x * y;
+
+        const double expected = 4.0;
+
+        // Act
+        var result = _integrator.Integrate2D(grid, func);
+
+        // Assert
+        Assert.AreEqual(result, expected, 1.0e-7);
+    }
+
+    #endregion
 }
