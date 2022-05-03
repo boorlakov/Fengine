@@ -5,13 +5,13 @@ namespace Fengine.Backend.Fem.Mesh;
 /// <summary>
 ///     1D grid class. Can be uniform or non-uniform due to given discharge ratio
 /// </summary>
-public class Cartesian1DMesh : IMesh
+public class Cartesian1D : IMesh
 {
     /// <summary>
-    ///     Cartesian1DMesh constructor. Can be uniform or non-uniform due to given discharge ratio
+    ///     Cartesian1D constructor. Can be uniform or non-uniform due to given discharge ratio
     /// </summary>
     /// <param name="area">Given area settings</param>
-    public Cartesian1DMesh(Area area)
+    public Cartesian1D(Area area)
     {
         var nodes = new IMesh.Node[area.AmountPoints];
 
@@ -20,7 +20,7 @@ public class Cartesian1DMesh : IMesh
             nodes[i] = new IMesh.Node();
         }
 
-        nodes[0].Coordinates[IMesh.Axis.X] = area.LeftBorder;
+        nodes[0].Coordinates[Axis.X] = area.LeftBorder;
 
         if (Math.Abs(area.DischargeRatio - 1) > 1e-10)
         {
@@ -30,9 +30,9 @@ public class Cartesian1DMesh : IMesh
 
             for (var i = 1; i < area.AmountPoints; i++)
             {
-                nodes[i].Coordinates[IMesh.Axis.X] = area.LeftBorder +
-                                                     stepX * (1 - Math.Pow(area.DischargeRatio, i)) /
-                                                     (1 - area.DischargeRatio);
+                nodes[i].Coordinates[Axis.X] = area.LeftBorder +
+                                               stepX * (1 - Math.Pow(area.DischargeRatio, i)) /
+                                               (1 - area.DischargeRatio);
             }
         }
         else
@@ -42,7 +42,7 @@ public class Cartesian1DMesh : IMesh
 
             for (var i = 1; i < area.AmountPoints; i++)
             {
-                nodes[i].Coordinates[IMesh.Axis.X] = area.LeftBorder + i * stepX;
+                nodes[i].Coordinates[Axis.X] = area.LeftBorder + i * stepX;
             }
         }
 

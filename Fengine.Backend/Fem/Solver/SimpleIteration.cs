@@ -1,4 +1,5 @@
 using Fengine.Backend.DataModels;
+using Fengine.Backend.Differentiation;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Integration;
@@ -9,31 +10,38 @@ using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Solver;
 
-public class FemSolverWithSimpleIteration : IFemSolver
+public class SimpleIteration : IFemSolver
 {
     private readonly IIntegrator _integrator;
     private readonly ISlae _slae;
     private readonly ISlaeSolver _slaeSolver;
     private readonly IMatrix _matrix;
+    private readonly IDerivative? _derivative;
 
-    public FemSolverWithSimpleIteration(
+    public SimpleIteration
+    (
         ISlaeSolver slaeSolver,
         IIntegrator integrator,
         IMatrix matrix,
-        ISlae slae)
+        ISlae slae,
+        IDerivative? derivative = null
+    )
     {
         _slaeSolver = slaeSolver;
         _integrator = integrator;
         _matrix = matrix;
         _slae = slae;
+        _derivative = derivative;
     }
 
-    public Statistics Solve(
+    public Statistics Solve
+    (
         IMesh mesh,
         InputFuncs inputFuncs,
         Area area,
         BoundaryConditions boundaryConditions,
-        Accuracy accuracy
+        Accuracy accuracy,
+        bool withLinearization = false
     )
     {
         var iter = 0;
@@ -41,19 +49,17 @@ public class FemSolverWithSimpleIteration : IFemSolver
         var initApprox = new double[mesh.Nodes.Length];
 
         var relaxRatio = accuracy.RelaxRatio;
-        var slae = new Slae1DEllipticLinearFNonLinear();
+        var slae = new Elliptic1DLinearFNonLinear();
 
         do
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
-            slae = new Slae1DEllipticLinearFNonLinear(
-                mesh,
-                inputFuncs,
-                initApprox,
-                _slaeSolver,
-                _integrator,
-                _matrix
-            );
+
+            slae = withLinearization
+                ? new Elliptic1DLinearFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix,
+                    _derivative, true)
+                : new Elliptic1DLinearFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix);
+
             ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
 
@@ -75,7 +81,7 @@ public class FemSolverWithSimpleIteration : IFemSolver
 
             Console.Write($"\r[INFO] RelRes = {LinAlg.Utils.RelResidual(slae):G10} | Iter: {iter}");
         } while (iter < accuracy.MaxIter &&
-                 LinAlg.Utils.RelResidual(slae) > accuracy.Eps &&
+                 LinAlg.Utils.RelResidual(slae.NonLinearMatrix, slae.ResVec, slae.NonLinearRhsVec) > accuracy.Eps &&
                  !LinAlg.Utils.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
 
         var funcCalc = new XtensibleCalculator();
@@ -86,7 +92,7 @@ public class FemSolverWithSimpleIteration : IFemSolver
 
         for (var i = 0; i < slae.ResVec.Length; i++)
         {
-            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coordinates[IMesh.Axis.X]));
+            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coordinates[Axis.X]));
             absError[i] = u[i] - slae.ResVec[i];
         }
 
@@ -95,7 +101,7 @@ public class FemSolverWithSimpleIteration : IFemSolver
         var stat = new Statistics
         {
             Iterations = iter,
-            Residual = LinAlg.Utils.RelResidual(slae),
+            Residual = LinAlg.Utils.RelResidual(slae.NonLinearMatrix, slae.ResVec, slae.NonLinearRhsVec),
             Error = error,
             Values = slae.ResVec,
             RelaxRatio = coef
@@ -195,7 +201,7 @@ public class FemSolverWithSimpleIteration : IFemSolver
             approx[i] = x * resVec[i] + (1.0 - x) * prevResVec[i];
         }
 
-        var slae = new Slae1DEllipticLinearFNonLinear(
+        var slae = new Elliptic1DLinearFNonLinear(
             cartesian1DMesh,
             inputFuncs,
             approx,

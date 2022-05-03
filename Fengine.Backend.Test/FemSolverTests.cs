@@ -1,11 +1,4 @@
 using System;
-using Fengine.Backend.DataModels;
-using Fengine.Backend.Fem.Mesh;
-using Fengine.Backend.Fem.Slae;
-using Fengine.Backend.Fem.Solver;
-using Fengine.Backend.Integration;
-using Fengine.Backend.LinAlg.Matrix;
-using Fengine.Backend.LinAlg.SlaeSolver;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
@@ -16,25 +9,36 @@ public class FemSolverTests
     [SetUp]
     public void SetUp()
     {
-        var slaeSolver = new SlaeSolverGaussSeidel();
-        var integrator = new IntegratorGauss4Points();
-        var matrixType = new Matrix3Diagonal();
-        var slaeType = new Slae1DEllipticLinearFNonLinear();
-        _femSolverWithSimpleIteration = new FemSolverWithSimpleIteration(
+        var slaeSolver = new LinAlg.SlaeSolver.GaussSeidel();
+        var integrator = new Integration.Gauss4Points();
+        var matrixType = new LinAlg.Matrix.ThreeDiagonal();
+        var slaeType = new Fem.Slae.Elliptic1DLinearFNonLinear();
+        var differentiatorType = new Differentiation.OnePoint();
+
+        _simpleIteration = new Fem.Solver.SimpleIteration(
             slaeSolver,
             integrator,
             matrixType,
             slaeType
         );
+
+        _newton = new Fem.Solver.SimpleIteration(
+            slaeSolver,
+            integrator,
+            matrixType,
+            slaeType,
+            differentiatorType
+        );
     }
 
-    private FemSolverWithSimpleIteration _femSolverWithSimpleIteration;
+    private Fem.Solver.SimpleIteration _simpleIteration;
+    private Fem.Solver.SimpleIteration _newton;
 
     [Test]
     public void FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndUniformGrid_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new Area
+        var area = new DataModels.Area
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -42,7 +46,7 @@ public class FemSolverTests
             AmountPoints = 11
         };
 
-        var inputFuncs = new InputFuncs
+        var inputFuncs = new DataModels.InputFuncs
         {
             Lambda = "1",
             Gamma = "1",
@@ -50,7 +54,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new BoundaryConditions
+        var boundaryConditions = new DataModels.BoundaryConditions
         {
             Left = "First",
             LeftFunc = "2",
@@ -58,19 +62,19 @@ public class FemSolverTests
             RightFunc = "3"
         };
 
-        var accuracy = new Accuracy
+        var accuracy = new DataModels.Accuracy
         {
             Eps = 1.0e-7,
             Delta = 1.0e-7,
             MaxIter = 1000
         };
 
-        var grid = new Cartesian1DMesh(area);
+        var grid = new Fem.Mesh.Cartesian1D(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _femSolverWithSimpleIteration.Solve(
+        var result = _simpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -90,7 +94,7 @@ public class FemSolverTests
         FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndThirdBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new Area
+        var area = new DataModels.Area
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -98,7 +102,7 @@ public class FemSolverTests
             AmountPoints = 11
         };
 
-        var inputFuncs = new InputFuncs
+        var inputFuncs = new DataModels.InputFuncs
         {
             Lambda = "1",
             Gamma = "1",
@@ -106,7 +110,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new BoundaryConditions
+        var boundaryConditions = new DataModels.BoundaryConditions
         {
             Left = "Third",
             LeftFunc = "0",
@@ -115,19 +119,19 @@ public class FemSolverTests
             Beta = 0.5
         };
 
-        var accuracy = new Accuracy
+        var accuracy = new DataModels.Accuracy
         {
             Eps = 1.0e-10,
             Delta = 1.0e-10,
             MaxIter = 1000
         };
 
-        var grid = new Cartesian1DMesh(area);
+        var grid = new Fem.Mesh.Cartesian1D(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _femSolverWithSimpleIteration.Solve(
+        var result = _simpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -147,7 +151,7 @@ public class FemSolverTests
         FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndThirdBoundaryRightConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new Area
+        var area = new DataModels.Area
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -155,7 +159,7 @@ public class FemSolverTests
             AmountPoints = 11
         };
 
-        var inputFuncs = new InputFuncs
+        var inputFuncs = new DataModels.InputFuncs
         {
             Lambda = "1",
             Gamma = "1",
@@ -163,7 +167,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new BoundaryConditions
+        var boundaryConditions = new DataModels.BoundaryConditions
         {
             Left = "First",
             LeftFunc = "2",
@@ -172,19 +176,19 @@ public class FemSolverTests
             Beta = 0.5
         };
 
-        var accuracy = new Accuracy
+        var accuracy = new DataModels.Accuracy
         {
             Eps = 1.0e-10,
             Delta = 1.0e-10,
             MaxIter = 1000
         };
 
-        var grid = new Cartesian1DMesh(area);
+        var grid = new Fem.Mesh.Cartesian1D(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _femSolverWithSimpleIteration.Solve(
+        var result = _simpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -204,7 +208,7 @@ public class FemSolverTests
         FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndSecondBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new Area
+        var area = new DataModels.Area
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -212,7 +216,7 @@ public class FemSolverTests
             AmountPoints = 11
         };
 
-        var inputFuncs = new InputFuncs
+        var inputFuncs = new DataModels.InputFuncs
         {
             Lambda = "1",
             Gamma = "1",
@@ -220,7 +224,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new BoundaryConditions
+        var boundaryConditions = new DataModels.BoundaryConditions
         {
             Left = "Second",
             LeftFunc = "-1",
@@ -228,19 +232,19 @@ public class FemSolverTests
             RightFunc = "3"
         };
 
-        var accuracy = new Accuracy
+        var accuracy = new DataModels.Accuracy
         {
             Eps = 1.0e-10,
             Delta = 1.0e-10,
             MaxIter = 1000
         };
 
-        var grid = new Cartesian1DMesh(area);
+        var grid = new Fem.Mesh.Cartesian1D(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _femSolverWithSimpleIteration.Solve(
+        var result = _simpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -260,7 +264,7 @@ public class FemSolverTests
         FemSolverWithSimpleIterationTest_WhenPassSimpleFuncAndSecondBoundaryRightConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new Area
+        var area = new DataModels.Area
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -268,7 +272,7 @@ public class FemSolverTests
             AmountPoints = 11
         };
 
-        var inputFuncs = new InputFuncs
+        var inputFuncs = new DataModels.InputFuncs
         {
             Lambda = "1",
             Gamma = "1",
@@ -276,7 +280,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new BoundaryConditions
+        var boundaryConditions = new DataModels.BoundaryConditions
         {
             Left = "First",
             LeftFunc = "2",
@@ -284,19 +288,19 @@ public class FemSolverTests
             RightFunc = "1"
         };
 
-        var accuracy = new Accuracy
+        var accuracy = new DataModels.Accuracy
         {
             Eps = 1.0e-10,
             Delta = 1.0e-10,
             MaxIter = 1000
         };
 
-        var grid = new Cartesian1DMesh(area);
+        var grid = new Fem.Mesh.Cartesian1D(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
         // Act
-        var result = _femSolverWithSimpleIteration.Solve(
+        var result = _simpleIteration.Solve(
             grid,
             inputFuncs,
             area,
@@ -315,7 +319,7 @@ public class FemSolverTests
     public void FemSolverWithSimpleIterationTest_WhenPassSinFuncAndFirstBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new Area
+        var area = new DataModels.Area
         {
             LeftBorder = 0.0,
             RightBorder = 2.0,
@@ -323,7 +327,7 @@ public class FemSolverTests
             AmountPoints = 11
         };
 
-        var inputFuncs = new InputFuncs
+        var inputFuncs = new DataModels.InputFuncs
         {
             Lambda = "1",
             Gamma = "1",
@@ -331,7 +335,7 @@ public class FemSolverTests
             UStar = "Sin(x)"
         };
 
-        var boundaryConditions = new BoundaryConditions
+        var boundaryConditions = new DataModels.BoundaryConditions
         {
             Left = "First",
             LeftFunc = "0",
@@ -339,24 +343,24 @@ public class FemSolverTests
             RightFunc = "0.9092974268"
         };
 
-        var accuracy = new Accuracy
+        var accuracy = new DataModels.Accuracy
         {
             Eps = 1.0e-10,
             Delta = 1.0e-10,
             MaxIter = 10000
         };
 
-        var grid = new Cartesian1DMesh(area);
+        var grid = new Fem.Mesh.Cartesian1D(area);
 
         var expected = new double[11];
 
         for (var i = 0; i < expected.Length; i++)
         {
-            expected[i] = Math.Sin(grid.Nodes[i].Coordinates[IMesh.Axis.X]);
+            expected[i] = Math.Sin(grid.Nodes[i].Coordinates[Fem.Mesh.Axis.X]);
         }
 
         // Act
-        var result = _femSolverWithSimpleIteration.Solve(
+        var result = _simpleIteration.Solve(
             grid,
             inputFuncs,
             area,

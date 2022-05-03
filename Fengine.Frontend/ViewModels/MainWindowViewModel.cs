@@ -13,7 +13,7 @@ namespace Fengine.Frontend.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private readonly FemSolverWithSimpleIteration _femSolverWithSimpleIteration;
+    private readonly SimpleIteration _simpleIteration;
 
     private string _result = string.Empty;
 
@@ -27,8 +27,8 @@ public class MainWindowViewModel : ViewModelBase
             .ConfigureServices()
             .BuildServiceProvider();
 
-        _femSolverWithSimpleIteration = _serviceProvider.GetService<FemSolverWithSimpleIteration>()
-                                        ?? throw new InvalidOperationException();
+        _simpleIteration = _serviceProvider.GetService<SimpleIteration>()
+                           ?? throw new InvalidOperationException();
     }
 
     public Area Area { get; } = new();
@@ -60,9 +60,9 @@ public class MainWindowViewModel : ViewModelBase
 
     public void Solve(Dispatcher dispatcher)
     {
-        var mesh = new Cartesian1DMesh(Area);
+        var mesh = new Cartesian1D(Area);
 
-        var res = _femSolverWithSimpleIteration.Solve(
+        var res = _simpleIteration.Solve(
             mesh,
             InputFuncs,
             Area,
@@ -83,7 +83,7 @@ public class MainWindowViewModel : ViewModelBase
 
         for (var i = 0; i < res.Values.Length; i++)
         {
-            sb.Append($"\t{uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coordinates[IMesh.Axis.X]))}\n");
+            sb.Append($"\t{uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coordinates[Axis.X]))}\n");
         }
 
         sb.Append("\n|u - u*|:\n");
@@ -91,7 +91,7 @@ public class MainWindowViewModel : ViewModelBase
         for (var i = 0; i < res.Values.Length; i++)
         {
             sb.Append(
-                $"\t{Math.Abs(res.Values[i] - uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coordinates[IMesh.Axis.X])))}\n");
+                $"\t{Math.Abs(res.Values[i] - uStar(Backend.Utils.MakeDict1D(mesh.Nodes[i].Coordinates[Axis.X])))}\n");
         }
 
         sb.Append($"\nIterations: {res.Iterations}\n");

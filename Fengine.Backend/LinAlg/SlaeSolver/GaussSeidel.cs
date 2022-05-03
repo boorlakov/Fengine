@@ -7,7 +7,7 @@ namespace Fengine.Backend.LinAlg.SlaeSolver;
 /// <summary>
 ///     Class for holding methods of solving systems of linear equations
 /// </summary>
-public class SlaeSolverGaussSeidel : ISlaeSolver
+public class GaussSeidel : ISlaeSolver
 {
     /// <summary>
     /// Gauss-Seidel solve method 

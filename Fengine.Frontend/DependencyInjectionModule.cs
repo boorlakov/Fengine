@@ -18,14 +18,14 @@ public static class DependencyInjectionModule
             .AddTransient<Area>()
             .AddTransient<BoundaryConditions>()
             .AddTransient<InputFuncs>()
-            .AddTransient<IMatrix, Matrix3Diagonal>()
-            .AddTransient<IIntegrator, IntegratorGauss4Points>()
-            .AddTransient<IMesh, Cartesian1DMesh>()
-            .AddTransient<ISlaeSolver, SlaeSolverGaussSeidel>()
-            .AddTransient<ISlae, Slae1DEllipticLinearFNonLinear>()
-            .AddTransient<IFemSolver, FemSolverWithSimpleIteration>
+            .AddTransient<IMatrix, ThreeDiagonal>()
+            .AddTransient<IIntegrator, Gauss4Points>()
+            .AddTransient<IMesh, Cartesian1D>()
+            .AddTransient<ISlaeSolver, GaussSeidel>()
+            .AddTransient<ISlae, Elliptic1DLinearFNonLinear>()
+            .AddTransient<IFemSolver, SimpleIteration>
             (
-                x => new FemSolverWithSimpleIteration
+                x => new SimpleIteration
                 (
                     x.GetRequiredService<ISlaeSolver>(),
                     x.GetRequiredService<IIntegrator>(),

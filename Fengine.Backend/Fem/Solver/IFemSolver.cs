@@ -10,6 +10,7 @@ public interface IFemSolver
         InputFuncs inputFuncs,
         Area area,
         BoundaryConditions boundaryConditions,
-        Accuracy accuracy
+        Accuracy accuracy,
+        bool withLinearization
     );
 }

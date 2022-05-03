@@ -48,20 +48,20 @@ public static class Utils
     /// <summary>
     ///     Relative residual (||f - Ax|| / ||f||) of slae Ax = f
     /// </summary>
-    /// <param name="slae1DEllipticLinearFNonLinear">Given slae</param>
+    /// <param name="slae">Given slae</param>
     /// <returns>Relative residual value</returns>
-    public static double RelResidual(Slae1DEllipticLinearFNonLinear slae1DEllipticLinearFNonLinear)
+    public static double RelResidual(ISlae slae)
     {
-        var diff = new double[slae1DEllipticLinearFNonLinear.RhsVec.Length];
+        var diff = new double[slae.RhsVec.Length];
 
         var innerProd =
-            GeneralOperations.MatMul(slae1DEllipticLinearFNonLinear.Matrix, slae1DEllipticLinearFNonLinear.ResVec);
+            GeneralOperations.MatMul(slae.Matrix, slae.ResVec);
 
-        for (var i = 0; i < slae1DEllipticLinearFNonLinear.RhsVec.Length; i++)
+        for (var i = 0; i < slae.RhsVec.Length; i++)
         {
-            diff[i] = slae1DEllipticLinearFNonLinear.RhsVec[i] - innerProd[i];
+            diff[i] = slae.RhsVec[i] - innerProd[i];
         }
 
-        return GeneralOperations.Norm(diff) / GeneralOperations.Norm(slae1DEllipticLinearFNonLinear.RhsVec);
+        return GeneralOperations.Norm(diff) / GeneralOperations.Norm(slae.RhsVec);
     }
 }

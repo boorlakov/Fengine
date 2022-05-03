@@ -1,43 +1,62 @@
 using Fengine.Backend.DataModels;
+using Fengine.Backend.Differentiation;
 using Fengine.Backend.Fem.Basis;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Integration;
-using Fengine.Backend.LinAlg.Matrix;
 using Fengine.Backend.LinAlg.SlaeSolver;
 using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Slae;
 
-public class Slae1DEllipticLinearFNonLinear : ISlae
+public class Elliptic1DLinearFNonLinear : ISlae
 {
     private readonly IIntegrator _integrator;
     private readonly ISlaeSolver _slaeSolver;
+    private readonly IDerivative? _derivative;
 
-    public IMatrix Matrix { get; set; }
+    public bool WithLinearization { get; }
+
+    public LinAlg.Matrix.IMatrix Matrix { get; set; }
+    public LinAlg.Matrix.IMatrix NonLinearMatrix { get; set; }
+
     public double[] RhsVec { get; set; }
+    public double[] NonLinearRhsVec { get; set; }
+
     public double[] ResVec { get; set; }
 
-    public Slae1DEllipticLinearFNonLinear()
+    public Elliptic1DLinearFNonLinear()
     {
         Matrix = null!;
         ResVec = null!;
         RhsVec = null!;
         _integrator = null!;
         _slaeSolver = null!;
+        _derivative = null!;
     }
 
-    public Slae1DEllipticLinearFNonLinear(
+    public Elliptic1DLinearFNonLinear
+    (
         IMesh mesh,
         InputFuncs inputFuncs,
         double[] initApprox,
         ISlaeSolver slaeSolver,
         IIntegrator integrator,
-        IMatrix matrix
+        LinAlg.Matrix.IMatrix matrix,
+        IDerivative? derivative = null,
+        bool withLinearization = false
     )
     {
         _slaeSolver = slaeSolver;
         _integrator = integrator;
         Matrix = matrix;
+
+        if (withLinearization && derivative is null)
+        {
+            throw new ArgumentException("No derivative service provided");
+        }
+
+        _derivative = derivative;
+        WithLinearization = withLinearization;
 
         ResVec = new double[mesh.Nodes.Length];
         initApprox.AsSpan().CopyTo(ResVec);
@@ -57,14 +76,84 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
 
         for (var i = 0; i < mesh.Nodes.Length - 1; i++)
         {
-            var step = mesh.Nodes[i + 1].Coordinates[IMesh.Axis.X] - mesh.Nodes[i].Coordinates[IMesh.Axis.X];
+            var step = mesh.Nodes[i + 1].Coordinates[Axis.X] - mesh.Nodes[i].Coordinates[Axis.X];
 
             BuildMatrix(i, step, mesh, localStiffness, localMass, evalLambda, evalGamma, upper, center, lower);
 
             BuildRhs(i, step, mesh, evalRhsFunc, localMass);
         }
 
-        Matrix = new Matrix3Diagonal(upper, center, lower);
+        NonLinearMatrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+        NonLinearRhsVec = new double[RhsVec.Length];
+        RhsVec.AsSpan().CopyTo(NonLinearRhsVec);
+
+        if (WithLinearization)
+        {
+            Linearize(mesh, localStiffness, localMass, evalRhsFunc, upper, center, lower);
+        }
+
+        Matrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+    }
+
+    private void Linearize
+    (
+        IMesh mesh,
+        double[][][] localStiffness, double[][][] localMass,
+        Func<Dictionary<string, double>, double> evalRhsFunc,
+        double[] upper, double[] center, double[] lower
+    )
+    {
+        for (var i = 0; i < mesh.Nodes.Length - 1; i++)
+        {
+            var step = mesh.Nodes[i + 1].Coordinates[Axis.X] - mesh.Nodes[i].Coordinates[Axis.X];
+
+            var locNewton = new double[2][];
+            locNewton[0] = new double[2];
+            locNewton[1] = new double[2];
+            locNewton[0][0] = step * localMass[2][0][0] *
+                              _derivative!.FindFirst2DAt2Point
+                              (
+                                  evalRhsFunc,
+                                  mesh.Nodes[i].Coordinates[Axis.X],
+                                  ResVec[i],
+                                  1e-7
+                              );
+
+            locNewton[0][1] = step * localMass[2][0][1] *
+                              _derivative.FindFirst2DAt2Point
+                              (
+                                  evalRhsFunc,
+                                  mesh.Nodes[i + 1].Coordinates[Axis.X],
+                                  ResVec[i],
+                                  1e-7
+                              );
+
+            locNewton[1][0] = step * localMass[2][1][0] *
+                              _derivative.FindFirst2DAt2Point
+                              (
+                                  evalRhsFunc,
+                                  mesh.Nodes[i].Coordinates[Axis.X],
+                                  ResVec[i],
+                                  1e-7
+                              );
+
+            locNewton[1][1] = step *
+                              _derivative.FindFirst2DAt2Point
+                              (
+                                  evalRhsFunc,
+                                  mesh.Nodes[i + 1].Coordinates[Axis.X],
+                                  ResVec[i],
+                                  1e-7
+                              );
+
+            center[i] -= locNewton[0][0];
+            center[i + 1] -= locNewton[1][1];
+            upper[i] -= locNewton[0][1];
+            lower[i] -= locNewton[1][0];
+
+            RhsVec[i] -= ResVec[i] * locNewton[0][0] + ResVec[i + 1] * locNewton[0][1];
+            RhsVec[i + 1] -= ResVec[i] * locNewton[1][0] + ResVec[i + 1] * locNewton[1][1];
+        }
     }
 
     private static void BuildMatrix(
@@ -80,8 +169,8 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         double[] lower
     )
     {
-        var point = Utils.MakeDict1D(mesh.Nodes[i].Coordinates[IMesh.Axis.X]);
-        var nextPoint = Utils.MakeDict1D(mesh.Nodes[i + 1].Coordinates[IMesh.Axis.X]);
+        var point = Utils.MakeDict1D(mesh.Nodes[i].Coordinates[Axis.X]);
+        var nextPoint = Utils.MakeDict1D(mesh.Nodes[i + 1].Coordinates[Axis.X]);
 
         center[i] +=
             (evalLambda(point) * localStiffness[0][0][0] + evalLambda(nextPoint) * localStiffness[1][0][0]) /
@@ -108,25 +197,26 @@ public class Slae1DEllipticLinearFNonLinear : ISlae
         double[][][] localMass
     )
     {
-        var point = Utils.MakeDict2D(mesh.Nodes[i].Coordinates[IMesh.Axis.X], ResVec[i]);
-        var nextPoint = Utils.MakeDict2D(mesh.Nodes[i + 1].Coordinates[IMesh.Axis.X], ResVec[i + 1]);
+        var point = Utils.MakeDict2D(mesh.Nodes[i].Coordinates[Axis.X], ResVec[i]);
+        var nextPoint = Utils.MakeDict2D(mesh.Nodes[i + 1].Coordinates[Axis.X], ResVec[i + 1]);
 
         RhsVec[i] += step * (evalRhsFunc(point) * localMass[2][0][0] + evalRhsFunc(nextPoint) * localMass[2][0][1]);
         RhsVec[i + 1] += step * (evalRhsFunc(point) * localMass[2][1][0] + evalRhsFunc(nextPoint) * localMass[2][1][1]);
     }
 
-    public Slae1DEllipticLinearFNonLinear(
-        IMatrix matrix,
+    public Elliptic1DLinearFNonLinear(
+        LinAlg.Matrix.IMatrix matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,
-        IIntegrator integrator
-    )
+        IIntegrator integrator,
+        IDerivative? derivative = null)
     {
         Matrix = matrix;
         ResVec = new double[rhsVec.Length];
         RhsVec = rhsVec;
         _slaeSolver = slaeSolver;
         _integrator = integrator;
+        _derivative = derivative;
     }
 
     public double[] Solve(Accuracy accuracy)
