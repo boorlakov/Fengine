@@ -18,22 +18,34 @@ public static class GeneralOperations
     }
 
     /// <summary>
-    ///     Multiplication m by vector
+    /// Matrix multiplication by vector
     /// </summary>
-    /// <param name="m">Given matrix in 3-diagonal format</param>
-    /// <param name="vec">Vector, represented by double values</param>
-    /// <returns>Multiplication result m by vector</returns>
-    public static double[] MatMul(IMatrix m, double[] vec)
+    /// <param name="m"> Matrix, stored in 2-dim double array</param>
+    /// <param name="b"> Vector, that multiplies matrix </param>
+    /// <returns> Resulting vector of multiplication </returns>
+    public static double[] MatrixMultiply(double[,] m, double[] b)
     {
-        var res = new double[vec.Length];
+        var columns = m.GetLength(0);
+        var rows = m.GetLength(1);
 
-        for (var i = 0; i < vec.Length; i++)
+        var res = new double[rows];
+
+        for (var i = 0; i < rows; i++)
         {
-            res[i] = Dot(i, m, vec);
+            for (var j = 0; j < columns; j++)
+            {
+                res[i] += m[i, j] * b[j];
+            }
         }
 
         return res;
     }
+
+    public static double[] MatrixMultiply(IMatrix m, double[] b)
+    {
+        return m.Multiply(b);
+    }
+
 
     /// <summary>
     ///     Dot product of a specified row in m by vector

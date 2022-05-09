@@ -57,7 +57,7 @@ public class GeneralOperationsTests
         var expected = new[] {3.0, 6.0, 5.0};
 
         // Act
-        var result = LinearAlgebra.GeneralOperations.MatMul(matrix, vec);
+        var result = LinearAlgebra.GeneralOperations.MatrixMultiply(matrix, vec);
 
         // Assert
         for (var i = 0; i < expected.Length; i++)

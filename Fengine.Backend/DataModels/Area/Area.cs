@@ -1,4 +1,4 @@
-namespace Fengine.Backend.DataModels.Areas;
+namespace Fengine.Backend.DataModels.Area;
 
 public abstract class Area
 {

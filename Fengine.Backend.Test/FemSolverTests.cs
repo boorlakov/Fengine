@@ -12,7 +12,7 @@ public class FemSolverTests
         var slaeSolver = new LinearAlgebra.SlaeSolver.GaussSeidel();
         var integrator = new Integration.GaussFourPoints();
         var matrixType = new LinearAlgebra.Matrix.ThreeDiagonal();
-        var slaeType = new Fem.Slae.Elliptic1DLinearBasisFNonLinear();
+        var slaeType = new Fem.Slae.OneDim.EllipticLinearBasisFNonLinear();
         var differentiatorType = new Differentiation.TwoPoints();
 
         _simpleIteration = new Fem.Solver.SimpleIteration(
@@ -40,7 +40,7 @@ public class FemSolverTests
     public void FemSolverSimpleIterationTest_WhenPassSimpleFuncAndUniformGrid_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -97,7 +97,7 @@ public class FemSolverTests
         FemSolverSimpleIterationTest_WhenPassSimpleFuncAndThirdBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -155,7 +155,7 @@ public class FemSolverTests
         FemSolverSimpleIterationTest_WhenPassSimpleFuncAndThirdBoundaryRightConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -213,7 +213,7 @@ public class FemSolverTests
         FemSolverSimpleIterationTest_WhenPassSimpleFuncAndSecondBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -270,7 +270,7 @@ public class FemSolverTests
         FemSolverSimpleIterationTest_WhenPassSimpleFuncAndSecondBoundaryRightConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -326,7 +326,7 @@ public class FemSolverTests
     public void FemSolverSimpleIterationTest_WhenPassSinFuncAndFirstBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 2.0,
@@ -391,7 +391,7 @@ public class FemSolverTests
     public void FemSolverNewtonTest_WhenPassSimpleFuncAndUniformGrid_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -447,7 +447,7 @@ public class FemSolverTests
     public void FemSolverNewtonWithLowerEpsTest_WhenPassSimpleFuncAndUniformGrid_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -503,7 +503,7 @@ public class FemSolverTests
     public void FemSolverNewtonAutoRelaxTest_WhenPassSimpleFuncAndUniformGrid_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -561,7 +561,7 @@ public class FemSolverTests
         FemSolverNewtonTest_WhenPassSimpleFuncAndThirdBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -619,7 +619,7 @@ public class FemSolverTests
         FemSolverNewtonTest_WhenPassSimpleFuncAndThirdBoundaryRightConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -677,7 +677,7 @@ public class FemSolverTests
         FemSolverNewtonTest_WhenPassSimpleFuncAndSecondBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -734,7 +734,7 @@ public class FemSolverTests
         FemSolverNewtonTest_WhenPassSimpleFuncAndSecondBoundaryRightConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 1.0,
@@ -790,7 +790,7 @@ public class FemSolverTests
     public void FemSolverNewtonTest_WhenPassSinFuncAndFirstBoundaryConditions_ShouldReturnCorrectResult()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             LeftBorder = 0.0,
             RightBorder = 2.0,

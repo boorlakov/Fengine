@@ -7,9 +7,9 @@ using Fengine.Backend.LinearAlgebra.Matrix;
 using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Sprache.Calc;
 
-namespace Fengine.Backend.Fem.Slae;
+namespace Fengine.Backend.Fem.Slae.OneDim;
 
-public class Elliptic1DLinearBasisFNonLinear : ISlae
+public class EllipticLinearBasisFNonLinear : ISlae
 {
     private readonly IIntegrator _integrator;
     private readonly ISlaeSolver _slaeSolver;
@@ -25,7 +25,7 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
 
     public double[] ResVec { get; set; }
 
-    public Elliptic1DLinearBasisFNonLinear()
+    public EllipticLinearBasisFNonLinear()
     {
         Matrix = null!;
         ResVec = null!;
@@ -35,7 +35,7 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
         _derivative = null!;
     }
 
-    public Elliptic1DLinearBasisFNonLinear
+    public EllipticLinearBasisFNonLinear
     (
         IMesh mesh,
         InputFuncs inputFuncs,
@@ -199,8 +199,8 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
         RhsVec[i + 1] += step * (evalRhsFunc(point) * localMass[2][1][0] + evalRhsFunc(nextPoint) * localMass[2][1][1]);
     }
 
-    public Elliptic1DLinearBasisFNonLinear(
-        IMatrix matrix,
+    public EllipticLinearBasisFNonLinear(
+        ThreeDiagonal matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,
         IIntegrator integrator,

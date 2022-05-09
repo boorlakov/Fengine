@@ -29,10 +29,38 @@ public class ThreeDiagonal : IMatrix
         Size = -1;
     }
 
+    public double[] Multiply(double[] v)
+    {
+        double Dot(int i, double[] vec)
+        {
+            var res = Data["center"][i] * vec[i];
+
+            if (i >= 0 && i < Size - 1)
+            {
+                res += Data["upper"][i] * vec[i + 1];
+            }
+
+            if (i > 0 && i <= Size - 1)
+            {
+                res += Data["lower"][i - 1] * vec[i - 1];
+            }
+
+            return res;
+        }
+
+        var res = new double[v.Length];
+
+        for (var i = 0; i < v.Length; i++)
+        {
+            res[i] = Dot(i, v);
+        }
+
+        return res;
+    }
     public Dictionary<string, double[]> Data { get; set; } = new();
 
     /// <summary>
     ///     Size of matrix3Diag
     /// </summary>
-    public double Size { get; }
+    public int Size { get; }
 }

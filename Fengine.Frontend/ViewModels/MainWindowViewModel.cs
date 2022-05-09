@@ -30,14 +30,14 @@ public class MainWindowViewModel : ViewModelBase
         var slaeSolver = new GaussSeidel();
         var integrator = new Backend.Integration.GaussFourPoints();
         var matrixType = new ThreeDiagonal();
-        var slaeType = new Backend.Fem.Slae.Elliptic1DLinearBasisFNonLinear();
+        var slaeType = new Backend.Fem.Slae.OneDim.EllipticLinearBasisFNonLinear();
         var differentiatorType = new Backend.Differentiation.TwoPoints();
 
         _femSolver =
             new Backend.Fem.Solver.SimpleIteration(slaeSolver, integrator, matrixType, slaeType, differentiatorType);
     }
 
-    public Backend.DataModels.Areas.OneDim Area { get; } = new();
+    public Backend.DataModels.Area.OneDim Area { get; } = new();
 
     public Backend.DataModels.InputFuncs InputFuncs { get; } = new();
 

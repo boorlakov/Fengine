@@ -1,4 +1,4 @@
-namespace Fengine.Backend.DataModels.Areas;
+namespace Fengine.Backend.DataModels.Area;
 
 /// <summary>
 ///     1D area description, that essential for constructing grid in solving process.

@@ -1,4 +1,3 @@
-using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.LinearAlgebra.Matrix;
 
 namespace Fengine.Backend.LinearAlgebra;
@@ -35,7 +34,7 @@ public static class Utils
     {
         var diff = new double[f.Length];
 
-        var innerProd = GeneralOperations.MatMul(m, x);
+        var innerProd = GeneralOperations.MatrixMultiply(m, x);
 
         for (var i = 0; i < f.Length; i++)
         {
@@ -50,12 +49,12 @@ public static class Utils
     /// </summary>
     /// <param name="slae">Given slae</param>
     /// <returns>Relative residual value</returns>
-    public static double RelResidual(ISlae slae)
+    public static double RelResidual(Fem.Slae.OneDim.EllipticLinearBasisFNonLinear slae)
     {
         var diff = new double[slae.RhsVec.Length];
 
         var innerProd =
-            GeneralOperations.MatMul(slae.Matrix, slae.ResVec);
+            GeneralOperations.MatrixMultiply(slae.Matrix, slae.ResVec);
 
         for (var i = 0; i < slae.RhsVec.Length; i++)
         {

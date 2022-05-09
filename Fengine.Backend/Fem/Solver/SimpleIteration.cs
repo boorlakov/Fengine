@@ -37,7 +37,7 @@ public class SimpleIteration : IFemSolver
     (
         IMesh mesh,
         DataModels.InputFuncs inputFuncs,
-        DataModels.Areas.OneDim area,
+        DataModels.Area.OneDim area,
         DataModels.Conditions.Boundary.OneDim boundaryConditions,
         DataModels.Accuracy accuracy
     )
@@ -47,16 +47,18 @@ public class SimpleIteration : IFemSolver
         var initApprox = new double[mesh.Nodes.Length];
 
         var relaxRatio = accuracy.RelaxRatio;
-        var slae = new Elliptic1DLinearBasisFNonLinear();
+        var slae = new Slae.OneDim.EllipticLinearBasisFNonLinear();
 
         do
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
 
             slae = withLinearization
-                ? new Elliptic1DLinearBasisFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix,
+                ? new Slae.OneDim.EllipticLinearBasisFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator,
+                    _matrix,
                     _derivative)
-                : new Elliptic1DLinearBasisFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix);
+                : new Slae.OneDim.EllipticLinearBasisFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator,
+                    _matrix);
 
             ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
@@ -117,7 +119,7 @@ public class SimpleIteration : IFemSolver
         DataModels.InputFuncs inputFuncs,
         double[] prevResVec,
         DataModels.Accuracy accuracy,
-        DataModels.Areas.OneDim area,
+        DataModels.Area.OneDim area,
         DataModels.Conditions.Boundary.OneDim boundaryConditions
     )
     {
@@ -191,7 +193,7 @@ public class SimpleIteration : IFemSolver
         DataModels.InputFuncs inputFuncs,
         double x,
         double[] prevResVec,
-        DataModels.Areas.OneDim area,
+        DataModels.Area.OneDim area,
         DataModels.Conditions.Boundary.OneDim boundaryConditions
     )
     {
@@ -202,7 +204,7 @@ public class SimpleIteration : IFemSolver
             approx[i] = x * resVec[i] + (1.0 - x) * prevResVec[i];
         }
 
-        var slae = new Elliptic1DLinearBasisFNonLinear(
+        var slae = new Slae.OneDim.EllipticLinearBasisFNonLinear(
             cartesian1DMesh,
             inputFuncs,
             approx,
@@ -233,7 +235,7 @@ public class SimpleIteration : IFemSolver
     private static void ApplyBoundaryConditions(
         IMatrix m,
         double[] rhs,
-        DataModels.Areas.OneDim area,
+        DataModels.Area.OneDim area,
         DataModels.Conditions.Boundary.OneDim boundaryConditions
     )
     {

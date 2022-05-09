@@ -9,7 +9,7 @@ public class MeshTests
     public void MeshCtor_WhenPassUniformRatio_ShouldReturnUniformGrid()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             AmountPoints = 5,
             DischargeRatio = 1.0,
@@ -33,7 +33,7 @@ public class MeshTests
     public void MeshCtor_WhenPassNonUniformRatio_ShouldReturnNonUniformGrid()
     {
         // Arrange
-        var area = new DataModels.Areas.OneDim
+        var area = new DataModels.Area.OneDim
         {
             AmountPoints = 3,
             DischargeRatio = 0.5,

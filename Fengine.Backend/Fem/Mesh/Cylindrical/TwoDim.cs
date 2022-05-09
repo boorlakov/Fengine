@@ -2,7 +2,7 @@ namespace Fengine.Backend.Fem.Mesh.Cylindrical;
 
 public class TwoDim : IMesh
 {
-    public TwoDim(DataModels.Areas.TwoDim area)
+    public TwoDim(DataModels.Area.TwoDim area)
     {
         var nodes = new IMesh.Node[area.AmountPointsR * area.AmountPointsZ];
 

@@ -9,7 +9,7 @@ public class OneDim : IMesh
     ///     Cartesian1D constructor. Can be uniform or non-uniform due to given discharge ratio
     /// </summary>
     /// <param name="area">Given area settings</param>
-    public OneDim(DataModels.Areas.OneDim area)
+    public OneDim(DataModels.Area.OneDim area)
     {
         var nodes = new IMesh.Node[area.AmountPoints];
 
