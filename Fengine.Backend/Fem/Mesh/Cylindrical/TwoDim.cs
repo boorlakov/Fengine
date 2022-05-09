@@ -42,7 +42,7 @@ public class TwoDim : IMesh
             for (var i = 1; i < area.AmountPointsR; i++)
             {
                 nodes[i].Coordinates[Axis.R] = area.LeftBorder + i * stepR;
-                nodes[i].Coordinates[Axis.Z] = area.LowerBorder + i * stepR;
+                nodes[i].Coordinates[Axis.Z] = area.LowerBorder + i * stepZ;
             }
         }
 
