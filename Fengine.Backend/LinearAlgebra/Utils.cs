@@ -1,9 +1,29 @@
-using Fengine.Backend.LinearAlgebra.Matrix;
-
 namespace Fengine.Backend.LinearAlgebra;
 
 public static class Utils
 {
+    public static Matrix.IMatrix Copying(Matrix.IMatrix m)
+    {
+        var ggl = new double[m.Data["ggl"].Length];
+        m.Data["ggl"].AsSpan().CopyTo(ggl);
+
+        var ggu = new double[m.Data["ggu"].Length];
+        m.Data["ggu"].AsSpan().CopyTo(ggu);
+
+        var di = new double[m.Data["di"].Length];
+        m.Data["di"].AsSpan().CopyTo(di);
+
+        var ig = new int[m.Profile["ig"].Length];
+        m.Profile["ig"].AsSpan().CopyTo(ig);
+
+        var jg = new int[m.Profile["jg"].Length];
+        m.Profile["jg"].AsSpan().CopyTo(jg);
+
+        var decomposed = m.Decomposed;
+
+        return new Matrix.Sparse(ggl, ggu, di, ig, jg, decomposed);
+    }
+
     /// <summary>
     ///     Checks if iteration method is stagnating or not
     /// </summary>
@@ -30,7 +50,7 @@ public static class Utils
     /// <param name="x">Given approximation. x part in slae</param>
     /// <param name="f">RightType part (f) of the slae</param>
     /// <returns>Relative residual value</returns>
-    public static double RelResidual(IMatrix m, double[] x, double[] f)
+    public static double RelResidual(Matrix.IMatrix m, double[] x, double[] f)
     {
         var diff = new double[f.Length];
 

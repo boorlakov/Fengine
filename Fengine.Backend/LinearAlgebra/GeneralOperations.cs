@@ -1,3 +1,4 @@
+using System.Data;
 using Fengine.Backend.LinearAlgebra.Matrix;
 
 namespace Fengine.Backend.LinearAlgebra;
@@ -66,6 +67,31 @@ public static class GeneralOperations
         if (i > 0 && i <= m.Size - 1)
         {
             res += m.Data["lower"][i - 1] * vec[i - 1];
+        }
+
+        return res;
+    }
+
+    /// <summary>
+    /// Dot product of given vectors
+    /// </summary>
+    /// <param name="lhs">left hand side vector, represented as double array</param>
+    /// <param name="rhs">right hand side vector, represented as double array</param>
+    /// <returns>Result of dot product</returns>
+    /// <exception cref="EvaluateException">If lengths of given arrays are not equal</exception>
+    public static double Dot(double[] lhs, double[] rhs)
+    {
+        if (lhs.Length != rhs.Length)
+        {
+            throw new EvaluateException(
+                $"[ERR] Vectors have different sizes. lhsLen = {lhs.Length}, rhsLen = {rhs.Length}");
+        }
+
+        var res = 0.0;
+
+        for (var i = 0; i < lhs.Length; i++)
+        {
+            res += lhs[i] * rhs[i];
         }
 
         return res;
