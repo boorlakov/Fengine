@@ -1,6 +1,4 @@
 using System;
-using Fengine.Backend.LinearAlgebra.Matrix;
-using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
@@ -11,10 +9,10 @@ public class SlaeTests
     [SetUp]
     public void SetUp()
     {
-        _gaussSeidel = new GaussSeidel();
+        _gaussSeidel = new LinearAlgebra.SlaeSolver.GaussSeidel();
         _integrator = new Integration.GaussFourPoints();
     }
-    private GaussSeidel _gaussSeidel;
+    private LinearAlgebra.SlaeSolver.GaussSeidel _gaussSeidel;
     private Integration.IIntegrator _integrator;
 
     [Test]
@@ -25,10 +23,10 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 0.0};
 
-        var matrix = new ThreeDiagonal(upper, center, lower);
+        var matrix = new LinearAlgebra.Matrix.ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {4.0, 6.0, 8.0};
-        var slae = new Fem.Slae.OneDim.EllipticLinearBasisFNonLinear(matrix, vec, _gaussSeidel, _integrator);
+        var slae = new Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear(matrix, vec, _gaussSeidel, _integrator);
         var expected = new[] {2.0, 3.0, 4.0};
         var accuracy = new DataModels.Accuracy
         {
@@ -57,7 +55,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 2.0};
 
-        var matrix = new ThreeDiagonal(upper, center, lower);
+        var matrix = new LinearAlgebra.Matrix.ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {3.0, 2.0, 4.0};
         var accuracy = new DataModels.Accuracy
@@ -66,7 +64,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Fem.Slae.OneDim.EllipticLinearBasisFNonLinear(matrix, vec, _gaussSeidel, _integrator);
+        var slae = new Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear(matrix, vec, _gaussSeidel, _integrator);
         var expected = new[] {1.0, 1.0, 1.0};
 
         // Act
@@ -89,7 +87,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new ThreeDiagonal(upper, center, lower);
+        var matrix = new LinearAlgebra.Matrix.ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 
@@ -99,7 +97,7 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Fem.Slae.OneDim.EllipticLinearBasisFNonLinear(matrix, vec, _gaussSeidel, _integrator);
+        var slae = new Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear(matrix, vec, _gaussSeidel, _integrator);
         var expected = new[] {1.0, 1.0, 1.0};
 
         // Act
@@ -115,14 +113,14 @@ public class SlaeTests
     }
 
     [Test]
-    public void RelResigual()
+    public void RelativeResidual()
     {
         // Arrange
         var upper = new[] {1.0, 1.0};
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new ThreeDiagonal(upper, center, lower);
+        var matrix = new LinearAlgebra.Matrix.ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 
@@ -132,12 +130,12 @@ public class SlaeTests
             Eps = 1.0e-7,
             Delta = 1.0e-7
         };
-        var slae = new Fem.Slae.OneDim.EllipticLinearBasisFNonLinear(matrix, vec, _gaussSeidel, _integrator);
+        var slae = new Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear(matrix, vec, _gaussSeidel, _integrator);
         var expected = 1.0e-5;
 
         // Act
         slae.Solve(accuracy);
-        var result = LinearAlgebra.Utils.RelResidual(slae);
+        var result = LinearAlgebra.Utils.RelativeResidual(slae);
 
         // Assert
         Assert.AreEqual(result, expected, 1.0e-5);

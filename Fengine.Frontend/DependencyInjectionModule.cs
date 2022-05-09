@@ -15,6 +15,6 @@ public static class DependencyInjectionModule
             .AddTransient<Backend.Integration.IIntegrator, Backend.Integration.GaussFourPoints>()
             .AddTransient<Backend.Fem.Mesh.IMesh, Backend.Fem.Mesh.Cartesian.OneDim>()
             .AddTransient<Backend.LinearAlgebra.SlaeSolver.ISlaeSolver, Backend.LinearAlgebra.SlaeSolver.GaussSeidel>()
-            .AddTransient<Backend.Fem.Slae.ISlae, Backend.Fem.Slae.OneDim.EllipticLinearBasisFNonLinear>();
+            .AddTransient<Backend.Fem.Slae.ISlae, Backend.Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear>();
     }
 }

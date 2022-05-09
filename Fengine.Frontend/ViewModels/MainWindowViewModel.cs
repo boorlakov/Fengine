@@ -30,7 +30,7 @@ public class MainWindowViewModel : ViewModelBase
         var slaeSolver = new GaussSeidel();
         var integrator = new Backend.Integration.GaussFourPoints();
         var matrixType = new ThreeDiagonal();
-        var slaeType = new Backend.Fem.Slae.OneDim.EllipticLinearBasisFNonLinear();
+        var slaeType = new Backend.Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear();
         var differentiatorType = new Backend.Differentiation.TwoPoints();
 
         _femSolver =

@@ -12,7 +12,7 @@ public class FemSolverTests
         var slaeSolver = new LinearAlgebra.SlaeSolver.GaussSeidel();
         var integrator = new Integration.GaussFourPoints();
         var matrixType = new LinearAlgebra.Matrix.ThreeDiagonal();
-        var slaeType = new Fem.Slae.OneDim.EllipticLinearBasisFNonLinear();
+        var slaeType = new Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear();
         var differentiatorType = new Differentiation.TwoPoints();
 
         _simpleIteration = new Fem.Solver.SimpleIteration(

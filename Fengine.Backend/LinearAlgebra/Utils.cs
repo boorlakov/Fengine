@@ -50,7 +50,7 @@ public static class Utils
     /// <param name="x">Given approximation. x part in slae</param>
     /// <param name="f">RightType part (f) of the slae</param>
     /// <returns>Relative residual value</returns>
-    public static double RelResidual(Matrix.IMatrix m, double[] x, double[] f)
+    public static double RelativeResidual(Matrix.IMatrix m, double[] x, double[] f)
     {
         var diff = new double[f.Length];
 
@@ -69,7 +69,7 @@ public static class Utils
     /// </summary>
     /// <param name="slae">Given slae</param>
     /// <returns>Relative residual value</returns>
-    public static double RelResidual(Fem.Slae.OneDim.EllipticLinearBasisFNonLinear slae)
+    public static double RelativeResidual(Fem.Slae.NonlinearTask.Elliptic.OneDim.Linear slae)
     {
         var diff = new double[slae.RhsVec.Length];
 

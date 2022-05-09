@@ -1,21 +1,18 @@
 using Fengine.Backend.DataModels;
 using Fengine.Backend.Differentiation;
-using Fengine.Backend.Fem.Basis;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinearAlgebra.Matrix;
 using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Sprache.Calc;
 
-namespace Fengine.Backend.Fem.Slae.OneDim;
+namespace Fengine.Backend.Fem.Slae.NonlinearTask.Elliptic.OneDim;
 
-public class EllipticLinearBasisFNonLinear : ISlae
+public class Linear : ISlae
 {
     private readonly IIntegrator _integrator;
     private readonly ISlaeSolver _slaeSolver;
     private readonly IDerivative? _derivative;
-
-    private readonly bool _withLinearization;
 
     public IMatrix Matrix { get; set; }
     public IMatrix NonLinearMatrix { get; set; }
@@ -25,7 +22,7 @@ public class EllipticLinearBasisFNonLinear : ISlae
 
     public double[] ResVec { get; set; }
 
-    public EllipticLinearBasisFNonLinear()
+    public Linear()
     {
         Matrix = null!;
         ResVec = null!;
@@ -35,9 +32,9 @@ public class EllipticLinearBasisFNonLinear : ISlae
         _derivative = null!;
     }
 
-    public EllipticLinearBasisFNonLinear
+    public Linear
     (
-        IMesh mesh,
+        Mesh.Cartesian.OneDim mesh,
         InputFuncs inputFuncs,
         double[] initApprox,
         ISlaeSolver slaeSolver,
@@ -51,7 +48,7 @@ public class EllipticLinearBasisFNonLinear : ISlae
         Matrix = matrix;
 
         _derivative = derivative;
-        _withLinearization = _derivative is not null;
+        var withLinearization = _derivative is not null;
 
         ResVec = new double[mesh.Nodes.Length];
         initApprox.AsSpan().CopyTo(ResVec);
@@ -82,7 +79,7 @@ public class EllipticLinearBasisFNonLinear : ISlae
         NonLinearRhsVec = new double[RhsVec.Length];
         RhsVec.AsSpan().CopyTo(NonLinearRhsVec);
 
-        if (_withLinearization)
+        if (withLinearization)
         {
             Linearize(mesh, localStiffness, localMass, evalRhsFunc, upper, center, lower);
         }
@@ -92,7 +89,7 @@ public class EllipticLinearBasisFNonLinear : ISlae
 
     private void Linearize
     (
-        IMesh mesh,
+        Mesh.Cartesian.OneDim mesh,
         double[][][] localStiffness, double[][][] localMass,
         Func<Dictionary<string, double>, double> evalRhsFunc,
         double[] upper, double[] center, double[] lower
@@ -199,8 +196,8 @@ public class EllipticLinearBasisFNonLinear : ISlae
         RhsVec[i + 1] += step * (evalRhsFunc(point) * localMass[2][1][0] + evalRhsFunc(nextPoint) * localMass[2][1][1]);
     }
 
-    public EllipticLinearBasisFNonLinear(
-        ThreeDiagonal matrix,
+    public Linear(
+        IMatrix matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,
         IIntegrator integrator,
@@ -229,8 +226,8 @@ public class EllipticLinearBasisFNonLinear : ISlae
 
         var integralValues = new[]
         {
-            _integrator.Integrate1D(mesh, LinearBasis.Func[0]),
-            _integrator.Integrate1D(mesh, LinearBasis.Func[1])
+            _integrator.Integrate1D(mesh, Basis.LinearBasis.Func[0]),
+            _integrator.Integrate1D(mesh, Basis.LinearBasis.Func[1])
         };
 
         for (var i = 0; i < 2; i++)
@@ -268,17 +265,17 @@ public class EllipticLinearBasisFNonLinear : ISlae
         var integralValues = new[]
         {
             _integrator.Integrate1D(mesh,
-                x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
+                x => Basis.LinearBasis.Func[0](x) * Basis.LinearBasis.Func[0](x) * Basis.LinearBasis.Func[0](x)),
             _integrator.Integrate1D(mesh,
-                x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
+                x => Basis.LinearBasis.Func[0](x) * Basis.LinearBasis.Func[0](x) * Basis.LinearBasis.Func[1](x)),
             _integrator.Integrate1D(mesh,
-                x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
+                x => Basis.LinearBasis.Func[0](x) * Basis.LinearBasis.Func[1](x) * Basis.LinearBasis.Func[1](x)),
             _integrator.Integrate1D(mesh,
-                x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x) * LinearBasis.Func[1](x)),
+                x => Basis.LinearBasis.Func[1](x) * Basis.LinearBasis.Func[1](x) * Basis.LinearBasis.Func[1](x)),
 
-            _integrator.Integrate1D(mesh, x => LinearBasis.Func[0](x) * LinearBasis.Func[0](x)),
-            _integrator.Integrate1D(mesh, x => LinearBasis.Func[0](x) * LinearBasis.Func[1](x)),
-            _integrator.Integrate1D(mesh, x => LinearBasis.Func[1](x) * LinearBasis.Func[1](x))
+            _integrator.Integrate1D(mesh, x => Basis.LinearBasis.Func[0](x) * Basis.LinearBasis.Func[0](x)),
+            _integrator.Integrate1D(mesh, x => Basis.LinearBasis.Func[0](x) * Basis.LinearBasis.Func[1](x)),
+            _integrator.Integrate1D(mesh, x => Basis.LinearBasis.Func[1](x) * Basis.LinearBasis.Func[1](x))
         };
 
         for (var i = 0; i < 2; i++)

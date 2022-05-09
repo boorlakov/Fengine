@@ -18,7 +18,7 @@ public class GaussSeidel : ISlaeSolver
     public double[] Solve(ISlae slae, Accuracy accuracy)
     {
         slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.7, slae.RhsVec);
-        var residual = Utils.RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
+        var residual = Utils.RelativeResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
         var iter = 1;
         var prevResVec = new double[slae.ResVec.Length];
 
@@ -27,7 +27,7 @@ public class GaussSeidel : ISlaeSolver
         {
             slae.ResVec.AsSpan().CopyTo(prevResVec);
             slae.ResVec = Iterate(slae.ResVec, slae.Matrix, 1.0, slae.RhsVec);
-            residual = Utils.RelResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
+            residual = Utils.RelativeResidual(slae.Matrix, slae.ResVec, slae.RhsVec);
             iter++;
         }
 
