@@ -1,5 +1,4 @@
 using System;
-using Fengine.Backend.DataModels.Conditions.Boundary;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
@@ -57,7 +56,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -73,7 +72,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -114,7 +113,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "Third",
             LeftFunc = "0",
@@ -131,7 +130,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -172,7 +171,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -189,7 +188,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -230,7 +229,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "Second",
             LeftFunc = "-1",
@@ -246,7 +245,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -287,7 +286,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -303,7 +302,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -343,7 +342,7 @@ public class FemSolverTests
             UStar = "Sin(x)"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "0",
@@ -359,7 +358,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new double[11];
 
@@ -408,7 +407,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -424,7 +423,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -464,7 +463,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -480,7 +479,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -520,7 +519,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -537,7 +536,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -578,7 +577,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "Third",
             LeftFunc = "0",
@@ -595,7 +594,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -636,7 +635,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -653,7 +652,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -694,7 +693,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "Second",
             LeftFunc = "-1",
@@ -710,7 +709,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -751,7 +750,7 @@ public class FemSolverTests
             UStar = "x+2"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "2",
@@ -767,7 +766,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new[] {2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0};
 
@@ -807,7 +806,7 @@ public class FemSolverTests
             UStar = "Sin(x)"
         };
 
-        var boundaryConditions = new OneDim
+        var boundaryConditions = new DataModels.Conditions.Boundary.OneDim
         {
             Left = "First",
             LeftFunc = "0",
@@ -823,7 +822,7 @@ public class FemSolverTests
             RelaxRatio = 0.52
         };
 
-        var grid = new Fem.Mesh.Cartesian1D(area);
+        var grid = new Fem.Mesh.Cartesian.OneDim(area);
 
         var expected = new double[11];
 

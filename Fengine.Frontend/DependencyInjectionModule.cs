@@ -1,11 +1,3 @@
-using Fengine.Backend.DataModels;
-using Fengine.Backend.DataModels.Conditions.Boundary;
-using Fengine.Backend.Fem.Mesh;
-using Fengine.Backend.Fem.Slae;
-using Fengine.Backend.Fem.Solver;
-using Fengine.Backend.Integration;
-using Fengine.Backend.LinearAlgebra.Matrix;
-using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fengine.Frontend;
@@ -15,23 +7,23 @@ public static class DependencyInjectionModule
     public static IServiceCollection ConfigureServices()
     {
         return new ServiceCollection()
-            .AddTransient<Accuracy>()
+            .AddTransient<Backend.DataModels.Accuracy>()
             .AddTransient<Backend.DataModels.Areas.OneDim>()
-            .AddTransient<OneDim>()
-            .AddTransient<InputFuncs>()
-            .AddTransient<IMatrix, ThreeDiagonal>()
-            .AddTransient<IIntegrator, GaussFourPoints>()
-            .AddTransient<IMesh, Cartesian1D>()
-            .AddTransient<ISlaeSolver, GaussSeidel>()
-            .AddTransient<ISlae, Elliptic1DLinearBasisFNonLinear>()
-            .AddTransient<IFemSolver, SimpleIteration>
+            .AddTransient<Backend.DataModels.Conditions.Boundary.OneDim>()
+            .AddTransient<Backend.DataModels.InputFuncs>()
+            .AddTransient<Backend.LinearAlgebra.Matrix.IMatrix, Backend.LinearAlgebra.Matrix.ThreeDiagonal>()
+            .AddTransient<Backend.Integration.IIntegrator, Backend.Integration.GaussFourPoints>()
+            .AddTransient<Backend.Fem.Mesh.IMesh, Backend.Fem.Mesh.Cartesian.OneDim>()
+            .AddTransient<Backend.LinearAlgebra.SlaeSolver.ISlaeSolver, Backend.LinearAlgebra.SlaeSolver.GaussSeidel>()
+            .AddTransient<Backend.Fem.Slae.ISlae, Backend.Fem.Slae.Elliptic1DLinearBasisFNonLinear>()
+            .AddTransient<Backend.Fem.Solver.IFemSolver, Backend.Fem.Solver.SimpleIteration>
             (
-                x => new SimpleIteration
+                x => new Backend.Fem.Solver.SimpleIteration
                 (
-                    x.GetRequiredService<ISlaeSolver>(),
-                    x.GetRequiredService<IIntegrator>(),
-                    x.GetRequiredService<IMatrix>(),
-                    x.GetRequiredService<ISlae>()
+                    x.GetRequiredService<Backend.LinearAlgebra.SlaeSolver.ISlaeSolver>(),
+                    x.GetRequiredService<Backend.Integration.IIntegrator>(),
+                    x.GetRequiredService<Backend.LinearAlgebra.Matrix.IMatrix>(),
+                    x.GetRequiredService<Backend.Fem.Slae.ISlae>()
                 )
             );
     }

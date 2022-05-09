@@ -1,4 +1,3 @@
-using Fengine.Backend.DataModels.Areas;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
@@ -10,7 +9,7 @@ public class MeshTests
     public void MeshCtor_WhenPassUniformRatio_ShouldReturnUniformGrid()
     {
         // Arrange
-        var area = new OneDim
+        var area = new DataModels.Areas.OneDim
         {
             AmountPoints = 5,
             DischargeRatio = 1.0,
@@ -21,7 +20,7 @@ public class MeshTests
         var expected = new[] {0.0, 1.0, 2.0, 3.0, 4.0};
 
         // Act
-        var result = new Fem.Mesh.Cartesian1D(area);
+        var result = new Fem.Mesh.Cartesian.OneDim(area);
 
         // Assert
         for (var i = 0; i < expected.Length; i++)
@@ -34,7 +33,7 @@ public class MeshTests
     public void MeshCtor_WhenPassNonUniformRatio_ShouldReturnNonUniformGrid()
     {
         // Arrange
-        var area = new OneDim
+        var area = new DataModels.Areas.OneDim
         {
             AmountPoints = 3,
             DischargeRatio = 0.5,
@@ -45,7 +44,7 @@ public class MeshTests
         var expected = new[] {0.0, 2.0, 3.0};
 
         // Act
-        var result = new Fem.Mesh.Cartesian1D(area);
+        var result = new Fem.Mesh.Cartesian.OneDim(area);
 
         // Assert
         for (var i = 0; i < expected.Length; i++)

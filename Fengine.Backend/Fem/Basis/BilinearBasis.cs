@@ -1,6 +1,6 @@
 namespace Fengine.Backend.Fem.Basis;
 
-public class BilinearBasis : IBasis
+sealed class BilinearBasis : IBasis
 {
     public static readonly Func<double, double, double>[] Func =
     {

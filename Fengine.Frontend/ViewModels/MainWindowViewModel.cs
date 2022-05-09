@@ -66,7 +66,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public void Solve(Dispatcher dispatcher)
     {
-        var mesh = new Backend.Fem.Mesh.Cartesian1D(Area);
+        var mesh = new Backend.Fem.Mesh.Cartesian.OneDim(Area);
 
         var res = _femSolver.Solve(
             mesh,

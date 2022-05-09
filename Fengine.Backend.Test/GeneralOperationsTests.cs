@@ -1,6 +1,4 @@
 using System;
-using Fengine.Backend.LinearAlgebra;
-using Fengine.Backend.LinearAlgebra.Matrix;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
@@ -16,7 +14,7 @@ public class GeneralOperationsTests
         var expected = Math.Sqrt(14.0);
 
         // Act
-        var result = GeneralOperations.Norm(vec);
+        var result = LinearAlgebra.GeneralOperations.Norm(vec);
 
         // Assert
         Assert.AreEqual(result, expected, 1.0e-7);
@@ -30,7 +28,7 @@ public class GeneralOperationsTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {3.0, 3.0};
 
-        var matrix = new ThreeDiagonal(upper, center, lower);
+        var matrix = new LinearAlgebra.Matrix.ThreeDiagonal(upper, center, lower);
 
         const int i = 1;
         var vec = new[] {1.0, 1.0, 1.0};
@@ -38,7 +36,7 @@ public class GeneralOperationsTests
         const double expected = 6.0;
 
         // Act
-        var result = GeneralOperations.Dot(i, matrix, vec);
+        var result = LinearAlgebra.GeneralOperations.Dot(i, matrix, vec);
 
         // Assert
         Assert.AreEqual(result, expected, 1.0e-7);
@@ -52,14 +50,14 @@ public class GeneralOperationsTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {3.0, 3.0};
 
-        var matrix = new ThreeDiagonal(upper, center, lower);
+        var matrix = new LinearAlgebra.Matrix.ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {1.0, 1.0, 1.0};
 
         var expected = new[] {3.0, 6.0, 5.0};
 
         // Act
-        var result = GeneralOperations.MatMul(matrix, vec);
+        var result = LinearAlgebra.GeneralOperations.MatMul(matrix, vec);
 
         // Assert
         for (var i = 0; i < expected.Length; i++)
