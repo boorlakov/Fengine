@@ -37,7 +37,7 @@ public class TwoDim : IMesh
         {
             // Uniform case
             var stepR = (area.RightBorder - area.LeftBorder) / (area.AmountPointsR - 1);
-            var stepZ = (area.UpperBorder - area.LowerBorder) / (area.AmountPointsR - 1);
+            var stepZ = (area.UpperBorder - area.LowerBorder) / (area.AmountPointsZ - 1);
 
             for (var i = 1; i < area.AmountPointsR; i++)
             {
