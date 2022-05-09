@@ -1,5 +1,3 @@
-using Fengine.Backend.LinearAlgebra.Matrix;
-
 namespace Fengine.Backend.LinearAlgebra.SlaeSolver;
 
 public class LocalOptimalScheme : ISlaeSolver
@@ -15,7 +13,7 @@ public class LocalOptimalScheme : ISlaeSolver
             throw new ArgumentException("Matrix must be not decomposed");
         }
 
-        var precondMatrix = new Sparse(slae.Matrix);
+        var precondMatrix = new Matrix.Sparse(slae.Matrix);
         precondMatrix.Factorize();
 
         var x = new double[slae.RhsVec.Length];
@@ -104,7 +102,7 @@ public class LocalOptimalScheme : ISlaeSolver
     /// <param name="b"> RHS vector </param>
     /// <returns> Solution for lower triangular part of matrix A</returns>
     /// <exception cref="Matrix.Exception.NotDecomposedException"> Required decomposed matrix </exception>
-    private static double[] ForwardLUsq(IMatrix l, double[] b)
+    private static double[] ForwardLUsq(Matrix.IMatrix l, double[] b)
     {
         if (!l.Decomposed)
         {
@@ -137,7 +135,7 @@ public class LocalOptimalScheme : ISlaeSolver
     /// <param name="y"> RHS vector </param>
     /// <returns> Solution for upper triangular part of matrix A</returns>
     /// <exception cref="Matrix.Exception.NotDecomposedException"> Required decomposed matrix </exception>
-    private static double[] BackwardLUsq(IMatrix u, double[] y)
+    private static double[] BackwardLUsq(Matrix.IMatrix u, double[] y)
     {
         if (!u.Decomposed)
         {
