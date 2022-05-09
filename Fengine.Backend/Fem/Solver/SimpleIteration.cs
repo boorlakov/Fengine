@@ -2,9 +2,9 @@ using Fengine.Backend.Differentiation;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Integration;
-using Fengine.Backend.LinAlg;
-using Fengine.Backend.LinAlg.Matrix;
-using Fengine.Backend.LinAlg.SlaeSolver;
+using Fengine.Backend.LinearAlgebra;
+using Fengine.Backend.LinearAlgebra.Matrix;
+using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Solver;
@@ -79,10 +79,11 @@ public class SimpleIteration : IFemSolver
 
             iter++;
 
-            Console.Write($"\r[INFO] RelRes = {LinAlg.Utils.RelResidual(slae):G10} | Iter: {iter}");
+            Console.Write($"\r[INFO] RelRes = {LinearAlgebra.Utils.RelResidual(slae):G10} | Iter: {iter}");
         } while (iter < accuracy.MaxIter &&
-                 LinAlg.Utils.RelResidual(slae.NonLinearMatrix, slae.ResVec, slae.NonLinearRhsVec) > accuracy.Eps &&
-                 !LinAlg.Utils.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
+                 LinearAlgebra.Utils.RelResidual(slae.NonLinearMatrix, slae.ResVec, slae.NonLinearRhsVec) >
+                 accuracy.Eps &&
+                 !LinearAlgebra.Utils.CheckIsStagnate(slae.ResVec, initApprox, accuracy.Delta));
 
         var funcCalc = new XtensibleCalculator();
         var uStar = funcCalc.ParseFunction(inputFuncs.UStar).Compile();
@@ -101,7 +102,7 @@ public class SimpleIteration : IFemSolver
         var stat = new Statistics
         {
             Iterations = iter,
-            Residual = LinAlg.Utils.RelResidual(slae.NonLinearMatrix, slae.ResVec, slae.NonLinearRhsVec),
+            Residual = LinearAlgebra.Utils.RelResidual(slae.NonLinearMatrix, slae.ResVec, slae.NonLinearRhsVec),
             Error = error,
             Values = slae.ResVec,
             RelaxRatio = relaxRatio
@@ -210,7 +211,7 @@ public class SimpleIteration : IFemSolver
             _matrix
         );
         ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
-        return LinAlg.Utils.RelResidual(slae.Matrix, approx, slae.RhsVec);
+        return LinearAlgebra.Utils.RelResidual(slae.Matrix, approx, slae.RhsVec);
     }
 
     private static double[] UpdateApprox(

@@ -3,7 +3,8 @@ using Fengine.Backend.Differentiation;
 using Fengine.Backend.Fem.Basis;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Integration;
-using Fengine.Backend.LinAlg.SlaeSolver;
+using Fengine.Backend.LinearAlgebra.Matrix;
+using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Slae;
@@ -16,8 +17,8 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
 
     private readonly bool _withLinearization;
 
-    public LinAlg.Matrix.IMatrix Matrix { get; set; }
-    public LinAlg.Matrix.IMatrix NonLinearMatrix { get; set; }
+    public IMatrix Matrix { get; set; }
+    public IMatrix NonLinearMatrix { get; set; }
 
     public double[] RhsVec { get; set; }
     public double[] NonLinearRhsVec { get; set; }
@@ -41,7 +42,7 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
         double[] initApprox,
         ISlaeSolver slaeSolver,
         IIntegrator integrator,
-        LinAlg.Matrix.IMatrix matrix,
+        IMatrix matrix,
         IDerivative? derivative = null
     )
     {
@@ -77,7 +78,7 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
             BuildRhs(i, step, mesh, evalRhsFunc, localMass);
         }
 
-        NonLinearMatrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+        NonLinearMatrix = new ThreeDiagonal(upper, center, lower);
         NonLinearRhsVec = new double[RhsVec.Length];
         RhsVec.AsSpan().CopyTo(NonLinearRhsVec);
 
@@ -86,7 +87,7 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
             Linearize(mesh, localStiffness, localMass, evalRhsFunc, upper, center, lower);
         }
 
-        Matrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+        Matrix = new ThreeDiagonal(upper, center, lower);
     }
 
     private void Linearize
@@ -199,7 +200,7 @@ public class Elliptic1DLinearBasisFNonLinear : ISlae
     }
 
     public Elliptic1DLinearBasisFNonLinear(
-        LinAlg.Matrix.IMatrix matrix,
+        IMatrix matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,
         IIntegrator integrator,

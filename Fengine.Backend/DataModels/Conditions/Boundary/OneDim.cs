@@ -3,7 +3,7 @@ namespace Fengine.Backend.DataModels.Conditions.Boundary;
 /// <summary>
 ///     Boundary condition setting class. Support all types of conditions
 /// </summary>
-public class OneDim
+public class OneDim : BoundaryConditions
 {
     /// <summary>
     ///     Boundary condition type on left border. Valid values is: "First", "Second", "Third"
@@ -24,9 +24,4 @@ public class OneDim
     ///     Boundary function on right border. Represented by string
     /// </summary>
     public string RightFunc { get; init; } = string.Empty;
-
-    /// <summary>
-    ///     Parameter for third boundary condition
-    /// </summary>
-    public double Beta { get; init; }
 }

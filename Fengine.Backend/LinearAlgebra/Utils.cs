@@ -1,7 +1,7 @@
 using Fengine.Backend.Fem.Slae;
-using Fengine.Backend.LinAlg.Matrix;
+using Fengine.Backend.LinearAlgebra.Matrix;
 
-namespace Fengine.Backend.LinAlg;
+namespace Fengine.Backend.LinearAlgebra;
 
 public static class Utils
 {
@@ -29,7 +29,7 @@ public static class Utils
     /// </summary>
     /// <param name="m">Given weights. A part in slae</param>
     /// <param name="x">Given approximation. x part in slae</param>
-    /// <param name="f">Right part (f) of the slae</param>
+    /// <param name="f">RightType part (f) of the slae</param>
     /// <returns>Relative residual value</returns>
     public static double RelResidual(IMatrix m, double[] x, double[] f)
     {

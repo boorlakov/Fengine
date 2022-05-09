@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Threading;
 using Fengine.Backend.Fem.Mesh;
+using Fengine.Backend.LinearAlgebra.Matrix;
+using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Sprache.Calc;
@@ -25,11 +27,11 @@ public class MainWindowViewModel : ViewModelBase
             .ConfigureServices()
             .BuildServiceProvider();
 
-        var slaeSolver = new Backend.LinAlg.SlaeSolver.GaussSeidel();
-        var integrator = new Backend.Integration.Gauss4Points();
-        var matrixType = new Backend.LinAlg.Matrix.ThreeDiagonal();
+        var slaeSolver = new GaussSeidel();
+        var integrator = new Backend.Integration.GaussFourPoints();
+        var matrixType = new ThreeDiagonal();
         var slaeType = new Backend.Fem.Slae.Elliptic1DLinearBasisFNonLinear();
-        var differentiatorType = new Backend.Differentiation.TwoPoint();
+        var differentiatorType = new Backend.Differentiation.TwoPoints();
 
         _femSolver =
             new Backend.Fem.Solver.SimpleIteration(slaeSolver, integrator, matrixType, slaeType, differentiatorType);

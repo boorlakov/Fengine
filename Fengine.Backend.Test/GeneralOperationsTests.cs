@@ -1,6 +1,6 @@
 using System;
-using Fengine.Backend.LinAlg;
-using Fengine.Backend.LinAlg.Matrix;
+using Fengine.Backend.LinearAlgebra;
+using Fengine.Backend.LinearAlgebra.Matrix;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;

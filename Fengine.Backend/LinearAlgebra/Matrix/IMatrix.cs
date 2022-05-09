@@ -1,4 +1,4 @@
-namespace Fengine.Backend.LinAlg.Matrix;
+namespace Fengine.Backend.LinearAlgebra.Matrix;
 
 public interface IMatrix
 {

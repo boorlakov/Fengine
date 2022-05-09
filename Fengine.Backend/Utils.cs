@@ -44,8 +44,8 @@ public static class Utils
     /// <summary>
     ///     Makes 1D grid with 11 points in it
     /// </summary>
-    /// <param name="leftBorder">Left border point</param>
-    /// <param name="rightBorder">Right border point</param>
+    /// <param name="leftBorder">LeftType border point</param>
+    /// <param name="rightBorder">RightType border point</param>
     /// <returns>integrationGrid from leftBorder to rightBorder with 11 points in it</returns>
     public static double[] Create1DIntegrationMesh(double leftBorder, double rightBorder)
     {

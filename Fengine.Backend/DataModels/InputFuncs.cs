@@ -19,7 +19,7 @@ public class InputFuncs
     public string Gamma { get; init; } = string.Empty;
 
     /// <summary>
-    ///     Right side of differential equation, named f
+    ///     RightType side of differential equation, named f
     ///     -div(\lambda * grad(u)) + \gamma * u = f. Represented by string
     /// </summary>
     public string RhsFunc { get; init; } = string.Empty;

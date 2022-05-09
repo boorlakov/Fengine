@@ -4,7 +4,7 @@ namespace Fengine.Backend.DataModels.Areas;
 ///     1D area description, that essential for constructing grid in solving process.
 ///     For example: [0.0, 1.0]. LeftBorder stands for 0.0, RightBorder for 1.0
 /// </summary>
-public class OneDim
+public class OneDim : Area
 {
     /// <summary>
     ///     Starting point of area
@@ -15,12 +15,6 @@ public class OneDim
     ///     Ending point of area
     /// </summary>
     public double RightBorder { get; init; }
-
-    /// <summary>
-    ///     Ratio for constructing non-uniform grid.
-    ///     If you want uniform grid set value to 1.0
-    /// </summary>
-    public double DischargeRatio { get; init; }
 
     /// <summary>
     ///     Amount of points in segment. Including starting point

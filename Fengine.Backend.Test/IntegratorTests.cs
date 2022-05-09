@@ -9,7 +9,7 @@ public class IntegratorTests
     [SetUp]
     public void SetUp()
     {
-        _integrator = new Gauss4Points();
+        _integrator = new GaussFourPoints();
     }
 
     private IIntegrator _integrator;

@@ -1,6 +1,6 @@
-using Fengine.Backend.LinAlg.Matrix;
+using Fengine.Backend.LinearAlgebra.Matrix;
 
-namespace Fengine.Backend.LinAlg;
+namespace Fengine.Backend.LinearAlgebra;
 
 /// <summary>
 ///     Class, holding general operations in linear algebra

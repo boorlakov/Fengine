@@ -10,11 +10,11 @@ public class FemSolverTests
     [SetUp]
     public void SetUp()
     {
-        var slaeSolver = new LinAlg.SlaeSolver.GaussSeidel();
-        var integrator = new Integration.Gauss4Points();
-        var matrixType = new LinAlg.Matrix.ThreeDiagonal();
+        var slaeSolver = new LinearAlgebra.SlaeSolver.GaussSeidel();
+        var integrator = new Integration.GaussFourPoints();
+        var matrixType = new LinearAlgebra.Matrix.ThreeDiagonal();
         var slaeType = new Fem.Slae.Elliptic1DLinearBasisFNonLinear();
-        var differentiatorType = new Differentiation.TwoPoint();
+        var differentiatorType = new Differentiation.TwoPoints();
 
         _simpleIteration = new Fem.Solver.SimpleIteration(
             slaeSolver,

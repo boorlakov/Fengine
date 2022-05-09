@@ -4,8 +4,8 @@ using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Fem.Slae;
 using Fengine.Backend.Fem.Solver;
 using Fengine.Backend.Integration;
-using Fengine.Backend.LinAlg.Matrix;
-using Fengine.Backend.LinAlg.SlaeSolver;
+using Fengine.Backend.LinearAlgebra.Matrix;
+using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Fengine.Frontend;
@@ -20,7 +20,7 @@ public static class DependencyInjectionModule
             .AddTransient<OneDim>()
             .AddTransient<InputFuncs>()
             .AddTransient<IMatrix, ThreeDiagonal>()
-            .AddTransient<IIntegrator, Gauss4Points>()
+            .AddTransient<IIntegrator, GaussFourPoints>()
             .AddTransient<IMesh, Cartesian1D>()
             .AddTransient<ISlaeSolver, GaussSeidel>()
             .AddTransient<ISlae, Elliptic1DLinearBasisFNonLinear>()

@@ -1,4 +1,6 @@
 using System;
+using Fengine.Backend.LinearAlgebra.Matrix;
+using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
@@ -9,10 +11,10 @@ public class SlaeTests
     [SetUp]
     public void SetUp()
     {
-        _gaussSeidel = new LinAlg.SlaeSolver.GaussSeidel();
-        _integrator = new Integration.Gauss4Points();
+        _gaussSeidel = new GaussSeidel();
+        _integrator = new Integration.GaussFourPoints();
     }
-    private LinAlg.SlaeSolver.GaussSeidel _gaussSeidel;
+    private GaussSeidel _gaussSeidel;
     private Integration.IIntegrator _integrator;
 
     [Test]
@@ -23,7 +25,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 0.0};
 
-        var matrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+        var matrix = new ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {4.0, 6.0, 8.0};
         var slae = new Fem.Slae.Elliptic1DLinearBasisFNonLinear(matrix, vec, _gaussSeidel, _integrator);
@@ -55,7 +57,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {0.0, 2.0};
 
-        var matrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+        var matrix = new ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {3.0, 2.0, 4.0};
         var accuracy = new DataModels.Accuracy
@@ -87,7 +89,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+        var matrix = new ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 
@@ -120,7 +122,7 @@ public class SlaeTests
         var center = new[] {2.0, 2.0, 2.0};
         var lower = new[] {1.0, 1.0};
 
-        var matrix = new LinAlg.Matrix.ThreeDiagonal(upper, center, lower);
+        var matrix = new ThreeDiagonal(upper, center, lower);
 
         var vec = new[] {3.0, 4.0, 3.0};
 
@@ -135,7 +137,7 @@ public class SlaeTests
 
         // Act
         slae.Solve(accuracy);
-        var result = LinAlg.Utils.RelResidual(slae);
+        var result = LinearAlgebra.Utils.RelResidual(slae);
 
         // Assert
         Assert.AreEqual(result, expected, 1.0e-5);

@@ -1,8 +1,8 @@
 using Fengine.Backend.DataModels;
 using Fengine.Backend.Fem.Slae;
-using Fengine.Backend.LinAlg.Matrix;
+using Fengine.Backend.LinearAlgebra.Matrix;
 
-namespace Fengine.Backend.LinAlg.SlaeSolver;
+namespace Fengine.Backend.LinearAlgebra.SlaeSolver;
 
 /// <summary>
 ///     Class for holding methods of solving systems of linear equations
@@ -40,7 +40,7 @@ public class GaussSeidel : ISlaeSolver
     /// <param name="x">Given approximation. x part in slae</param>
     /// <param name="m">Given weights. A part in slae</param>
     /// <param name="w">Relaxation parameter</param>
-    /// <param name="f">Right part (f) of the slae</param>
+    /// <param name="f">RightType part (f) of the slae</param>
     /// <returns>New approximation x</returns>
     private static double[] Iterate(double[] x, IMatrix m, double w, double[] f)
     {

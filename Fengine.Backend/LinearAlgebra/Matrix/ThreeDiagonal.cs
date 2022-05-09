@@ -1,4 +1,4 @@
-namespace Fengine.Backend.LinAlg.Matrix;
+namespace Fengine.Backend.LinearAlgebra.Matrix;
 
 /// <summary>
 ///     Matrix class represented in 3-diagonal format

@@ -62,7 +62,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"
                     FontSize="18">
-                    Left border
+                    LeftType border
                 </Label>
                 <TextBox
                     Grid.Row="1" Grid.Column="1"
@@ -75,7 +75,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"
                     FontSize="18">
-                    Right border
+                    RightType border
                 </Label>
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
@@ -181,7 +181,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"
                     FontSize="18">
-                    Left border
+                    LeftType border
                 </Label>
                 <ComboBox
                     Grid.Row="1" Grid.Column="1"
@@ -194,7 +194,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"
                     FontSize="18">
-                    Left border func
+                    LeftType border func
                 </Label>
                 <TextBox
                     Grid.Row="2" Grid.Column="1"
@@ -207,7 +207,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"
                     FontSize="18">
-                    Right border
+                    RightType border
                 </Label>
                 <ComboBox
                     Grid.Row="3" Grid.Column="1"
@@ -220,7 +220,7 @@
                     HorizontalContentAlignment="Left"
                     VerticalContentAlignment="Center"
                     FontSize="18">
-                    Right border func
+                    RightType border func
                 </Label>
                 <TextBox
                     Grid.Row="4" Grid.Column="1"
