@@ -1,10 +1,10 @@
-namespace Fengine.Backend.DataModels;
+namespace Fengine.Backend.DataModels.Areas;
 
 /// <summary>
 ///     1D area description, that essential for constructing grid in solving process.
 ///     For example: [0.0, 1.0]. LeftBorder stands for 0.0, RightBorder for 1.0
 /// </summary>
-public class Area
+public class OneDim
 {
     /// <summary>
     ///     Starting point of area

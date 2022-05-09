@@ -1,9 +1,9 @@
-namespace Fengine.Backend.DataModels;
+namespace Fengine.Backend.DataModels.Conditions.Boundary;
 
 /// <summary>
 ///     Boundary condition setting class. Support all types of conditions
 /// </summary>
-public class BoundaryConditions
+public class OneDim
 {
     /// <summary>
     ///     Boundary condition type on left border. Valid values is: "First", "Second", "Third"

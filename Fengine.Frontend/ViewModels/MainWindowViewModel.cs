@@ -2,9 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Text;
 using Avalonia.Threading;
-using Fengine.Backend.DataModels;
 using Fengine.Backend.Fem.Mesh;
-using Fengine.Backend.Fem.Solver;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using Sprache.Calc;
@@ -13,7 +11,7 @@ namespace Fengine.Frontend.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private readonly SimpleIteration _simpleIteration;
+    private readonly Backend.Fem.Solver.SimpleIteration _femSolver;
 
     private string _result = string.Empty;
 
@@ -27,13 +25,19 @@ public class MainWindowViewModel : ViewModelBase
             .ConfigureServices()
             .BuildServiceProvider();
 
-        _simpleIteration = _serviceProvider.GetService<SimpleIteration>()
-                           ?? throw new InvalidOperationException();
+        var slaeSolver = new Backend.LinAlg.SlaeSolver.GaussSeidel();
+        var integrator = new Backend.Integration.Gauss4Points();
+        var matrixType = new Backend.LinAlg.Matrix.ThreeDiagonal();
+        var slaeType = new Backend.Fem.Slae.Elliptic1DLinearBasisFNonLinear();
+        var differentiatorType = new Backend.Differentiation.TwoPoint();
+
+        _femSolver =
+            new Backend.Fem.Solver.SimpleIteration(slaeSolver, integrator, matrixType, slaeType, differentiatorType);
     }
 
-    public Area Area { get; } = new();
+    public Backend.DataModels.Areas.OneDim Area { get; } = new();
 
-    public InputFuncs InputFuncs { get; } = new();
+    public Backend.DataModels.InputFuncs InputFuncs { get; } = new();
 
     public ObservableCollection<string> BoundaryConditionItems { get; } = new()
     {
@@ -42,9 +46,9 @@ public class MainWindowViewModel : ViewModelBase
         "Third"
     };
 
-    public BoundaryConditions BoundaryConditions { get; } = new();
+    public Backend.DataModels.Conditions.Boundary.OneDim BoundaryConditions { get; } = new();
 
-    public Accuracy Accuracy { get; } = new();
+    public Backend.DataModels.Accuracy Accuracy { get; } = new();
 
     public string Result
     {
@@ -60,9 +64,9 @@ public class MainWindowViewModel : ViewModelBase
 
     public void Solve(Dispatcher dispatcher)
     {
-        var mesh = new Cartesian1D(Area);
+        var mesh = new Backend.Fem.Mesh.Cartesian1D(Area);
 
-        var res = _simpleIteration.Solve(
+        var res = _femSolver.Solve(
             mesh,
             InputFuncs,
             Area,

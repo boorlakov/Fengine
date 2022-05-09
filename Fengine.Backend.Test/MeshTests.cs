@@ -1,3 +1,4 @@
+using Fengine.Backend.DataModels.Areas;
 using NUnit.Framework;
 
 namespace Fengine.Backend.Test;
@@ -9,7 +10,7 @@ public class MeshTests
     public void MeshCtor_WhenPassUniformRatio_ShouldReturnUniformGrid()
     {
         // Arrange
-        var area = new DataModels.Area
+        var area = new OneDim
         {
             AmountPoints = 5,
             DischargeRatio = 1.0,
@@ -33,7 +34,7 @@ public class MeshTests
     public void MeshCtor_WhenPassNonUniformRatio_ShouldReturnNonUniformGrid()
     {
         // Arrange
-        var area = new DataModels.Area
+        var area = new OneDim
         {
             AmountPoints = 3,
             DischargeRatio = 0.5,

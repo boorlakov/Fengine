@@ -8,13 +8,13 @@ using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Slae;
 
-public class Elliptic1DLinearFNonLinear : ISlae
+public class Elliptic1DLinearBasisFNonLinear : ISlae
 {
     private readonly IIntegrator _integrator;
     private readonly ISlaeSolver _slaeSolver;
     private readonly IDerivative? _derivative;
 
-    public bool WithLinearization { get; }
+    private readonly bool _withLinearization;
 
     public LinAlg.Matrix.IMatrix Matrix { get; set; }
     public LinAlg.Matrix.IMatrix NonLinearMatrix { get; set; }
@@ -24,7 +24,7 @@ public class Elliptic1DLinearFNonLinear : ISlae
 
     public double[] ResVec { get; set; }
 
-    public Elliptic1DLinearFNonLinear()
+    public Elliptic1DLinearBasisFNonLinear()
     {
         Matrix = null!;
         ResVec = null!;
@@ -34,7 +34,7 @@ public class Elliptic1DLinearFNonLinear : ISlae
         _derivative = null!;
     }
 
-    public Elliptic1DLinearFNonLinear
+    public Elliptic1DLinearBasisFNonLinear
     (
         IMesh mesh,
         InputFuncs inputFuncs,
@@ -42,21 +42,15 @@ public class Elliptic1DLinearFNonLinear : ISlae
         ISlaeSolver slaeSolver,
         IIntegrator integrator,
         LinAlg.Matrix.IMatrix matrix,
-        IDerivative? derivative = null,
-        bool withLinearization = false
+        IDerivative? derivative = null
     )
     {
         _slaeSolver = slaeSolver;
         _integrator = integrator;
         Matrix = matrix;
 
-        if (withLinearization && derivative is null)
-        {
-            throw new ArgumentException("No derivative service provided");
-        }
-
         _derivative = derivative;
-        WithLinearization = withLinearization;
+        _withLinearization = _derivative is not null;
 
         ResVec = new double[mesh.Nodes.Length];
         initApprox.AsSpan().CopyTo(ResVec);
@@ -87,7 +81,7 @@ public class Elliptic1DLinearFNonLinear : ISlae
         NonLinearRhsVec = new double[RhsVec.Length];
         RhsVec.AsSpan().CopyTo(NonLinearRhsVec);
 
-        if (WithLinearization)
+        if (_withLinearization)
         {
             Linearize(mesh, localStiffness, localMass, evalRhsFunc, upper, center, lower);
         }
@@ -137,7 +131,7 @@ public class Elliptic1DLinearFNonLinear : ISlae
                                   1e-7
                               );
 
-            locNewton[1][1] = step *
+            locNewton[1][1] = step * localMass[2][1][0] *
                               _derivative.FindFirst2DAt2Point
                               (
                                   evalRhsFunc,
@@ -204,7 +198,7 @@ public class Elliptic1DLinearFNonLinear : ISlae
         RhsVec[i + 1] += step * (evalRhsFunc(point) * localMass[2][1][0] + evalRhsFunc(nextPoint) * localMass[2][1][1]);
     }
 
-    public Elliptic1DLinearFNonLinear(
+    public Elliptic1DLinearBasisFNonLinear(
         LinAlg.Matrix.IMatrix matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,

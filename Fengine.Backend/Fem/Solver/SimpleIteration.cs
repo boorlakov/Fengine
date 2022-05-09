@@ -1,4 +1,3 @@
-using Fengine.Backend.DataModels;
 using Fengine.Backend.Differentiation;
 using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Fem.Slae;
@@ -37,35 +36,36 @@ public class SimpleIteration : IFemSolver
     public Statistics Solve
     (
         IMesh mesh,
-        InputFuncs inputFuncs,
-        Area area,
-        BoundaryConditions boundaryConditions,
-        Accuracy accuracy,
-        bool withLinearization = false
+        DataModels.InputFuncs inputFuncs,
+        DataModels.Areas.OneDim area,
+        DataModels.Conditions.Boundary.OneDim boundaryConditions,
+        DataModels.Accuracy accuracy
     )
     {
+        var withLinearization = _derivative is not null;
         var iter = 0;
-        var coef = 0.0;
         var initApprox = new double[mesh.Nodes.Length];
 
         var relaxRatio = accuracy.RelaxRatio;
-        var slae = new Elliptic1DLinearFNonLinear();
+        var slae = new Elliptic1DLinearBasisFNonLinear();
 
         do
         {
             slae.ResVec.AsSpan().CopyTo(initApprox);
 
             slae = withLinearization
-                ? new Elliptic1DLinearFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix,
-                    _derivative, true)
-                : new Elliptic1DLinearFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix);
+                ? new Elliptic1DLinearBasisFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix,
+                    _derivative)
+                : new Elliptic1DLinearBasisFNonLinear(mesh, inputFuncs, initApprox, _slaeSolver, _integrator, _matrix);
 
             ApplyBoundaryConditions(slae.Matrix, slae.RhsVec, area, boundaryConditions);
             slae.Solve(accuracy);
 
             if (accuracy.AutoRelax)
             {
-                relaxRatio = RelaxRatio(slae.ResVec,
+                relaxRatio = EvalRelaxRatio
+                (
+                    slae.ResVec,
                     mesh,
                     inputFuncs,
                     initApprox,
@@ -75,8 +75,8 @@ public class SimpleIteration : IFemSolver
                 );
             }
 
-            coef = relaxRatio;
             initApprox = UpdateApprox(slae.ResVec, initApprox, relaxRatio);
+
             iter++;
 
             Console.Write($"\r[INFO] RelRes = {LinAlg.Utils.RelResidual(slae):G10} | Iter: {iter}");
@@ -104,20 +104,20 @@ public class SimpleIteration : IFemSolver
             Residual = LinAlg.Utils.RelResidual(slae.NonLinearMatrix, slae.ResVec, slae.NonLinearRhsVec),
             Error = error,
             Values = slae.ResVec,
-            RelaxRatio = coef
+            RelaxRatio = relaxRatio
         };
 
         return stat;
     }
 
-    private double RelaxRatio(
+    private double EvalRelaxRatio(
         double[] resVec,
         IMesh cartesian1DMesh,
-        InputFuncs inputFuncs,
+        DataModels.InputFuncs inputFuncs,
         double[] prevResVec,
-        Accuracy accuracy,
-        Area area,
-        BoundaryConditions boundaryConditions
+        DataModels.Accuracy accuracy,
+        DataModels.Areas.OneDim area,
+        DataModels.Conditions.Boundary.OneDim boundaryConditions
     )
     {
         var gold = (Math.Sqrt(5) - 1.0) / 2.0;
@@ -126,7 +126,7 @@ public class SimpleIteration : IFemSolver
         var xLeft = 1 - gold;
         var xRight = gold;
 
-        var fLeft = ResidualFunc(
+        var fLeft = EvalResidualFunc(
             resVec,
             cartesian1DMesh,
             inputFuncs,
@@ -135,7 +135,7 @@ public class SimpleIteration : IFemSolver
             area,
             boundaryConditions
         );
-        var fRight = ResidualFunc(
+        var fRight = EvalResidualFunc(
             resVec,
             cartesian1DMesh,
             inputFuncs,
@@ -153,7 +153,7 @@ public class SimpleIteration : IFemSolver
                 xLeft = xRight;
                 fLeft = fRight;
                 xRight = left + gold * (right - left);
-                fRight = ResidualFunc(
+                fRight = EvalResidualFunc(
                     resVec,
                     cartesian1DMesh,
                     inputFuncs,
@@ -169,7 +169,7 @@ public class SimpleIteration : IFemSolver
                 xRight = xLeft;
                 fRight = fLeft;
                 xLeft = left + (1.0 - gold) * (right - left);
-                fLeft = ResidualFunc(
+                fLeft = EvalResidualFunc(
                     resVec,
                     cartesian1DMesh,
                     inputFuncs,
@@ -184,14 +184,14 @@ public class SimpleIteration : IFemSolver
         return (left + right) / 2.0;
     }
 
-    private double ResidualFunc(
+    private double EvalResidualFunc(
         double[] resVec,
         IMesh cartesian1DMesh,
-        InputFuncs inputFuncs,
+        DataModels.InputFuncs inputFuncs,
         double x,
         double[] prevResVec,
-        Area area,
-        BoundaryConditions boundaryConditions
+        DataModels.Areas.OneDim area,
+        DataModels.Conditions.Boundary.OneDim boundaryConditions
     )
     {
         var approx = new double[prevResVec.Length];
@@ -201,7 +201,7 @@ public class SimpleIteration : IFemSolver
             approx[i] = x * resVec[i] + (1.0 - x) * prevResVec[i];
         }
 
-        var slae = new Elliptic1DLinearFNonLinear(
+        var slae = new Elliptic1DLinearBasisFNonLinear(
             cartesian1DMesh,
             inputFuncs,
             approx,
@@ -232,8 +232,8 @@ public class SimpleIteration : IFemSolver
     private static void ApplyBoundaryConditions(
         IMatrix m,
         double[] rhs,
-        Area area,
-        BoundaryConditions boundaryConditions
+        DataModels.Areas.OneDim area,
+        DataModels.Conditions.Boundary.OneDim boundaryConditions
     )
     {
         switch (boundaryConditions.Left)

@@ -2,7 +2,7 @@ using Sprache.Calc;
 
 namespace Fengine.Backend.Differentiation;
 
-public class Derivative2Point : IDerivative
+public class TwoPoint : IDerivative
 {
     public double FindFirst1D(Func<double, double> func, double point, double step)
     {
