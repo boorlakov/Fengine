@@ -1,29 +1,22 @@
-using Fengine.Backend.Differentiation;
-using Fengine.Backend.Fem.Mesh;
-using Fengine.Backend.Fem.Slae;
-using Fengine.Backend.Integration;
-using Fengine.Backend.LinearAlgebra;
-using Fengine.Backend.LinearAlgebra.Matrix;
-using Fengine.Backend.LinearAlgebra.SlaeSolver;
 using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Solver;
 
 public class SimpleIteration : IFemSolver
 {
-    private readonly IIntegrator _integrator;
-    private readonly ISlae _slae;
-    private readonly ISlaeSolver _slaeSolver;
-    private readonly IMatrix _matrix;
-    private readonly IDerivative? _derivative;
+    private readonly Integration.IIntegrator _integrator;
+    private readonly Slae.ISlae _slae;
+    private readonly LinearAlgebra.SlaeSolver.ISlaeSolver _slaeSolver;
+    private readonly LinearAlgebra.Matrix.IMatrix _matrix;
+    private readonly Differentiation.IDerivative? _derivative;
 
     public SimpleIteration
     (
-        ISlaeSolver slaeSolver,
-        IIntegrator integrator,
-        IMatrix matrix,
-        ISlae slae,
-        IDerivative? derivative = null
+        LinearAlgebra.SlaeSolver.ISlaeSolver slaeSolver,
+        Integration.IIntegrator integrator,
+        LinearAlgebra.Matrix.IMatrix matrix,
+        Slae.ISlae slae,
+        Differentiation.IDerivative? derivative = null
     )
     {
         _slaeSolver = slaeSolver;
@@ -35,7 +28,7 @@ public class SimpleIteration : IFemSolver
 
     public Statistics Solve
     (
-        IMesh mesh,
+        Mesh.IMesh mesh,
         DataModels.InputFuncs inputFuncs,
         DataModels.Area.OneDim area,
         DataModels.Conditions.Boundary.OneDim boundaryConditions,
@@ -95,11 +88,11 @@ public class SimpleIteration : IFemSolver
 
         for (var i = 0; i < slae.ResVec.Length; i++)
         {
-            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coordinates[Axis.X]));
+            u[i] = uStar(Utils.MakeDict1D(mesh.Nodes[i].Coordinates[Mesh.Axis.X]));
             absError[i] = u[i] - slae.ResVec[i];
         }
 
-        var error = GeneralOperations.Norm(absError) / GeneralOperations.Norm(u);
+        var error = LinearAlgebra.GeneralOperations.Norm(absError) / LinearAlgebra.GeneralOperations.Norm(u);
 
         var stat = new Statistics
         {
@@ -115,7 +108,7 @@ public class SimpleIteration : IFemSolver
 
     private double EvalRelaxRatio(
         double[] resVec,
-        IMesh cartesian1DMesh,
+        Mesh.IMesh cartesian1DMesh,
         DataModels.InputFuncs inputFuncs,
         double[] prevResVec,
         DataModels.Accuracy accuracy,
@@ -189,7 +182,7 @@ public class SimpleIteration : IFemSolver
 
     private double EvalResidualFunc(
         double[] resVec,
-        IMesh cartesian1DMesh,
+        Mesh.IMesh cartesian1DMesh,
         DataModels.InputFuncs inputFuncs,
         double x,
         double[] prevResVec,
@@ -233,7 +226,7 @@ public class SimpleIteration : IFemSolver
     }
 
     private static void ApplyBoundaryConditions(
-        IMatrix m,
+        LinearAlgebra.Matrix.IMatrix m,
         double[] rhs,
         DataModels.Area.OneDim area,
         DataModels.Conditions.Boundary.OneDim boundaryConditions
