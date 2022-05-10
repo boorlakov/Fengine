@@ -1,0 +1,364 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Fengine.Frontend.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:csmath="clr-namespace:CSharpMath.Avalonia;assembly=CSharpMath.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+        MinWidth="1000"
+        MinHeight="800"
+        x:Class="Fengine.Frontend.Views.MainWindow"
+        Icon="/Assets/Fem.ico"
+        Title="Fengine.Frontend"
+        ExtendClientAreaToDecorationsHint="True"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="Full">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid
+        RowDefinitions="Auto, Auto, *">
+
+        <!-- Equation title -->
+        <StackPanel
+            Grid.Row="0"
+            Margin="0,30,0,10"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal">
+            <Label
+                FontSize="30"
+                FontWeight="Bold"
+
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center">
+                Equation
+            </Label>
+            <csmath:MathView
+                FontSize="30"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                LaTeX="\text{ }-\text{div}(\lambda\text{grad}u) + \gamma u= f(u)" />
+        </StackPanel>
+
+        <!-- Settings -->
+        <Grid
+            Grid.Row="1" ColumnDefinitions="*, *, *, *">
+            <Grid
+                Grid.Column="0"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto"
+                HorizontalAlignment="Center">
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    FontSize="20" FontWeight="Bold"
+                    Grid.ColumnSpan="2">
+                    Area settings
+                </Label>
+
+                <Label
+                    Grid.Row="1" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    LeftType border
+                </Label>
+                <TextBox
+                    Grid.Row="1" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding Area.LeftBorder}" />
+
+                <Label
+                    Grid.Row="2" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    RightType border
+                </Label>
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding Area.RightBorder}" />
+
+                <Label
+                    Grid.Row="3" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    Discharge Ratio
+                </Label>
+                <TextBox
+                    Grid.Row="3" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding Area.DischargeRatio}" />
+
+                <Label
+                    Grid.Row="4" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    Amount of points
+                </Label>
+                <TextBox
+                    Grid.Row="4" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding Area.AmountPoints}" />
+            </Grid>
+
+            <Grid
+                Grid.Column="1"
+                HorizontalAlignment="Center"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto">
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    FontSize="20" FontWeight="Bold"
+                    Grid.ColumnSpan="2">
+                    Functions settings
+                </Label>
+
+                <csmath:MathView
+                    Grid.Row="1" Grid.Column="0"
+                    FontSize="18"
+                    LaTeX="\lambda" />
+                <TextBox
+                    Grid.Row="1" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding InputFuncs.Lambda}" />
+
+                <csmath:MathView
+                    Grid.Row="2" Grid.Column="0"
+                    FontSize="18"
+                    LaTeX="\gamma" />
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding InputFuncs.Gamma}" />
+
+                <csmath:MathView
+                    Grid.Row="3" Grid.Column="0"
+                    FontSize="18"
+                    LaTeX="f" />
+                <TextBox
+                    Grid.Row="3" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding InputFuncs.RhsFunc}" />
+
+                <csmath:MathView
+                    Grid.Row="4" Grid.Column="0"
+                    FontSize="18"
+                    LaTeX="u^*" />
+                <TextBox
+                    Grid.Row="4" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="optional"
+                    Text="{Binding InputFuncs.UStar}" />
+            </Grid>
+
+            <Grid
+                Grid.Column="2"
+                HorizontalAlignment="Center"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto">
+                <Label
+                    FontSize="20"
+                    FontWeight="Bold"
+                    Grid.Row="0" Grid.Column="0"
+                    Grid.ColumnSpan="2">
+                    Boundary settings
+                </Label>
+
+                <Label
+                    Grid.Row="1" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    LeftType border
+                </Label>
+                <ComboBox
+                    Grid.Row="1" Grid.Column="1"
+                    FontSize="16"
+                    SelectedItem="{Binding BoundaryConditions.Left}"
+                    Items="{Binding BoundaryConditionItems}" />
+
+                <Label
+                    Grid.Row="2" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    LeftType border func
+                </Label>
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding BoundaryConditions.LeftFunc}" />
+
+                <Label
+                    Grid.Row="3" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    RightType border
+                </Label>
+                <ComboBox
+                    Grid.Row="3" Grid.Column="1"
+                    FontSize="16"
+                    SelectedItem="{Binding BoundaryConditions.Right}"
+                    Items="{Binding BoundaryConditionItems}" />
+
+                <Label
+                    Grid.Row="4" Grid.Column="0"
+                    HorizontalContentAlignment="Left"
+                    VerticalContentAlignment="Center"
+                    FontSize="18">
+                    RightType border func
+                </Label>
+                <TextBox
+                    Grid.Row="4" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding BoundaryConditions.RightFunc}" />
+
+                <csmath:MathView
+                    Grid.Row="5" Grid.Column="0"
+                    FontSize="18"
+                    LaTeX="\beta" />
+                <TextBox
+                    Grid.Row="5" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="If third boundary condition"
+                    Text="{Binding BoundaryConditions.Beta}" />
+            </Grid>
+
+            <Grid
+                Grid.Column="3"
+                HorizontalAlignment="Center"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto"
+                ColumnDefinitions="Auto, Auto">
+                <Label
+                    Grid.Row="0" Grid.Column="0"
+                    FontSize="20" FontWeight="Bold"
+                    Grid.ColumnSpan="2">
+                    Accuracy settings
+                </Label>
+
+                <Label Grid.Row="1" Grid.Column="0"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center">
+                    Max iterations
+                </Label>
+                <TextBox
+                    Grid.Row="1" Grid.Column="1"
+                    Watermark="required"
+                    Text="{Binding Accuracy.MaxIter}" />
+
+                <csmath:MathView
+                    Grid.Row="2" Grid.Column="0"
+                    FontSize="18"
+                    LaTeX="\varepsilon" />
+                <TextBox
+                    Grid.Row="2" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding Accuracy.Eps}" />
+
+                <csmath:MathView
+                    Grid.Row="3" Grid.Column="0"
+                    FontSize="18"
+                    LaTeX="\delta" />
+                <TextBox
+                    Grid.Row="3" Grid.Column="1"
+                    FontSize="16"
+                    Watermark="required"
+                    Text="{Binding Accuracy.Delta}" />
+
+                <Label Grid.Row="4" Grid.Column="0"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center">
+                    Auto Relax Ratio
+                </Label>
+                <CheckBox IsChecked="{Binding Accuracy.AutoRelax}" Grid.Row="4" Grid.Column="1" />
+
+                <Label Grid.Row="5" Grid.Column="0"
+                       HorizontalContentAlignment="Left"
+                       VerticalContentAlignment="Center">
+                    Relax Ratio
+                </Label>
+                <TextBox
+                    Grid.Row="5" Grid.Column="1"
+                    FontSize="18"
+                    Text="{Binding Accuracy.RelaxRatio}" />
+
+            </Grid>
+
+        </Grid>
+
+        <!-- Result, status and copy -->
+        <Grid
+            Grid.Row="2"
+            Margin="30, 10, 30, 30"
+            RowDefinitions="Auto, *, Auto">
+            <Label
+                Grid.Row="0"
+                FontSize="20" FontWeight="Bold">
+                Result
+            </Label>
+            <TextBox
+                Grid.Row="1"
+                Text="{Binding Result}"
+                TextWrapping="Wrap"
+                FontSize="16"
+                FontWeight="Bold"
+                IsReadOnly="True"
+                x:Name="ResultBox"
+                CopyingToClipboard="TextBox_OnCopyingToClipboard" />
+            <Grid
+                Grid.Row="2"
+                ColumnDefinitions="*, *"
+                HorizontalAlignment="Stretch">
+                <StackPanel
+                    Grid.Column="0"
+                    Orientation="Horizontal">
+                    <Button
+                        FontWeight="Bold"
+                        Content="Solve"
+                        x:Name="SolveButton"
+                        Click="Solve_OnClick" />
+                    <Button
+                        HorizontalAlignment="Right"
+                        FontWeight="Bold"
+                        Content="Copy to Clipboard"
+                        x:Name="CopyButton"
+                        Click="Button_CopyToClipboard_OnClick" />
+                    <Label
+                        VerticalContentAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        x:Name="CopyTextBlock"
+                        IsVisible="False">
+                        Copied!
+                    </Label>
+                </StackPanel>
+                <Label
+                    Grid.Column="1"
+                    VerticalContentAlignment="Center"
+                    HorizontalAlignment="Right"
+                    HorizontalContentAlignment="Center"
+
+                    x:Name="StatusLabel"
+                    Content="{Binding StatusLabelContent}" />
+            </Grid>
+
+
+        </Grid>
+    </Grid>
+
+</Window>
