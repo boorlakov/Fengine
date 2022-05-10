@@ -1,9 +1,9 @@
 using NUnit.Framework;
 
-namespace Fengine.Backend.Test;
+namespace Fengine.Backend.Test.Fem.Mesh.Cartesian;
 
 [TestFixture]
-public class MeshTests
+public class Tests
 {
     [Test]
     public void MeshCtor_WhenPassUniformRatio_ShouldReturnUniformGrid()
@@ -20,12 +20,12 @@ public class MeshTests
         var expected = new[] {0.0, 1.0, 2.0, 3.0, 4.0};
 
         // Act
-        var result = new Fem.Mesh.Cartesian.OneDim(area);
+        var result = new Backend.Fem.Mesh.Cartesian.OneDim(area);
 
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Nodes[i].Coordinates[Fem.Mesh.Axis.X], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Nodes[i].Coordinates[Backend.Fem.Mesh.Axis.X], expected[i], 1.0e-7);
         }
     }
 
@@ -44,12 +44,12 @@ public class MeshTests
         var expected = new[] {0.0, 2.0, 3.0};
 
         // Act
-        var result = new Fem.Mesh.Cartesian.OneDim(area);
+        var result = new Backend.Fem.Mesh.Cartesian.OneDim(area);
 
         // Assert
         for (var i = 0; i < expected.Length; i++)
         {
-            Assert.AreEqual(result.Nodes[i].Coordinates[Fem.Mesh.Axis.X], expected[i], 1.0e-7);
+            Assert.AreEqual(result.Nodes[i].Coordinates[Backend.Fem.Mesh.Axis.X], expected[i], 1.0e-7);
         }
     }
 }

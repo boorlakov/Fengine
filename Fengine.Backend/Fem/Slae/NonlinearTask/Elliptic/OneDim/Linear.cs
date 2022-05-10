@@ -181,7 +181,8 @@ public class Linear : ISlae
             (evalGamma(point) * localMass[0][1][0] + evalGamma(nextPoint) * localMass[1][1][0]) * step;
     }
 
-    private void BuildRhs(
+    private void BuildRhs
+    (
         int i,
         double step,
         IMesh mesh,
@@ -196,12 +197,14 @@ public class Linear : ISlae
         RhsVec[i + 1] += step * (evalRhsFunc(point) * localMass[2][1][0] + evalRhsFunc(nextPoint) * localMass[2][1][1]);
     }
 
-    public Linear(
+    public Linear
+    (
         IMatrix matrix,
         double[] rhsVec,
         ISlaeSolver slaeSolver,
         IIntegrator integrator,
-        IDerivative? derivative = null)
+        IDerivative? derivative = null
+    )
     {
         Matrix = matrix;
         ResVec = new double[rhsVec.Length];

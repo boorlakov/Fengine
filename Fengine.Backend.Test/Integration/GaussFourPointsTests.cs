@@ -1,10 +1,10 @@
 using Fengine.Backend.Integration;
 using NUnit.Framework;
 
-namespace Fengine.Backend.Test;
+namespace Fengine.Backend.Test.Integration;
 
 [TestFixture]
-public class IntegratorTests
+public class GaussFourPointsTests
 {
     [SetUp]
     public void SetUp()

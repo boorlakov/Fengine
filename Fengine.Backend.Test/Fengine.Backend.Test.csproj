@@ -18,4 +18,9 @@
         <ProjectReference Include="..\Fengine.Backend\Fengine.Backend.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <Folder Include="Fem"/>
+        <Folder Include="Fem\Mesh\Cylindrical"/>
+    </ItemGroup>
+
 </Project>
