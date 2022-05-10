@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace Fengine.Backend.Test.Fem.Mesh.Cartesian;
 
 [TestFixture]
-public class Tests
+public class OneDimTests
 {
     [Test]
     public void MeshCtor_WhenPassUniformRatio_ShouldReturnUniformGrid()

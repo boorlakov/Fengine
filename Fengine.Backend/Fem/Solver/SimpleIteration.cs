@@ -106,7 +106,8 @@ public class SimpleIteration : IFemSolver
         return stat;
     }
 
-    private double EvalRelaxRatio(
+    private double EvalRelaxRatio
+    (
         double[] resVec,
         Mesh.Cartesian.OneDim mesh,
         DataModels.InputFuncs inputFuncs,
@@ -122,7 +123,8 @@ public class SimpleIteration : IFemSolver
         var xLeft = 1 - gold;
         var xRight = gold;
 
-        var fLeft = EvalResidualFunc(
+        var fLeft = EvalResidualFunc
+        (
             resVec,
             mesh,
             inputFuncs,
@@ -131,7 +133,8 @@ public class SimpleIteration : IFemSolver
             area,
             boundaryConditions
         );
-        var fRight = EvalResidualFunc(
+        var fRight = EvalResidualFunc
+        (
             resVec,
             mesh,
             inputFuncs,
@@ -180,7 +183,8 @@ public class SimpleIteration : IFemSolver
         return (left + right) / 2.0;
     }
 
-    private double EvalResidualFunc(
+    private double EvalResidualFunc
+    (
         double[] resVec,
         Mesh.Cartesian.OneDim mesh,
         DataModels.InputFuncs inputFuncs,
@@ -226,7 +230,8 @@ public class SimpleIteration : IFemSolver
         return newApprox;
     }
 
-    private static void ApplyBoundaryConditions(
+    private static void ApplyBoundaryConditions
+    (
         LinearAlgebra.Matrix.IMatrix m,
         double[] rhs,
         DataModels.Area.OneDim area,

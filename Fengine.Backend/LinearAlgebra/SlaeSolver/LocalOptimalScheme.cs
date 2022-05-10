@@ -19,7 +19,7 @@ public class LocalOptimalScheme : ISlaeSolver
         var x = new double[slae.RhsVec.Length];
 
         // A x_{0}
-        var matMulRes = LinearAlgebra.GeneralOperations.MatrixMultiply(slae.Matrix, x);
+        var matMulRes = GeneralOperations.MatrixMultiply(slae.Matrix, x);
 
         // f - A x_{0}
         for (var i = 0; i < slae.Matrix.Size; i++)
@@ -28,10 +28,10 @@ public class LocalOptimalScheme : ISlaeSolver
         }
 
         // r = L^{-1} (f - A x_{0}) === Lr = (f - A x_{0}) ==> Forward
-        var r = ForwardLUsq(precondMatrix, matMulRes);
+        var r = ForwardPropagation(precondMatrix, matMulRes);
 
         // r = (r_{0}, r_{0})         
-        var residual = LinearAlgebra.GeneralOperations.Dot(r, r);
+        var residual = GeneralOperations.Dot(r, r);
 
         // Need for checking stagnation 
         var residualNext = residual + 1.0;
@@ -39,18 +39,18 @@ public class LocalOptimalScheme : ISlaeSolver
         var absResidualDifference = Math.Abs(residual - residualNext);
 
         // z = U^{-1} r === Uz = r ==> Backward
-        var z = BackwardLUsq(precondMatrix, r);
+        var z = BackwardPropagation(precondMatrix, r);
 
         // A z_{0}
         matMulRes = GeneralOperations.MatrixMultiply(slae.Matrix, z);
 
         // p_{0} = L^{-1} Az_{0} === L p_{0} = A z_{0} ==> Forward
-        var p = ForwardLUsq(precondMatrix, matMulRes);
+        var p = ForwardPropagation(precondMatrix, matMulRes);
 
         // Current iteration
         var k = 1;
 
-        for (; residual > accuracy.Eps && k < accuracy.MaxIter && absResidualDifference > 1e-15; k++)
+        for (; residual > accuracy.Eps && k < accuracy.MaxIter && absResidualDifference > accuracy.Delta; k++)
         {
             var pp = GeneralOperations.Dot(p, p);
             var alpha = GeneralOperations.Dot(p, r) / pp;
@@ -63,7 +63,7 @@ public class LocalOptimalScheme : ISlaeSolver
             // We dont need to over-calculate scalar product, because we calculated at k = 0
             // r_{k} = - α^2 (p_{k-1}, p_{k-1}) 
             residual -= alpha * alpha * pp;
-            Console.Write($"\rLOS With LU Precond. Iter: {k}, R: {residual}, |RNext - R| = {absResidualDifference}");
+            Console.Write($"\r[INFO] Iter: {k}, Residual: {residual}, Stagnation value: {absResidualDifference}");
 
             // Updating to {k} 
             for (var i = 0; i < slae.Matrix.Size; i++)
@@ -73,16 +73,111 @@ public class LocalOptimalScheme : ISlaeSolver
             }
 
             // Go from right to left. Need to avoid finding reverse matrices
-            var ur = BackwardLUsq(precondMatrix, r);
+            var ur = BackwardPropagation(precondMatrix, r);
             matMulRes = GeneralOperations.MatrixMultiply(slae.Matrix, ur);
 
-            var dotRhs = ForwardLUsq(precondMatrix, matMulRes);
+            var dotRhs = ForwardPropagation(precondMatrix, matMulRes);
 
             // β = - (p_{k-1}, L^{-1} A U^{-1} r_{k}) / (p_{k-1}, p_{k-1}) 
             var beta = -GeneralOperations.Dot(p, dotRhs) / pp;
 
             // Updating to {k} 
             for (var i = 0; i < slae.Matrix.Size; i++)
+            {
+                // z_{k} = U^{-1} r + β z_{k-1} 
+                z[i] = ur[i] + beta * z[i];
+
+                // p_{k} = L^{-1} A U^{-1} r_{k} + β p_{k-1}
+                p[i] = dotRhs[i] + beta * p[i];
+            }
+        }
+
+        return x;
+    }
+
+    public static double[] Solve
+    (
+        Matrix.Sparse matrix,
+        double[] rhs,
+        DataModels.Accuracy accuracy
+    )
+    {
+        if (matrix.Decomposed)
+        {
+            throw new ArgumentException("Matrix must be not decomposed");
+        }
+
+        var precondMatrix = new Matrix.Sparse(matrix);
+        precondMatrix.Factorize();
+
+        var x = new double[rhs.Length];
+
+        // A x_{0}
+        var matMulRes = GeneralOperations.MatrixMultiply(matrix, x);
+
+        // f - A x_{0}
+        for (var i = 0; i < matrix.Size; i++)
+        {
+            matMulRes[i] = rhs[i] - matMulRes[i];
+        }
+
+        // r = L^{-1} (f - A x_{0}) === Lr = (f - A x_{0}) ==> Forward
+        var r = ForwardPropagation(precondMatrix, matMulRes);
+
+        // r = (r_{0}, r_{0})         
+        var residual = GeneralOperations.Dot(r, r);
+
+        // Need for checking stagnation 
+        var residualNext = residual + 1.0;
+
+        var absResidualDifference = Math.Abs(residual - residualNext);
+
+        // z = U^{-1} r === Uz = r ==> Backward
+        var z = BackwardPropagation(precondMatrix, r);
+
+        // A z_{0}
+        matMulRes = GeneralOperations.MatrixMultiply(matrix, z);
+
+        // p_{0} = L^{-1} Az_{0} === L p_{0} = A z_{0} ==> Forward
+        var p = ForwardPropagation(precondMatrix, matMulRes);
+
+        // Current iteration
+        var k = 1;
+
+        for (; residual > accuracy.Eps && k < accuracy.MaxIter && absResidualDifference > accuracy.Delta; k++)
+        {
+            var pp = GeneralOperations.Dot(p, p);
+            var alpha = GeneralOperations.Dot(p, r) / pp;
+
+            absResidualDifference = Math.Abs(residual - residualNext);
+
+            // Updating residual
+            residualNext = residual;
+
+            // We dont need to over-calculate scalar product, because we calculated at k = 0
+            // r_{k} = - α^2 (p_{k-1}, p_{k-1}) 
+            residual -= alpha * alpha * pp;
+            Console.Write(
+                $"\r[INFO] Iter: {k,3}, Residual: {residual,20}, Stagnation value: {absResidualDifference,20}");
+
+            // Updating to {k} 
+            for (var i = 0; i < matrix.Size; i++)
+            {
+                x[i] += alpha * z[i];
+                r[i] -= alpha * p[i];
+            }
+
+            // Go from right to left. Need to avoid finding reverse matrices
+            var ur = BackwardPropagation(precondMatrix, r);
+            matMulRes = GeneralOperations.MatrixMultiply(matrix, ur);
+
+            var dotRhs = ForwardPropagation(precondMatrix, matMulRes);
+
+            // β = - (p_{k-1}, L^{-1} A U^{-1} r_{k}) / (p_{k-1}, p_{k-1}) 
+            var beta = -GeneralOperations.Dot(p, dotRhs) / pp;
+
+            // Updating to {k} 
+            for (var i = 0; i < matrix.Size; i++)
             {
                 // z_{k} = U^{-1} r + β z_{k-1} 
                 z[i] = ur[i] + beta * z[i];
@@ -102,7 +197,7 @@ public class LocalOptimalScheme : ISlaeSolver
     /// <param name="b"> RHS vector </param>
     /// <returns> Solution for lower triangular part of matrix A</returns>
     /// <exception cref="Matrix.Exception.NotDecomposedException"> Required decomposed matrix </exception>
-    private static double[] ForwardLUsq(Matrix.IMatrix l, double[] b)
+    private static double[] ForwardPropagation(Matrix.IMatrix l, double[] b)
     {
         if (!l.Decomposed)
         {
@@ -135,7 +230,7 @@ public class LocalOptimalScheme : ISlaeSolver
     /// <param name="y"> RHS vector </param>
     /// <returns> Solution for upper triangular part of matrix A</returns>
     /// <exception cref="Matrix.Exception.NotDecomposedException"> Required decomposed matrix </exception>
-    private static double[] BackwardLUsq(Matrix.IMatrix u, double[] y)
+    private static double[] BackwardPropagation(Matrix.IMatrix u, double[] y)
     {
         if (!u.Decomposed)
         {

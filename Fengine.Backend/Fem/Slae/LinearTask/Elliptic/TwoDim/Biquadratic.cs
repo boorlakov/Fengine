@@ -16,6 +16,13 @@ public class Biquadratic : ISlae
         ResVec = resVec;
     }
 
+    public Biquadratic(IMatrix matrix, double[] rhsVec)
+    {
+        Matrix = matrix;
+        RhsVec = rhsVec;
+        ResVec = new double[rhsVec.Length];
+    }
+
     public Biquadratic
     (
         Mesh.Cylindrical.TwoDim mesh,

@@ -20,7 +20,6 @@
 
     <ItemGroup>
         <Folder Include="Fem"/>
-        <Folder Include="Fem\Mesh\Cylindrical"/>
     </ItemGroup>
 
 </Project>

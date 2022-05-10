@@ -22,6 +22,7 @@ public class Sparse : IMatrix
         Profile["jg"].AsSpan().CopyTo(m.Profile["jg"]);
 
         m.Decomposed = Decomposed;
+        m.Size = Size;
     }
 
     public Sparse()
@@ -47,6 +48,7 @@ public class Sparse : IMatrix
         m.Profile["jg"].AsSpan().CopyTo(Profile["jg"]);
 
         Decomposed = m.Decomposed;
+        Size = m.Size;
     }
 
     public Sparse
@@ -102,14 +104,14 @@ public class Sparse : IMatrix
                 {
                     if (Profile["jg"][iK] == Profile["jg"][kJ])
                     {
-                        sumL += Data["ggl"][iK] * Data["Ggu"][kJ];
+                        sumL += Data["ggl"][iK] * Data["ggu"][kJ];
                         sumU += Data["ggu"][iK] * Data["ggl"][kJ];
                         iK++;
                         kJ++;
                     }
                     else
                     {
-                        if (Data["jg"][iK] > Data["jg"][kJ])
+                        if (Profile["jg"][iK] > Profile["jg"][kJ])
                         {
                             kJ++;
                         }
@@ -161,5 +163,5 @@ public class Sparse : IMatrix
     }
     public Dictionary<string, double[]> Data { get; } = new();
     public Dictionary<string, int[]> Profile { get; } = new();
-    public int Size { get; }
+    public int Size { get; private set; }
 }
