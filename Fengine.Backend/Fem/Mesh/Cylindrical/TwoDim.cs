@@ -47,6 +47,9 @@ public class TwoDim : IMesh
             }
         }
 
+        R = r.ToArray();
+        Z = z.ToArray();
+
         var nodes = new IMesh.Node[r.Count * z.Count];
 
         for (var i = 0; i < nodes.Length; i++)
@@ -69,5 +72,8 @@ public class TwoDim : IMesh
         Nodes = nodes;
     }
 
+    public double[] R { get; init; }
+
+    public double[] Z { get; init; }
     public IMesh.Node[] Nodes { get; init; }
 }

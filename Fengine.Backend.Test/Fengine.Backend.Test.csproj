@@ -18,8 +18,4 @@
         <ProjectReference Include="..\Fengine.Backend\Fengine.Backend.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="Fem"/>
-    </ItemGroup>
-
 </Project>

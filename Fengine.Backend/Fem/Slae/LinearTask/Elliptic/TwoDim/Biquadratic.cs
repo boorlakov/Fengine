@@ -1,13 +1,14 @@
+using Fengine.Backend.Integration;
 using Fengine.Backend.LinearAlgebra.Matrix;
 
 namespace Fengine.Backend.Fem.Slae.LinearTask.Elliptic.TwoDim;
 
 public class Biquadratic : ISlae
 {
-    public double[] Solve(DataModels.Accuracy accuracy)
-    {
-        throw new NotImplementedException();
-    }
+    private readonly FiniteElement[] _finiteElements;
+
+    private IIntegrator _integrator;
+    private LinearAlgebra.SlaeSolver.ISlaeSolver _slaeSolver;
 
     public Biquadratic(IMatrix matrix, double[] rhsVec, double[] resVec)
     {
@@ -27,18 +28,107 @@ public class Biquadratic : ISlae
     (
         Mesh.Cylindrical.TwoDim mesh,
         DataModels.InputFuncs inputFuncs,
-        double[] initApprox,
+        DataModels.Conditions.Boundary.TwoDim boundaryConditions,
         LinearAlgebra.SlaeSolver.ISlaeSolver slaeSolver,
-        Integration.IIntegrator integrator,
+        IIntegrator integrator,
         IMatrix matrix
     )
     {
+        _slaeSolver = slaeSolver;
+        _integrator = integrator;
+
+        _finiteElements = GetFiniteElementsFrom(mesh);
+
+        (Matrix, RhsVec) = GetPortraitFrom(mesh);
+        ResVec = new double[RhsVec.Length];
+
+        AssemblyGlobally();
+
+        ApplyBoundaryConditions(boundaryConditions);
     }
 
-    private Integration.IIntegrator _integrator;
-    private LinearAlgebra.SlaeSolver.ISlaeSolver _slaeSolver;
+    public double[] Solve(DataModels.Accuracy accuracy)
+    {
+        return _slaeSolver.Solve(this, accuracy);
+    }
 
     public IMatrix Matrix { get; set; }
     public double[] RhsVec { get; set; }
     public double[] ResVec { get; set; }
+
+    private void ApplyBoundaryConditions(DataModels.Conditions.Boundary.TwoDim boundaryConditions)
+    {
+        throw new NotImplementedException();
+    }
+
+    private (IMatrix Matrix, double[] RhsVec) GetPortraitFrom(Mesh.Cylindrical.TwoDim mesh)
+    {
+        throw new NotImplementedException();
+    }
+
+    private FiniteElement[] GetFiniteElementsFrom(Mesh.Cylindrical.TwoDim mesh)
+    {
+        var finiteElements = new FiniteElement[(mesh.R.Length - 1) * (mesh.Z.Length - 1)];
+
+        var k = 0;
+        var startPos = 0;
+        var lineLen = mesh.R.Length - 1;
+
+        for (var i = 0; i < mesh.Z.Length - 1; i++, startPos += lineLen)
+        {
+            for (var j = 0; j < mesh.R.Length - 1; j++, startPos += 1, k++)
+            {
+                var localNodes = new[]
+                {
+                    (
+                        startPos,
+                        mesh.Nodes[startPos].Coordinates[Mesh.Axis.X],
+                        mesh.Nodes[startPos].Coordinates[Mesh.Axis.Y]
+                    ),
+                    (
+                        startPos + 1,
+                        mesh.Nodes[startPos + 1].Coordinates[Mesh.Axis.X],
+                        mesh.Nodes[startPos + 1].Coordinates[Mesh.Axis.Y]
+                    ),
+
+                    (
+                        startPos + lineLen,
+                        mesh.Nodes[startPos + lineLen].Coordinates[Mesh.Axis.X],
+                        mesh.Nodes[startPos + lineLen].Coordinates[Mesh.Axis.Y]
+                    ),
+                    (
+                        startPos + lineLen + 1,
+                        mesh.Nodes[startPos + lineLen + 1].Coordinates[Mesh.Axis.X],
+                        mesh.Nodes[startPos + lineLen + 1].Coordinates[Mesh.Axis.Y]
+                    )
+                };
+                finiteElements[k] = new FiniteElement(localNodes);
+            }
+        }
+
+        return finiteElements;
+    }
+
+    private void AssemblyGlobally()
+    {
+        foreach (var finiteElement in _finiteElements)
+        {
+            AssemblyLocally(finiteElement);
+        }
+    }
+
+    private void AssemblyLocally(FiniteElement finiteElement)
+    {
+        throw new NotImplementedException();
+    }
+
+    private class FiniteElement
+    {
+        public readonly (int globalNumber, double r, double z)[] Nodes;
+
+        public FiniteElement((int, double, double)[] nodes)
+        {
+            Nodes = nodes;
+        }
+    }
 }

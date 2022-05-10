@@ -18,11 +18,11 @@ public class TwoDim : Area
     ///     Ratio for constructing non-uniform grid.
     ///     If you want uniform grid set value to 1.0
     /// </summary>
-    public double DischargeRatioR { get; init; }
+    public double DischargeRatioR { get; init; } = 1.0;
 
     /// <summary>
     ///     Ratio for constructing non-uniform grid.
     ///     If you want uniform grid set value to 1.0
     /// </summary>
-    public double DischargeRatioZ { get; init; }
+    public double DischargeRatioZ { get; init; } = 1.0;
 }
