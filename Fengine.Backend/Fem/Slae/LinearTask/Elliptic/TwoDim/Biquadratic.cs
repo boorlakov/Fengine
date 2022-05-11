@@ -71,54 +71,52 @@ public class Biquadratic : ISlae
         var finiteElements = new FiniteElement[(mesh.R.Length - 1) * (mesh.Z.Length - 1)];
 
         var k = 0;
-        var startPos = 0;
+        var startPosition = 0;
         var lineLenght = mesh.R.Length;
 
-        for (var i = 0; i < mesh.Z.Length - 1; i++, startPos = i * lineLenght)
+        for (var i = 0; i < mesh.Z.Length - 1; i++, startPosition = i * lineLenght)
         {
-            for (var j = 0; j < lineLenght - 1; j++, startPos += 1, k++)
+            for (var j = 0; j < lineLenght - 1; j++, startPosition += 1, k++)
             {
-                AssemblyFiniteElementFrom(mesh, finiteElements, startPos, lineLenght, k);
+                var localNodes = GetLocalNodesFrom(mesh, startPosition, lineLenght);
+                finiteElements[k] = new FiniteElement(localNodes);
             }
         }
 
         return finiteElements;
     }
 
-    private static void AssemblyFiniteElementFrom
+    private static (int, double, double)[] GetLocalNodesFrom
     (
         Mesh.Cylindrical.TwoDim mesh,
-        FiniteElement[] finiteElements,
-        int startPos,
-        int lineLen,
-        int k
+        int startPosition,
+        int lineLenght
     )
     {
-        var localNodes = new[]
+        return new[]
         {
             (
-                startPos,
-                mesh.Nodes[startPos].Coordinates[Mesh.Axis.R],
-                mesh.Nodes[startPos].Coordinates[Mesh.Axis.Z]
+                startPosition,
+                mesh.Nodes[startPosition].Coordinates[Mesh.Axis.R],
+                mesh.Nodes[startPosition].Coordinates[Mesh.Axis.Z]
             ),
             (
-                startPos + 1,
-                mesh.Nodes[startPos + 1].Coordinates[Mesh.Axis.R],
-                mesh.Nodes[startPos + 1].Coordinates[Mesh.Axis.Z]
+                startPosition + 1,
+                mesh.Nodes[startPosition + 1].Coordinates[Mesh.Axis.R],
+                mesh.Nodes[startPosition + 1].Coordinates[Mesh.Axis.Z]
             ),
 
             (
-                startPos + lineLen,
-                mesh.Nodes[startPos + lineLen].Coordinates[Mesh.Axis.R],
-                mesh.Nodes[startPos + lineLen].Coordinates[Mesh.Axis.Z]
+                startPosition + lineLenght,
+                mesh.Nodes[startPosition + lineLenght].Coordinates[Mesh.Axis.R],
+                mesh.Nodes[startPosition + lineLenght].Coordinates[Mesh.Axis.Z]
             ),
             (
-                startPos + lineLen + 1,
-                mesh.Nodes[startPos + lineLen + 1].Coordinates[Mesh.Axis.R],
-                mesh.Nodes[startPos + lineLen + 1].Coordinates[Mesh.Axis.Z]
+                startPosition + lineLenght + 1,
+                mesh.Nodes[startPosition + lineLenght + 1].Coordinates[Mesh.Axis.R],
+                mesh.Nodes[startPosition + lineLenght + 1].Coordinates[Mesh.Axis.Z]
             )
         };
-        finiteElements[k] = new FiniteElement(localNodes);
     }
 
     private void AssemblyGlobally()
