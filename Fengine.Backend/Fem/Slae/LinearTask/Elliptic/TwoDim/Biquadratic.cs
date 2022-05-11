@@ -260,10 +260,11 @@ public class Biquadratic : ISlae
         InputFuncs inputFuncs
     )
     {
-        var localLambdaValue = GetLocalLambdaValueFrom(finiteElement, inputFuncs.Lambda);
+        var points = GetAllPointsIn(finiteElement);
+        var localLambdaValue = GetLocalLambdaValueFrom(finiteElement);
 
-        var hR = (finiteElement.Nodes[1].r - finiteElement.Nodes[0].r) / 2.0;
-        var hZ = (finiteElement.Nodes[1].z - finiteElement.Nodes[0].z) / 2.0;
+        var hR = finiteElement.Nodes[1].r - finiteElement.Nodes[0].r;
+        var hZ = finiteElement.Nodes[1].z - finiteElement.Nodes[0].z;
 
         var localStiffness = new double[9, 9];
         var localC = new double[9, 9];
@@ -273,20 +274,30 @@ public class Biquadratic : ISlae
 
         var localNumber = 0;
 
-        foreach (var localNode in finiteElement.Nodes)
-        {
-            var point = Utils.MakeDict2DCylindrical(localNode.r, localNode.z);
+        var integralStiffnessValues = GetIntegralStiffnessValues();
+        var integralMassValues = GetIntegralMassValues();
+        var integralCValues = GetIntegralCValues();
 
+        foreach (var point in points)
+        {
             localF[localNumber] = _evalRhsFuncAt(point);
             localNumber++;
 
-            AssemblyLocalMatrices
-            (
-                localStiffness, localMass, localC,
-                hR, hZ,
-                localLambdaValue,
-                point
-            );
+            for (var i = 0; i < 9; i++)
+            {
+                for (var j = 0; j < 9; j++)
+                {
+                    localStiffness[i, j] += hR * hZ * localLambdaValue * integralStiffnessValues[i, j];
+
+                    for (var k = 0; k < 4; k++)
+                    {
+                        localMass[i, j] += _evalGammaFuncAt(point) * integralMassValues[i, j];
+                    }
+
+                    localMass[i, j] *= hR * hZ;
+                    localC[i, j] += hR * hZ * integralCValues[i, j];
+                }
+            }
         }
 
         var localMatrix = AssemblyLocalMatrixFrom(localMass, localStiffness);
@@ -294,6 +305,104 @@ public class Biquadratic : ISlae
 
         AddToGlobal(finiteElement, localMatrix);
         AddToGlobal(finiteElement, localB);
+    }
+
+    private double[,] GetIntegralCValues()
+    {
+        var integrationMesh = Utils.Create1DIntegrationMesh(0, 1);
+        var integralMassValues = new double[9, 9];
+
+        for (var i = 0; i < 9; i++)
+        {
+            for (var j = 0; j < 9; j++)
+            {
+                var indXi = i % 3;
+                var indYi = i / 3;
+
+                var indXj = j % 3;
+                var indYj = j / 3;
+
+                var cIntegrand = (double r, double z) =>
+                    r *
+                    QuadraticBasis.Func[indXi](r) *
+                    QuadraticBasis.Func[indYi](z) *
+                    QuadraticBasis.Func[indXj](r) *
+                    QuadraticBasis.Func[indYj](z);
+
+                _integrator.Integrate2D(integrationMesh, cIntegrand);
+            }
+        }
+
+        return integralMassValues;
+    }
+
+    private double[,] GetIntegralMassValues()
+    {
+        var integrationMesh = Utils.Create1DIntegrationMesh(0, 1);
+        var integralMassValues = new double[9, 9];
+
+        for (var i = 0; i < 9; i++)
+        {
+            for (var j = 0; j < 9; j++)
+            {
+                var indXi = i % 3;
+                var indYi = i / 3;
+
+                var indXj = j % 3;
+                var indYj = j / 3;
+
+                var basisPartMassIntegrand = (double x, double y) =>
+                    QuadraticBasis.Func[indXi](x) *
+                    QuadraticBasis.Func[indYi](y) *
+                    QuadraticBasis.Func[indXj](x) *
+                    QuadraticBasis.Func[indYj](y);
+
+                for (var k = 0; k < 4; k++)
+                {
+                    var k1 = k;
+                    integralMassValues[i, j] += _integrator.Integrate2D
+                    (
+                        integrationMesh,
+                        (r, z) => r * basisPartMassIntegrand(r, z) * BilinearBasis.Func[k1](r, z)
+                    );
+                }
+            }
+        }
+
+        return integralMassValues;
+    }
+
+    private double[,] GetIntegralStiffnessValues()
+    {
+        var integrationMesh = Utils.Create1DIntegrationMesh(0, 1);
+        var integralStiffnessValues = new double[9, 9];
+
+        for (var i = 0; i < 9; i++)
+        {
+            for (var j = 0; j < 9; j++)
+            {
+                var indXi = i % 3;
+                var indYi = i / 3;
+
+                var indXj = j % 3;
+                var indYj = j / 3;
+
+                var dR = (double r, double z) =>
+                    QuadraticBasis.FirstDerivative[indXi](r) * QuadraticBasis.Func[indYi](z) *
+                    QuadraticBasis.FirstDerivative[indXj](r) * QuadraticBasis.Func[indYj](z);
+
+                var dZ = (double r, double z) =>
+                    QuadraticBasis.Func[indXi](r) * QuadraticBasis.FirstDerivative[indYi](z) *
+                    QuadraticBasis.Func[indXj](r) * QuadraticBasis.FirstDerivative[indYj](z);
+
+                var stiffnessIntegrand = (double r, double z) =>
+                    r * (dR(r, z) + dZ(r, z));
+
+                integralStiffnessValues[i, j] += _integrator.Integrate2D(integrationMesh, stiffnessIntegrand);
+            }
+        }
+
+        return integralStiffnessValues;
     }
 
     private static double[,] AssemblyLocalMatrixFrom(double[,] localMass, double[,] localStiffness)
@@ -311,101 +420,95 @@ public class Biquadratic : ISlae
         return localMatrix;
     }
 
-    private void AssemblyLocalMatrices
-    (
-        double[,] localStiffness, double[,] localMass, double[,] localC,
-        double hR, double hZ,
-        double localLambdaValue,
-        Dictionary<string, double> point
-    )
-    {
-        var integrationGrid = Utils.Create1DIntegrationMesh(0, 1);
-
-        for (var i = 0; i < 9; i++)
-        {
-            for (var j = 0; j < 9; j++)
-            {
-                var indXi = i % 3;
-                var indYi = i / 3;
-
-                var indXj = j % 3;
-                var indYj = j / 3;
-
-                var dX = (double r, double z) =>
-                    QuadraticBasis.FirstDerivative[indXi](r) * QuadraticBasis.Func[indYi](z) *
-                    QuadraticBasis.FirstDerivative[indXj](r) * QuadraticBasis.Func[indYj](z);
-
-                var dY = (double r, double z) =>
-                    QuadraticBasis.Func[indXi](r) * QuadraticBasis.FirstDerivative[indYi](z) *
-                    QuadraticBasis.Func[indXj](r) * QuadraticBasis.FirstDerivative[indYj](z);
-
-                var stiffnessIntegrand = (double r, double z) =>
-                    dX(r, z) + dY(r, z);
-
-                localStiffness[i, j] +=
-                    hR * hZ * localLambdaValue * _integrator.Integrate2D(integrationGrid, stiffnessIntegrand);
-
-                var basisPartMassIntegrand = (double x, double y) =>
-                    QuadraticBasis.Func[indXi](x) *
-                    QuadraticBasis.Func[indYi](y) *
-                    QuadraticBasis.Func[indXj](x) *
-                    QuadraticBasis.Func[indYj](y);
-
-                AssemblyLocalMass
-                (
-                    localMass,
-                    point,
-                    i, j,
-                    integrationGrid,
-                    basisPartMassIntegrand
-                );
-
-                localMass[i, j] *= hR * hZ;
-
-                localC[i, j] += hR * hZ * _integrator.Integrate2D(integrationGrid, basisPartMassIntegrand);
-            }
-        }
-    }
-    private void AssemblyLocalMass
-    (
-        double[,] localMass,
-        Dictionary<string, double> point,
-        int i, int j,
-        double[] integrationGrid,
-        Func<double, double, double> basisPartMassIntegrand
-    )
-    {
-        for (var k = 0; k < 4; k++)
-        {
-            var k1 = k;
-            localMass[i, j] += _evalGammaFuncAt(point) * _integrator.Integrate2D
-            (
-                integrationGrid,
-                (r, z) => basisPartMassIntegrand(r, z) * BilinearBasis.Func[k1](r, z)
-            );
-        }
-    }
-
     private void AddToGlobal(FiniteElement finiteElement, double[] localB)
     {
-        throw new NotImplementedException();
+        foreach (var globalNumber in finiteElement.FictiveNumeration)
+        {
+            for (var k = 0; k < 9; k++)
+            {
+                RhsVec[globalNumber] += localB[k];
+            }
+        }
     }
 
     private void AddToGlobal(FiniteElement finiteElement, double[,] localMatrix)
     {
-        throw new NotImplementedException();
+        for (var i = 0; i < localMatrix.GetLength(1); i++)
+        {
+            for (var j = 0; j < localMatrix.GetLength(0); j++)
+            {
+                var globalI = finiteElement.FictiveNumeration[i];
+                var globalJ = finiteElement.FictiveNumeration[j];
+                AddToGlobalAtPos(globalI, globalJ, localMatrix[i, j]);
+            }
+        }
+    }
+    private void AddToGlobalAtPos(int i, int j, double a)
+    {
+        if (i == j)
+        {
+            Matrix.Data["di"][i] += a;
+        }
+
+        if (i < j)
+        {
+            for (var ind = Matrix.Profile["ig"][j]; ind < Matrix.Profile["ig"][j + 1]; ind++)
+            {
+                if (Matrix.Profile["jg"][ind] == i)
+                {
+                    break;
+                }
+
+                Matrix.Data["ggu"][ind] += a;
+            }
+        }
+        else
+        {
+            for (var ind = Matrix.Profile["ig"][j]; ind < Matrix.Profile["ig"][j + 1]; ind++)
+            {
+                if (Matrix.Profile["jg"][ind] == j)
+                {
+                    break;
+                }
+
+                Matrix.Data["ggl"][ind] += a;
+            }
+        }
     }
 
-    private double GetLocalLambdaValueFrom(FiniteElement finiteElement, string inputFuncsLambda)
+    private double GetLocalLambdaValueFrom(FiniteElement finiteElement)
     {
-        throw new NotImplementedException();
+        var points = GetAllPointsIn(finiteElement);
+
+        return points.Sum(point => _lambdaFunc(point)) / 9.0;
+    }
+
+    private static Dictionary<string, double>[] GetAllPointsIn(FiniteElement finiteElement)
+    {
+        var hR = (finiteElement.Nodes[1].r - finiteElement.Nodes[0].r) / 2.0;
+        var hZ = (finiteElement.Nodes[1].z - finiteElement.Nodes[0].z) / 2.0;
+        var points = new[]
+        {
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[0].z),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r + hR, finiteElement.Nodes[0].z),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[1].r, finiteElement.Nodes[0].z),
+
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[0].z + hZ),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r + hR, finiteElement.Nodes[0].z + hZ),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[1].r, finiteElement.Nodes[0].z + hZ),
+
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[1].z),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r + hR, finiteElement.Nodes[1].z),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[1].z),
+        };
+        return points;
     }
 
     private class FiniteElement
     {
         public readonly (int globalNumber, double r, double z)[] Nodes;
 
-        public int[] FictiveNumeration { get; set; } = new int[9];
+        public int[] FictiveNumeration { get; } = new int[9];
 
         public FiniteElement((int, double, double)[] nodes)
         {
