@@ -36,9 +36,20 @@ public static class Utils
     /// <param name="x">Value of passing argument x to function</param>
     /// <param name="u">Value of passing argument u to function</param>
     /// <returns>Dictionary like {{"x", x}, {"u": u}}</returns>
-    public static Dictionary<string, double> MakeDict2D(double x, double u)
+    public static Dictionary<string, double> MakeDict2DCartesian(double x, double u)
     {
         return new Dictionary<string, double> {{"x", x}, {"u", u}};
+    }
+
+    /// <summary>
+    ///     Makes specific dictionary for passing into function in string form
+    /// </summary>
+    /// <param name="r">Value of passing argument r to function</param>
+    /// <param name="z">Value of passing argument z to function</param>
+    /// <returns>Dictionary like {{"x", x}, {"u": u}}</returns>
+    public static Dictionary<string, double> MakeDict2DCylindrical(double r, double z)
+    {
+        return new Dictionary<string, double> {{"r", r}, {"z", z}};
     }
 
     /// <summary>

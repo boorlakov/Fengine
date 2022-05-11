@@ -143,7 +143,11 @@ public class GaussFourPoints : IIntegrator
         return res;
     }
 
-    public double Integrate2D(double[] grid, string func)
+    public double Integrate2D
+    (
+        double[] grid,
+        string func
+    )
     {
         var calc = new XtensibleCalculator();
         var funcToIntegrate = calc.ParseFunction(func).Compile();
@@ -167,7 +171,7 @@ public class GaussFourPoints : IIntegrator
                     for (var k = 0; k < 4; k++)
                     {
                         var argZ = t * _ti[k] + centerR;
-                        res += _ci[j] * _ci[k] * funcToIntegrate(Utils.MakeDict2D(argR, argZ));
+                        res += _ci[j] * _ci[k] * funcToIntegrate(Utils.MakeDict2DCartesian(argR, argZ));
                     }
                 }
             }
@@ -198,7 +202,7 @@ public class GaussFourPoints : IIntegrator
                     for (var k = 0; k < 4; k++)
                     {
                         var argZ = t * _ti[k] + centerR;
-                        res += _ci[j] * _ci[k] * func(Utils.MakeDict2D(argR, argZ));
+                        res += _ci[j] * _ci[k] * func(Utils.MakeDict2DCartesian(argR, argZ));
                     }
                 }
             }
@@ -206,5 +210,44 @@ public class GaussFourPoints : IIntegrator
 
         res *= t * t;
         return res;
+    }
+    public double Integrate2D
+    (
+        double[] grid,
+        Func<Dictionary<string, double>, double> func,
+        Func<double, double, Dictionary<string, double>> makeDict2D)
+    {
+        var t = (grid[1] - grid[0]) / 2.0;
+
+        var res = 0.0;
+
+        for (var i = 0; i < grid.Length - 1; i++)
+        {
+            var centerZ = (grid[i + 1] + grid[i]) / 2.0;
+
+            for (var ii = 0; ii < grid.Length - 1; ii++)
+            {
+                var centerR = (grid[ii + 1] + grid[ii]) / 2.0;
+
+                for (var j = 0; j < 4; j++)
+                {
+                    var argR = t * _ti[j] + centerZ;
+
+                    for (var k = 0; k < 4; k++)
+                    {
+                        var argZ = t * _ti[k] + centerR;
+                        res += _ci[j] * _ci[k] * func(makeDict2D(argR, argZ));
+                    }
+                }
+            }
+        }
+
+        res *= t * t;
+        return res;
+    }
+    public double Integrate2D(double[] integrationGrid, Func<double, double, double> stiffnessIntegrand,
+        Func<double, double, Dictionary<string, double>> makeDict2DCylindrical)
+    {
+        throw new NotImplementedException();
     }
 }

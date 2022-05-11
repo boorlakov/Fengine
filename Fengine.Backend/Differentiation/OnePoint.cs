@@ -31,7 +31,7 @@ public class OnePoint : IDerivative
 
     public double FindFirst2DAt2Point(Func<Dictionary<string, double>, double> func, double x1, double x2, double step)
     {
-        return (func(Utils.MakeDict2D(x1, x2 + step)) - func(Utils.MakeDict2D(x1, x2))) /
+        return (func(Utils.MakeDict2DCartesian(x1, x2 + step)) - func(Utils.MakeDict2DCartesian(x1, x2))) /
                step;
     }
 }

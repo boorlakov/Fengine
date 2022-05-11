@@ -26,12 +26,12 @@
 //         var inputFuncs = new DataModels.InputFuncs();
 //         var area = new DataModels.Area.TwoDim
 //         {
-//             AmountPointsR = 6,
-//             AmountPointsZ = 4,
+//             AmountPointsR = 5,
+//             AmountPointsZ = 5,
 //             LeftBorder = 0,
-//             RightBorder = 5,
+//             RightBorder = 1,
 //             LowerBorder = 0,
-//             UpperBorder = 4
+//             UpperBorder = 1
 //         };
 //         var boundaryConditions = new DataModels.Conditions.Boundary.TwoDim();
 //         var mesh = new Backend.Fem.Mesh.Cylindrical.TwoDim(area);
@@ -44,8 +44,7 @@
 //             inputFuncs,
 //             boundaryConditions,
 //             _slaeSolver,
-//             _integrator,
-//             _matrix
+//             _integrator
 //         );
 //
 //         // Assert

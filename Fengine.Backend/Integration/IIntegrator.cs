@@ -49,4 +49,18 @@ public interface IIntegrator
     /// <param name="func"> Function to integrate. Note: must have 2-dimension </param>
     /// <returns> Value of the definite integral </returns>
     double Integrate2D(double[] grid, Func<Dictionary<string, double>, double> func);
+
+    /// <summary>
+    ///     Integrates a 2 dimensional functionFromString of given grid
+    /// </summary>
+    /// <param name="grid"> Array grid </param>
+    /// <param name="func"> Function to integrate. Note: must have 2-dimension </param>
+    /// <param name="makeDict2D">TODO</param>
+    /// <returns> Value of the definite integral </returns>
+    double Integrate2D
+    (
+        double[] grid,
+        Func<Dictionary<string, double>, double> func,
+        Func<double, double, Dictionary<string, double>> makeDict2D
+    );
 }

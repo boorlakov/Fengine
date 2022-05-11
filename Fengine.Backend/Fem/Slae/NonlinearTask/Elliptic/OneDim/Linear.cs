@@ -190,8 +190,8 @@ public class Linear : ISlae
         double[][][] localMass
     )
     {
-        var point = Utils.MakeDict2D(mesh.Nodes[i].Coordinates[Axis.X], ResVec[i]);
-        var nextPoint = Utils.MakeDict2D(mesh.Nodes[i + 1].Coordinates[Axis.X], ResVec[i + 1]);
+        var point = Utils.MakeDict2DCartesian(mesh.Nodes[i].Coordinates[Axis.X], ResVec[i]);
+        var nextPoint = Utils.MakeDict2DCartesian(mesh.Nodes[i + 1].Coordinates[Axis.X], ResVec[i + 1]);
 
         RhsVec[i] += step * (evalRhsFunc(point) * localMass[2][0][0] + evalRhsFunc(nextPoint) * localMass[2][0][1]);
         RhsVec[i + 1] += step * (evalRhsFunc(point) * localMass[2][1][0] + evalRhsFunc(nextPoint) * localMass[2][1][1]);
