@@ -244,12 +244,73 @@ public class Biquadratic : ISlae
                         )
                     };
 
+                    var localUBetaVec = new[]
+                    {
+                        _evalBoundaryFuncLeftAt(leftBorderPoints[0]),
+                        _evalBoundaryFuncLeftAt(leftBorderPoints[1]),
+                        _evalBoundaryFuncLeftAt(leftBorderPoints[2])
+                    };
+
+                    var borderPartToInsert = LinearAlgebra.GeneralOperations.MatrixMultiply
+                    (
+                        _localMatrixForThirdBoundaryCondition,
+                        localUBetaVec
+                    );
+
+                    Matrix.Data["di"][leftBorder[0]] += hZ * boundaryConditions.Beta *
+                                                        _localMatrixForThirdBoundaryCondition[0, 0];
+
+                    Matrix.Data["di"][leftBorder[1]] += hZ * boundaryConditions.Beta *
+                                                        _localMatrixForThirdBoundaryCondition[1, 1];
+
+                    Matrix.Data["di"][leftBorder[2]] += hZ * boundaryConditions.Beta *
+                                                        _localMatrixForThirdBoundaryCondition[2, 2];
+
+                    // (3, 0) || (0, 3)
+                    Matrix.Data["ggl"][Matrix.Profile["ig"][leftBorder[1]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[1, 0];
+                    Matrix.Data["ggu"][Matrix.Profile["ig"][leftBorder[1]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[1, 0];
+
+                    // (6, 0) || (0, 6)
+                    Matrix.Data["ggl"][Matrix.Profile["ig"][leftBorder[2]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 0];
+                    Matrix.Data["ggu"][Matrix.Profile["ig"][leftBorder[2]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 0];
+
+                    // (6, 3)
+                    var indent = 0;
+
+                    while (Matrix.Profile["jg"][Matrix.Profile["ig"][leftBorder[2]] + indent] != leftBorder[1])
+                    {
+                        indent++;
+                    }
+
+                    Matrix.Data["ggl"][Matrix.Profile["ig"][leftBorder[2]] + indent] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 1];
+                    Matrix.Data["ggu"][Matrix.Profile["ig"][leftBorder[2]] + indent] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 1];
+
                     RhsVec[leftBorder[0]] +=
-                        hZ * boundaryConditions.Beta * _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
+                        hZ * boundaryConditions.Beta *
+                        (4.0 * borderPartToInsert[0] + 2.0 * borderPartToInsert[1] - borderPartToInsert[2]) /
+                        30.0;
+
                     RhsVec[leftBorder[1]] +=
-                        hZ * boundaryConditions.Beta * _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
+                        hZ * boundaryConditions.Beta *
+                        (2.0 * borderPartToInsert[0] + 16.0 * borderPartToInsert[1] + 2.0 * borderPartToInsert[2]) /
+                        30.0;
+
                     RhsVec[leftBorder[2]] +=
-                        hZ * boundaryConditions.Beta * _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
+                        hZ * boundaryConditions.Beta *
+                        (-1.0 * borderPartToInsert[0] + 2.0 * borderPartToInsert[1] + 4.0 * borderPartToInsert[2]) /
+                        30.0;
                 }
 
                 break;
