@@ -10,7 +10,7 @@ public class TwoDim : BoundaryConditions
     /// <summary>
     ///     Boundary function on left border. Represented by string
     /// </summary>
-    public string LeftFunc { get; init; } = string.Empty;
+    public string LeftFunc { get; init; } = "0.0";
 
     /// <summary>
     ///     Boundary condition type on right border. Valid values is: "First", "Second", "Third"
@@ -20,7 +20,7 @@ public class TwoDim : BoundaryConditions
     /// <summary>
     ///     Boundary function on right border. Represented by string
     /// </summary>
-    public string RightFunc { get; init; } = string.Empty;
+    public string RightFunc { get; init; } = "0.0";
 
     /// <summary>
     ///     Boundary condition type on upper border. Valid values is: "First", "Second", "Third"
@@ -30,7 +30,7 @@ public class TwoDim : BoundaryConditions
     /// <summary>
     ///     Boundary function on upper border. Represented by string
     /// </summary>
-    public string UpperFunc { get; init; } = string.Empty;
+    public string UpperFunc { get; init; } = "0.0";
 
     /// <summary>
     ///     Boundary condition type on lower border. Valid values is: "First", "Second", "Third"
@@ -40,5 +40,5 @@ public class TwoDim : BoundaryConditions
     /// <summary>
     ///     Boundary function on lower border. Represented by string
     /// </summary>
-    public string LowerFunc { get; init; } = string.Empty;
+    public string LowerFunc { get; init; } = "0.0";
 }

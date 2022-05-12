@@ -12,8 +12,20 @@ public class Biquadratic : ISlae
     private SortedSet<int>[] _boundsList;
 
     private Func<Dictionary<string, double>, double> _evalRhsFuncAt;
-    private Func<Dictionary<string, double>, double> _lambdaFunc;
+    private Func<Dictionary<string, double>, double> _evalLambdaFuncAt;
     private Func<Dictionary<string, double>, double> _evalGammaFuncAt;
+
+    private Func<Dictionary<string, double>, double> _evalBoundaryFuncLeftAt;
+    private Func<Dictionary<string, double>, double> _evalBoundaryFuncRightAt;
+    private Func<Dictionary<string, double>, double> _evalBoundaryFuncLowerAt;
+    private Func<Dictionary<string, double>, double> _evalBoundaryFuncUpperAt;
+
+    private double[,] _localMatrixForThirdBoundaryCondition =
+    {
+        {2.0 / 15.0, 1.0 / 15.0, -1.0 / 30.0},
+        {1.0 / 15.0, 8.0 / 15.0, 1.0 / 15.0},
+        {-1.0 / 30.0, 1.0 / 15.0, 2.0 / 15.0}
+    };
 
     private IIntegrator _integrator;
     private LinearAlgebra.SlaeSolver.ISlaeSolver _slaeSolver;
@@ -34,6 +46,7 @@ public class Biquadratic : ISlae
 
     public Biquadratic
     (
+        DataModels.Area.TwoDim area,
         Mesh.Cylindrical.TwoDim mesh,
         InputFuncs inputFuncs,
         DataModels.Conditions.Boundary.TwoDim boundaryConditions,
@@ -43,7 +56,7 @@ public class Biquadratic : ISlae
     {
         ConfigureServices(slaeSolver, integrator);
 
-        // CompileInputFunctions(inputFuncs);
+        CompileInputFunctions(inputFuncs, boundaryConditions);
 
         _finiteElements = GetFiniteElementsFrom(mesh);
 
@@ -51,15 +64,20 @@ public class Biquadratic : ISlae
 
         AssemblyGlobally(inputFuncs);
 
-        ApplyBoundaryConditions(boundaryConditions);
+        var bim = 9;
+        ApplyBoundaryConditions(boundaryConditions, area, mesh);
     }
 
-    private void CompileInputFunctions(InputFuncs inputFuncs)
+    private void CompileInputFunctions(InputFuncs inputFuncs, DataModels.Conditions.Boundary.TwoDim boundaryConditions)
     {
         var calculator = new XtensibleCalculator();
         _evalRhsFuncAt = calculator.ParseFunction(inputFuncs.RhsFunc).Compile();
-        _lambdaFunc = calculator.ParseFunction(inputFuncs.Lambda).Compile();
+        _evalLambdaFuncAt = calculator.ParseFunction(inputFuncs.Lambda).Compile();
         _evalGammaFuncAt = calculator.ParseFunction(inputFuncs.Gamma).Compile();
+        _evalBoundaryFuncLeftAt = calculator.ParseFunction(boundaryConditions.LeftFunc).Compile();
+        _evalBoundaryFuncRightAt = calculator.ParseFunction(boundaryConditions.RightFunc).Compile();
+        _evalBoundaryFuncLowerAt = calculator.ParseFunction(boundaryConditions.LowerFunc).Compile();
+        _evalBoundaryFuncUpperAt = calculator.ParseFunction(boundaryConditions.UpperFunc).Compile();
     }
 
     public double[] Solve(Accuracy accuracy)
@@ -81,9 +99,373 @@ public class Biquadratic : ISlae
         _integrator = integrator;
     }
 
-    private void ApplyBoundaryConditions(DataModels.Conditions.Boundary.TwoDim boundaryConditions)
+    private void ApplyBoundaryConditions
+    (
+        DataModels.Conditions.Boundary.TwoDim boundaryConditions,
+        DataModels.Area.TwoDim area,
+        Mesh.Cylindrical.TwoDim mesh
+    )
     {
-        throw new NotImplementedException();
+        var numberOfFiniteElementsAtAxisR = mesh.R.Length - 1;
+        var numberOfFiniteElementsAtAxisZ = mesh.Z.Length - 1;
+
+        switch (boundaryConditions.LeftType)
+        {
+            case "First":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement = i * numberOfFiniteElementsAtAxisR;
+
+                    var leftBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[0],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[3],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6]
+                    };
+
+                    Matrix.Data["di"][leftBorder[0]] = 1.0;
+                    Matrix.Data["di"][leftBorder[1]] = 1.0;
+                    Matrix.Data["di"][leftBorder[2]] = 1.0;
+
+                    Nullify(leftBorder[0], mesh);
+                    Nullify(leftBorder[1], mesh);
+                    Nullify(leftBorder[2], mesh);
+
+                    var hZ =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                    ) / 2.0;
+
+                    var leftBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z + hZ
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        )
+                    };
+
+                    RhsVec[leftBorder[0]] = _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
+                    RhsVec[leftBorder[1]] = _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
+                    RhsVec[leftBorder[2]] = _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
+                }
+
+                break;
+            case "Second":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement = i * numberOfFiniteElementsAtAxisR;
+
+                    var leftBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[0],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[3],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6]
+                    };
+
+
+                    var hZ =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                    ) / 2.0;
+
+                    var leftBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z + hZ
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        )
+                    };
+
+                    RhsVec[leftBorder[0]] += _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
+                    RhsVec[leftBorder[1]] += _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
+                    RhsVec[leftBorder[2]] += _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
+                }
+
+                break;
+            case "Third":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement = i * numberOfFiniteElementsAtAxisR;
+
+                    var leftBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[0],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[3],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6]
+                    };
+
+
+                    var hZ =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                    ) / 2.0;
+
+                    var leftBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z + hZ
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        )
+                    };
+
+                    RhsVec[leftBorder[0]] +=
+                        hZ * boundaryConditions.Beta * _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
+                    RhsVec[leftBorder[1]] +=
+                        hZ * boundaryConditions.Beta * _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
+                    RhsVec[leftBorder[2]] +=
+                        hZ * boundaryConditions.Beta * _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
+                }
+
+                break;
+        }
+
+        switch (boundaryConditions.RightType)
+        {
+            case "First":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement =
+                        i * numberOfFiniteElementsAtAxisR + numberOfFiniteElementsAtAxisR;
+
+                    var rightBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[2],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[5],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[8]
+                    };
+
+                    Matrix.Data["di"][rightBorder[0]] = 1.0;
+                    Matrix.Data["di"][rightBorder[1]] = 1.0;
+                    Matrix.Data["di"][rightBorder[2]] = 1.0;
+
+                    Nullify(rightBorder[0], mesh);
+                    Nullify(rightBorder[1], mesh);
+                    Nullify(rightBorder[2], mesh);
+
+                    var hZ =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z
+                    ) / 2.0;
+
+                    var rightBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z + hZ
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z
+                        )
+                    };
+
+                    RhsVec[rightBorder[0]] = _evalBoundaryFuncRightAt(rightBorderPoints[0]);
+                    RhsVec[rightBorder[1]] = _evalBoundaryFuncRightAt(rightBorderPoints[1]);
+                    RhsVec[rightBorder[2]] = _evalBoundaryFuncRightAt(rightBorderPoints[2]);
+                }
+
+                break;
+            case "Second":
+                throw new NotImplementedException();
+                break;
+            case "Third":
+                throw new NotImplementedException();
+                break;
+        }
+
+        switch (boundaryConditions.LowerType)
+        {
+            case "First":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisR; i++)
+                {
+                    var lowerBorder = new[]
+                    {
+                        _finiteElements[i].FictiveNumeration[0],
+                        _finiteElements[i].FictiveNumeration[1],
+                        _finiteElements[i].FictiveNumeration[2]
+                    };
+
+                    Matrix.Data["di"][lowerBorder[0]] = 1.0;
+                    Matrix.Data["di"][lowerBorder[1]] = 1.0;
+                    Matrix.Data["di"][lowerBorder[2]] = 1.0;
+
+                    Nullify(lowerBorder[0], mesh);
+                    Nullify(lowerBorder[1], mesh);
+                    Nullify(lowerBorder[2], mesh);
+
+                    var hR =
+                    (
+                        _finiteElements[i].Nodes[1].r -
+                        _finiteElements[i].Nodes[0].r
+                    ) / 2.0;
+
+                    var lowerBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[i].Nodes[0].r,
+                            _finiteElements[i].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[i].Nodes[0].r + hR,
+                            _finiteElements[i].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[i].Nodes[1].r,
+                            _finiteElements[i].Nodes[1].z
+                        )
+                    };
+
+                    RhsVec[lowerBorder[0]] = _evalBoundaryFuncLowerAt(lowerBorderPoints[0]);
+                    RhsVec[lowerBorder[1]] = _evalBoundaryFuncLowerAt(lowerBorderPoints[1]);
+                    RhsVec[lowerBorder[2]] = _evalBoundaryFuncLowerAt(lowerBorderPoints[2]);
+                }
+
+                break;
+            case "Second":
+                throw new NotImplementedException();
+                break;
+            case "Third":
+                throw new NotImplementedException();
+                break;
+        }
+
+        switch (boundaryConditions.UpperType)
+        {
+            case "First":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement =
+                        (numberOfFiniteElementsAtAxisZ - 1) * numberOfFiniteElementsAtAxisR + i;
+
+                    var upperBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[7],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[8]
+                    };
+
+                    Matrix.Data["di"][upperBorder[0]] = 1.0;
+                    Matrix.Data["di"][upperBorder[1]] = 1.0;
+                    Matrix.Data["di"][upperBorder[2]] = 1.0;
+
+                    Nullify(upperBorder[0], mesh);
+                    Nullify(upperBorder[1], mesh);
+                    Nullify(upperBorder[2], mesh);
+
+                    var hR =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                    ) / 2.0;
+
+                    var upperBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r + hR,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z
+                        )
+                    };
+
+                    RhsVec[upperBorder[0]] = _evalBoundaryFuncUpperAt(upperBorderPoints[0]);
+                    RhsVec[upperBorder[1]] = _evalBoundaryFuncUpperAt(upperBorderPoints[1]);
+                    RhsVec[upperBorder[2]] = _evalBoundaryFuncUpperAt(upperBorderPoints[2]);
+                }
+
+                break;
+            case "Second":
+                throw new NotImplementedException();
+                break;
+            case "Third":
+                throw new NotImplementedException();
+                break;
+        }
+    }
+
+    private void Nullify(int node, Mesh.Cylindrical.TwoDim mesh)
+    {
+        for (var i = Matrix.Profile["ig"][node]; i < Matrix.Profile["ig"][node + 1]; i++)
+        {
+            Matrix.Data["ggl"][i] = 0.0;
+        }
+
+        for (var i = node; i < (2 * mesh.R.Length - 1) * (2 * mesh.Z.Length - 1); i++)
+        {
+            var curNode = Matrix.Profile["jg"][Matrix.Profile["ig"][i]];
+            var k = 0;
+
+            while (curNode <= node && k < Matrix.Profile["ig"][i + 1] - Matrix.Profile["ig"][i])
+            {
+                if (curNode == node)
+                {
+                    Matrix.Data["ggu"][Matrix.Profile["jg"][i] + k] = 0.0;
+                }
+
+                k++;
+
+                if (k < Matrix.Profile["ig"][i + 1] - Matrix.Profile["ig"][i])
+                {
+                    curNode = Matrix.Profile["jg"][Matrix.Profile["ig"][i] + k];
+                }
+            }
+        }
     }
 
     private (IMatrix Matrix, double[] ResVec, double[] RhsVec) GetPortraitFrom(Mesh.Cylindrical.TwoDim mesh)
@@ -184,6 +566,7 @@ public class Biquadratic : ISlae
             }
         }
     }
+
     private static void GetFictiveNumerationFor(FiniteElement[] finiteElements, Mesh.Cylindrical.TwoDim mesh)
     {
         var k = 0;
@@ -264,7 +647,7 @@ public class Biquadratic : ISlae
         var localLambdaValue = GetLocalLambdaValueFrom(finiteElement);
 
         var hR = finiteElement.Nodes[1].r - finiteElement.Nodes[0].r;
-        var hZ = finiteElement.Nodes[1].z - finiteElement.Nodes[0].z;
+        var hZ = finiteElement.Nodes[2].z - finiteElement.Nodes[0].z;
 
         var localStiffness = new double[9, 9];
         var localC = new double[9, 9];
@@ -310,7 +693,7 @@ public class Biquadratic : ISlae
     private double[,] GetIntegralCValues()
     {
         var integrationMesh = Utils.Create1DIntegrationMesh(0, 1);
-        var integralMassValues = new double[9, 9];
+        var integralCValues = new double[9, 9];
 
         for (var i = 0; i < 9; i++)
         {
@@ -329,11 +712,11 @@ public class Biquadratic : ISlae
                     QuadraticBasis.Func[indXj](r) *
                     QuadraticBasis.Func[indYj](z);
 
-                _integrator.Integrate2D(integrationMesh, cIntegrand);
+                integralCValues[i, j] += _integrator.Integrate2D(integrationMesh, cIntegrand);
             }
         }
 
-        return integralMassValues;
+        return integralCValues;
     }
 
     private double[,] GetIntegralMassValues()
@@ -443,6 +826,7 @@ public class Biquadratic : ISlae
             }
         }
     }
+
     private void AddToGlobalAtPos(int i, int j, double a)
     {
         if (i == j)
@@ -480,7 +864,7 @@ public class Biquadratic : ISlae
     {
         var points = GetAllPointsIn(finiteElement);
 
-        return points.Sum(point => _lambdaFunc(point)) / 9.0;
+        return points.Sum(point => _evalLambdaFuncAt(point)) / 9.0;
     }
 
     private static Dictionary<string, double>[] GetAllPointsIn(FiniteElement finiteElement)
