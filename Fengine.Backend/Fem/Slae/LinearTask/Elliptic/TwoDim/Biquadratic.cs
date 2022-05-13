@@ -20,15 +20,24 @@ public class Biquadratic : ISlae
     private Func<Dictionary<string, double>, double> _evalBoundaryFuncLowerAt;
     private Func<Dictionary<string, double>, double> _evalBoundaryFuncUpperAt;
 
-    private double[,] _localMatrixForThirdBoundaryCondition =
+    private readonly double[,] _localMatrixForThirdBoundaryCondition =
     {
-        {2.0 / 15.0, 1.0 / 15.0, -1.0 / 30.0},
-        {1.0 / 15.0, 8.0 / 15.0, 1.0 / 15.0},
-        {-1.0 / 30.0, 1.0 / 15.0, 2.0 / 15.0}
+        {
+            2.0 / 15.0, 1.0 / 15.0, -1.0 / 30.0
+        },
+        {
+            1.0 / 15.0, 8.0 / 15.0, 1.0 / 15.0
+        },
+        {
+            -1.0 / 30.0, 1.0 / 15.0, 2.0 / 15.0
+        }
     };
 
     private IIntegrator _integrator;
     private LinearAlgebra.SlaeSolver.ISlaeSolver _slaeSolver;
+    private double[,] _integralStiffnessValues;
+    private double[,,] _integralMassValues;
+    private double[,] _integralCValues;
 
     public Biquadratic(IMatrix matrix, double[] rhsVec, double[] resVec)
     {
@@ -62,9 +71,8 @@ public class Biquadratic : ISlae
 
         (Matrix, ResVec, RhsVec) = GetPortraitFrom(mesh);
 
-        AssemblyGlobally(inputFuncs);
+        AssemblyGlobally();
 
-        var bim = 9;
         ApplyBoundaryConditions(boundaryConditions, area, mesh);
     }
 
@@ -111,57 +119,6 @@ public class Biquadratic : ISlae
 
         switch (boundaryConditions.LeftType)
         {
-            case "First":
-                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
-                {
-                    var numberOfCurrentFiniteElement = i * numberOfFiniteElementsAtAxisR;
-
-                    var leftBorder = new[]
-                    {
-                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[0],
-                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[3],
-                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6]
-                    };
-
-                    Matrix.Data["di"][leftBorder[0]] = 1.0;
-                    Matrix.Data["di"][leftBorder[1]] = 1.0;
-                    Matrix.Data["di"][leftBorder[2]] = 1.0;
-
-                    Nullify(leftBorder[0], mesh);
-                    Nullify(leftBorder[1], mesh);
-                    Nullify(leftBorder[2], mesh);
-
-                    var hZ =
-                    (
-                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z -
-                        _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
-                    ) / 2.0;
-
-                    var leftBorderPoints = new[]
-                    {
-                        Utils.MakeDict2DCylindrical
-                        (
-                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
-                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
-                        ),
-                        Utils.MakeDict2DCylindrical
-                        (
-                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
-                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z + hZ
-                        ),
-                        Utils.MakeDict2DCylindrical
-                        (
-                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r,
-                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
-                        )
-                    };
-
-                    RhsVec[leftBorder[0]] = _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
-                    RhsVec[leftBorder[1]] = _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
-                    RhsVec[leftBorder[2]] = _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
-                }
-
-                break;
             case "Second":
                 for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
                 {
@@ -200,9 +157,33 @@ public class Biquadratic : ISlae
                         )
                     };
 
-                    RhsVec[leftBorder[0]] += _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
-                    RhsVec[leftBorder[1]] += _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
-                    RhsVec[leftBorder[2]] += _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
+                    var derivativeValues = new[]
+                    {
+                        _evalBoundaryFuncLeftAt(leftBorderPoints[0]),
+                        _evalBoundaryFuncLeftAt(leftBorderPoints[1]),
+                        _evalBoundaryFuncLeftAt(leftBorderPoints[2])
+                    };
+
+                    RhsVec[leftBorder[0]] += hZ / 30.0 *
+                                             (
+                                                 4.0 * derivativeValues[0]
+                                                 + 2.0 * derivativeValues[1]
+                                                 - 1.0 * derivativeValues[2]
+                                             );
+
+                    RhsVec[leftBorder[1]] += hZ / 30.0 *
+                                             (
+                                                 2 * derivativeValues[0]
+                                                 + 16 * derivativeValues[1]
+                                                 + 2 * derivativeValues[2]
+                                             );
+
+                    RhsVec[leftBorder[2]] += hZ / 30.0 *
+                                             (
+                                                 -1 * derivativeValues[0]
+                                                 + 2 * derivativeValues[1]
+                                                 + 4 * derivativeValues[2]
+                                             );
                 }
 
                 break;
@@ -318,11 +299,407 @@ public class Biquadratic : ISlae
 
         switch (boundaryConditions.RightType)
         {
-            case "First":
+            case "Second":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement =
+                        i * numberOfFiniteElementsAtAxisR + numberOfFiniteElementsAtAxisR - 1;
+
+                    var rightBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[2],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[5],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[8]
+                    };
+
+                    var hZ =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z
+                    ) / 2.0;
+
+                    var rightBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z + hZ
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z
+                        )
+                    };
+
+                    var derivativeValues = new[]
+                    {
+                        _evalBoundaryFuncLeftAt(rightBorderPoints[0]),
+                        _evalBoundaryFuncLeftAt(rightBorderPoints[1]),
+                        _evalBoundaryFuncLeftAt(rightBorderPoints[2])
+                    };
+
+                    RhsVec[rightBorder[0]] += hZ / 30.0 *
+                                              (
+                                                  4.0 * derivativeValues[0]
+                                                  + 2.0 * derivativeValues[1]
+                                                  - 1.0 * derivativeValues[2]
+                                              );
+
+                    RhsVec[rightBorder[1]] += hZ / 30.0 *
+                                              (
+                                                  2 * derivativeValues[0]
+                                                  + 16 * derivativeValues[1]
+                                                  + 2 * derivativeValues[2]
+                                              );
+
+                    RhsVec[rightBorder[2]] += hZ / 30.0 *
+                                              (
+                                                  -1 * derivativeValues[0]
+                                                  + 2 * derivativeValues[1]
+                                                  + 4 * derivativeValues[2]
+                                              );
+                }
+
+                break;
+            case "Third":
                 for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
                 {
                     var numberOfCurrentFiniteElement =
                         i * numberOfFiniteElementsAtAxisR + numberOfFiniteElementsAtAxisR;
+
+                    var rightBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[2],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[5],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[8]
+                    };
+
+                    var hZ =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z
+                    ) / 2.0;
+
+                    var rightBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[1].z + hZ
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z
+                        )
+                    };
+
+                    var localUBetaVec = new[]
+                    {
+                        _evalBoundaryFuncLeftAt(rightBorderPoints[0]),
+                        _evalBoundaryFuncLeftAt(rightBorderPoints[1]),
+                        _evalBoundaryFuncLeftAt(rightBorderPoints[2])
+                    };
+
+                    var borderPartToInsert = LinearAlgebra.GeneralOperations.MatrixMultiply
+                    (
+                        _localMatrixForThirdBoundaryCondition,
+                        localUBetaVec
+                    );
+
+                    Matrix.Data["di"][rightBorder[0]] += hZ * boundaryConditions.Beta *
+                                                         _localMatrixForThirdBoundaryCondition[0, 0];
+
+                    Matrix.Data["di"][rightBorder[1]] += hZ * boundaryConditions.Beta *
+                                                         _localMatrixForThirdBoundaryCondition[1, 1];
+
+                    Matrix.Data["di"][rightBorder[2]] += hZ * boundaryConditions.Beta *
+                                                         _localMatrixForThirdBoundaryCondition[2, 2];
+
+                    // (3, 0) || (0, 3)
+                    Matrix.Data["ggl"][Matrix.Profile["ig"][rightBorder[1]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[1, 0];
+                    Matrix.Data["ggu"][Matrix.Profile["ig"][rightBorder[1]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[1, 0];
+
+                    // (6, 0) || (0, 6)
+                    Matrix.Data["ggl"][Matrix.Profile["ig"][rightBorder[2]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 0];
+                    Matrix.Data["ggu"][Matrix.Profile["ig"][rightBorder[2]]] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 0];
+
+                    // (6, 3)
+                    var indent = 0;
+
+                    while (Matrix.Profile["jg"][Matrix.Profile["ig"][rightBorder[2]] + indent] != rightBorder[1])
+                    {
+                        indent++;
+                    }
+
+                    Matrix.Data["ggl"][Matrix.Profile["ig"][rightBorder[2]] + indent] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 1];
+                    Matrix.Data["ggu"][Matrix.Profile["ig"][rightBorder[2]] + indent] +=
+                        hZ * boundaryConditions.Beta
+                           * _localMatrixForThirdBoundaryCondition[2, 1];
+
+                    RhsVec[rightBorder[0]] +=
+                        hZ * boundaryConditions.Beta *
+                        (4.0 * borderPartToInsert[0] + 2.0 * borderPartToInsert[1] - borderPartToInsert[2]) /
+                        30.0;
+
+                    RhsVec[rightBorder[1]] +=
+                        hZ * boundaryConditions.Beta *
+                        (2.0 * borderPartToInsert[0] + 16.0 * borderPartToInsert[1] + 2.0 * borderPartToInsert[2]) /
+                        30.0;
+
+                    RhsVec[rightBorder[2]] +=
+                        hZ * boundaryConditions.Beta *
+                        (-1.0 * borderPartToInsert[0] + 2.0 * borderPartToInsert[1] + 4.0 * borderPartToInsert[2]) /
+                        30.0;
+                }
+
+                break;
+        }
+
+        switch (boundaryConditions.LowerType)
+        {
+            case "Second":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var lowerBorder = new[]
+                    {
+                        _finiteElements[i].FictiveNumeration[0],
+                        _finiteElements[i].FictiveNumeration[1],
+                        _finiteElements[i].FictiveNumeration[2]
+                    };
+
+                    var hR =
+                    (
+                        _finiteElements[i].Nodes[1].r -
+                        _finiteElements[i].Nodes[0].r
+                    ) / 2.0;
+
+                    var lowerBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[i].Nodes[0].r,
+                            _finiteElements[i].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[i].Nodes[0].r + hR,
+                            _finiteElements[i].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[i].Nodes[1].r,
+                            _finiteElements[i].Nodes[1].z
+                        )
+                    };
+
+                    var derivativeValues = new[]
+                    {
+                        _evalBoundaryFuncLeftAt(lowerBorderPoints[0]),
+                        _evalBoundaryFuncLeftAt(lowerBorderPoints[1]),
+                        _evalBoundaryFuncLeftAt(lowerBorderPoints[2])
+                    };
+
+                    RhsVec[lowerBorder[0]] += hR / 30.0 *
+                                              (
+                                                  4.0 * derivativeValues[0]
+                                                  + 2.0 * derivativeValues[1]
+                                                  - 1.0 * derivativeValues[2]
+                                              );
+
+                    RhsVec[lowerBorder[1]] += hR / 30.0 *
+                                              (
+                                                  2 * derivativeValues[0]
+                                                  + 16 * derivativeValues[1]
+                                                  + 2 * derivativeValues[2]
+                                              );
+
+                    RhsVec[lowerBorder[2]] += hR / 30.0 *
+                                              (
+                                                  -1 * derivativeValues[0]
+                                                  + 2 * derivativeValues[1]
+                                                  + 4 * derivativeValues[2]
+                                              );
+                }
+
+                break;
+            case "Third":
+                throw new NotImplementedException();
+                break;
+        }
+
+        switch (boundaryConditions.UpperType)
+        {
+            case "Second":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement =
+                        (numberOfFiniteElementsAtAxisZ - 1) * numberOfFiniteElementsAtAxisR + i;
+
+                    var upperBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[7],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[8]
+                    };
+
+                    var hR =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                    ) / 2.0;
+
+                    var upperBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r + hR,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z
+                        )
+                    };
+
+                    var derivativeValues = new[]
+                    {
+                        _evalBoundaryFuncLeftAt(upperBorderPoints[0]),
+                        _evalBoundaryFuncLeftAt(upperBorderPoints[1]),
+                        _evalBoundaryFuncLeftAt(upperBorderPoints[2])
+                    };
+
+                    RhsVec[upperBorder[0]] += hR / 30.0 *
+                                              (
+                                                  4.0 * derivativeValues[0]
+                                                  + 2.0 * derivativeValues[1]
+                                                  - 1.0 * derivativeValues[2]
+                                              );
+
+                    RhsVec[upperBorder[1]] += hR / 30.0 *
+                                              (
+                                                  2 * derivativeValues[0]
+                                                  + 16 * derivativeValues[1]
+                                                  + 2 * derivativeValues[2]
+                                              );
+
+                    RhsVec[upperBorder[2]] += hR / 30.0 *
+                                              (
+                                                  -1 * derivativeValues[0]
+                                                  + 2 * derivativeValues[1]
+                                                  + 4 * derivativeValues[2]
+                                              );
+                }
+
+                break;
+            case "Third":
+                throw new NotImplementedException();
+                break;
+        }
+
+        ApplyFirstBoundaryConditions
+        (
+            boundaryConditions,
+            mesh,
+            numberOfFiniteElementsAtAxisZ, numberOfFiniteElementsAtAxisR
+        );
+    }
+    private void ApplyFirstBoundaryConditions
+    (
+        DataModels.Conditions.Boundary.TwoDim boundaryConditions,
+        Mesh.Cylindrical.TwoDim mesh,
+        int numberOfFiniteElementsAtAxisZ, int numberOfFiniteElementsAtAxisR
+    )
+    {
+        switch (boundaryConditions.LeftType)
+        {
+            case "First":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement = i * numberOfFiniteElementsAtAxisR;
+
+                    var leftBorder = new[]
+                    {
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[0],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[3],
+                        _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6]
+                    };
+
+                    Matrix.Data["di"][leftBorder[0]] = 1.0;
+                    Matrix.Data["di"][leftBorder[1]] = 1.0;
+                    Matrix.Data["di"][leftBorder[2]] = 1.0;
+
+                    Nullify(leftBorder[0], mesh);
+                    Nullify(leftBorder[1], mesh);
+                    Nullify(leftBorder[2], mesh);
+
+                    var hZ =
+                    (
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                    ) / 2.0;
+
+                    var leftBorderPoints = new[]
+                    {
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[0].z + hZ
+                        ),
+                        Utils.MakeDict2DCylindrical
+                        (
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r,
+                            _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        )
+                    };
+
+                    RhsVec[leftBorder[0]] = _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
+                    RhsVec[leftBorder[1]] = _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
+                    RhsVec[leftBorder[2]] = _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
+                }
+
+                break;
+        }
+
+        switch (boundaryConditions.RightType)
+        {
+            case "First":
+                for (var i = 0; i < numberOfFiniteElementsAtAxisZ; i++)
+                {
+                    var numberOfCurrentFiniteElement =
+                        i * numberOfFiniteElementsAtAxisR + numberOfFiniteElementsAtAxisR - 1;
 
                     var rightBorder = new[]
                     {
@@ -369,12 +746,6 @@ public class Biquadratic : ISlae
                     RhsVec[rightBorder[2]] = _evalBoundaryFuncRightAt(rightBorderPoints[2]);
                 }
 
-                break;
-            case "Second":
-                throw new NotImplementedException();
-                break;
-            case "Third":
-                throw new NotImplementedException();
                 break;
         }
 
@@ -428,12 +799,6 @@ public class Biquadratic : ISlae
                     RhsVec[lowerBorder[2]] = _evalBoundaryFuncLowerAt(lowerBorderPoints[2]);
                 }
 
-                break;
-            case "Second":
-                throw new NotImplementedException();
-                break;
-            case "Third":
-                throw new NotImplementedException();
                 break;
         }
 
@@ -490,12 +855,6 @@ public class Biquadratic : ISlae
                     RhsVec[upperBorder[2]] = _evalBoundaryFuncUpperAt(upperBorderPoints[2]);
                 }
 
-                break;
-            case "Second":
-                throw new NotImplementedException();
-                break;
-            case "Third":
-                throw new NotImplementedException();
                 break;
         }
     }
@@ -690,19 +1049,24 @@ public class Biquadratic : ISlae
         };
     }
 
-    private void AssemblyGlobally(InputFuncs inputFunctions)
+    private void AssemblyGlobally()
     {
+        EvalLocalIntegrals();
+
         foreach (var finiteElement in _finiteElements)
         {
-            AssemblyLocally(finiteElement, inputFunctions);
+            AssemblyLocally(finiteElement);
         }
     }
 
-    private void AssemblyLocally
-    (
-        FiniteElement finiteElement,
-        InputFuncs inputFuncs
-    )
+    private void EvalLocalIntegrals()
+    {
+        _integralStiffnessValues = GetIntegralStiffnessValues();
+        _integralMassValues = GetIntegralMassValues();
+        _integralCValues = GetIntegralCValues();
+    }
+
+    private void AssemblyLocally(FiniteElement finiteElement)
     {
         var points = GetAllPointsIn(finiteElement);
         var localLambdaValue = GetLocalLambdaValueFrom(finiteElement);
@@ -718,29 +1082,31 @@ public class Biquadratic : ISlae
 
         var localNumber = 0;
 
-        var integralStiffnessValues = GetIntegralStiffnessValues();
-        var integralMassValues = GetIntegralMassValues();
-        var integralCValues = GetIntegralCValues();
-
         foreach (var point in points)
         {
             localF[localNumber] = _evalRhsFuncAt(point);
             localNumber++;
+        }
 
-            for (var i = 0; i < 9; i++)
+        for (var i = 0; i < 9; i++)
+        {
+            for (var j = 0; j < 9; j++)
             {
-                for (var j = 0; j < 9; j++)
+                localStiffness[i, j] += hR * hZ * localLambdaValue * _integralStiffnessValues[i, j];
+
+                for (var k = 0; k < 4; k++)
                 {
-                    localStiffness[i, j] += hR * hZ * localLambdaValue * integralStiffnessValues[i, j];
+                    var point = Utils.MakeDict2DCylindrical
+                    (
+                        finiteElement.Nodes[k].r,
+                        finiteElement.Nodes[k].z
+                    );
 
-                    for (var k = 0; k < 4; k++)
-                    {
-                        localMass[i, j] += _evalGammaFuncAt(point) * integralMassValues[i, j];
-                    }
-
-                    localMass[i, j] *= hR * hZ;
-                    localC[i, j] += hR * hZ * integralCValues[i, j];
+                    localMass[i, j] += _evalGammaFuncAt(point) * _integralMassValues[i, j, k];
                 }
+
+                localMass[i, j] *= hR * hZ;
+                localC[i, j] += hR * hZ * _integralCValues[i, j];
             }
         }
 
@@ -780,10 +1146,11 @@ public class Biquadratic : ISlae
         return integralCValues;
     }
 
-    private double[,] GetIntegralMassValues()
+    private double[,,] GetIntegralMassValues()
     {
         var integrationMesh = Utils.Create1DIntegrationMesh(0, 1);
-        var integralMassValues = new double[9, 9];
+        var integralMassValues = new double[9, 9, 4];
+
 
         for (var i = 0; i < 9; i++)
         {
@@ -804,7 +1171,7 @@ public class Biquadratic : ISlae
                 for (var k = 0; k < 4; k++)
                 {
                     var k1 = k;
-                    integralMassValues[i, j] += _integrator.Integrate2D
+                    integralMassValues[i, j, k] = _integrator.Integrate2D
                     (
                         integrationMesh,
                         (r, z) => r * basisPartMassIntegrand(r, z) * BilinearBasis.Func[k1](r, z)
