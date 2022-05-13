@@ -631,6 +631,7 @@ public class Biquadratic : ISlae
             numberOfFiniteElementsAtAxisZ, numberOfFiniteElementsAtAxisR
         );
     }
+
     private void ApplyFirstBoundaryConditions
     (
         DataModels.Conditions.Boundary.TwoDim boundaryConditions,
@@ -638,6 +639,8 @@ public class Biquadratic : ISlae
         int numberOfFiniteElementsAtAxisZ, int numberOfFiniteElementsAtAxisR
     )
     {
+        const double bigConst = 1e+10;
+
         switch (boundaryConditions.LeftType)
         {
             case "First":
@@ -652,13 +655,13 @@ public class Biquadratic : ISlae
                         _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[6]
                     };
 
-                    Matrix.Data["di"][leftBorder[0]] = 1.0;
-                    Matrix.Data["di"][leftBorder[1]] = 1.0;
-                    Matrix.Data["di"][leftBorder[2]] = 1.0;
+                    Matrix.Data["di"][leftBorder[0]] = bigConst;
+                    Matrix.Data["di"][leftBorder[1]] = bigConst;
+                    Matrix.Data["di"][leftBorder[2]] = bigConst;
 
-                    Nullify(leftBorder[0], mesh);
-                    Nullify(leftBorder[1], mesh);
-                    Nullify(leftBorder[2], mesh);
+                    // Nullify(leftBorder[0], mesh);
+                    // Nullify(leftBorder[1], mesh);
+                    // Nullify(leftBorder[2], mesh);
 
                     var hZ =
                     (
@@ -685,9 +688,9 @@ public class Biquadratic : ISlae
                         )
                     };
 
-                    RhsVec[leftBorder[0]] = _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
-                    RhsVec[leftBorder[1]] = _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
-                    RhsVec[leftBorder[2]] = _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
+                    RhsVec[leftBorder[0]] = bigConst * _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
+                    RhsVec[leftBorder[1]] = bigConst * _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
+                    RhsVec[leftBorder[2]] = bigConst * _evalBoundaryFuncLeftAt(leftBorderPoints[2]);
                 }
 
                 break;
@@ -708,13 +711,13 @@ public class Biquadratic : ISlae
                         _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[8]
                     };
 
-                    Matrix.Data["di"][rightBorder[0]] = 1.0;
-                    Matrix.Data["di"][rightBorder[1]] = 1.0;
-                    Matrix.Data["di"][rightBorder[2]] = 1.0;
+                    Matrix.Data["di"][rightBorder[0]] = bigConst;
+                    Matrix.Data["di"][rightBorder[1]] = bigConst;
+                    Matrix.Data["di"][rightBorder[2]] = bigConst;
 
-                    Nullify(rightBorder[0], mesh);
-                    Nullify(rightBorder[1], mesh);
-                    Nullify(rightBorder[2], mesh);
+                    // Nullify(rightBorder[0], mesh);
+                    // Nullify(rightBorder[1], mesh);
+                    // Nullify(rightBorder[2], mesh);
 
                     var hZ =
                     (
@@ -741,9 +744,9 @@ public class Biquadratic : ISlae
                         )
                     };
 
-                    RhsVec[rightBorder[0]] = _evalBoundaryFuncRightAt(rightBorderPoints[0]);
-                    RhsVec[rightBorder[1]] = _evalBoundaryFuncRightAt(rightBorderPoints[1]);
-                    RhsVec[rightBorder[2]] = _evalBoundaryFuncRightAt(rightBorderPoints[2]);
+                    RhsVec[rightBorder[0]] = bigConst * _evalBoundaryFuncRightAt(rightBorderPoints[0]);
+                    RhsVec[rightBorder[1]] = bigConst * _evalBoundaryFuncRightAt(rightBorderPoints[1]);
+                    RhsVec[rightBorder[2]] = bigConst * _evalBoundaryFuncRightAt(rightBorderPoints[2]);
                 }
 
                 break;
@@ -761,13 +764,13 @@ public class Biquadratic : ISlae
                         _finiteElements[i].FictiveNumeration[2]
                     };
 
-                    Matrix.Data["di"][lowerBorder[0]] = 1.0;
-                    Matrix.Data["di"][lowerBorder[1]] = 1.0;
-                    Matrix.Data["di"][lowerBorder[2]] = 1.0;
+                    Matrix.Data["di"][lowerBorder[0]] = bigConst;
+                    Matrix.Data["di"][lowerBorder[1]] = bigConst;
+                    Matrix.Data["di"][lowerBorder[2]] = bigConst;
 
-                    Nullify(lowerBorder[0], mesh);
-                    Nullify(lowerBorder[1], mesh);
-                    Nullify(lowerBorder[2], mesh);
+                    // Nullify(lowerBorder[0], mesh);
+                    // Nullify(lowerBorder[1], mesh);
+                    // Nullify(lowerBorder[2], mesh);
 
                     var hR =
                     (
@@ -794,9 +797,9 @@ public class Biquadratic : ISlae
                         )
                     };
 
-                    RhsVec[lowerBorder[0]] = _evalBoundaryFuncLowerAt(lowerBorderPoints[0]);
-                    RhsVec[lowerBorder[1]] = _evalBoundaryFuncLowerAt(lowerBorderPoints[1]);
-                    RhsVec[lowerBorder[2]] = _evalBoundaryFuncLowerAt(lowerBorderPoints[2]);
+                    RhsVec[lowerBorder[0]] = bigConst * _evalBoundaryFuncLowerAt(lowerBorderPoints[0]);
+                    RhsVec[lowerBorder[1]] = bigConst * _evalBoundaryFuncLowerAt(lowerBorderPoints[1]);
+                    RhsVec[lowerBorder[2]] = bigConst * _evalBoundaryFuncLowerAt(lowerBorderPoints[2]);
                 }
 
                 break;
@@ -817,18 +820,18 @@ public class Biquadratic : ISlae
                         _finiteElements[numberOfCurrentFiniteElement].FictiveNumeration[8]
                     };
 
-                    Matrix.Data["di"][upperBorder[0]] = 1.0;
-                    Matrix.Data["di"][upperBorder[1]] = 1.0;
-                    Matrix.Data["di"][upperBorder[2]] = 1.0;
+                    Matrix.Data["di"][upperBorder[0]] = bigConst;
+                    Matrix.Data["di"][upperBorder[1]] = bigConst;
+                    Matrix.Data["di"][upperBorder[2]] = bigConst;
 
-                    Nullify(upperBorder[0], mesh);
-                    Nullify(upperBorder[1], mesh);
-                    Nullify(upperBorder[2], mesh);
+                    // Nullify(upperBorder[0], mesh);
+                    // Nullify(upperBorder[1], mesh);
+                    // Nullify(upperBorder[2], mesh);
 
                     var hR =
                     (
-                        _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z -
-                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[3].r -
+                        _finiteElements[numberOfCurrentFiniteElement].Nodes[2].r
                     ) / 2.0;
 
                     var upperBorderPoints = new[]
@@ -850,9 +853,9 @@ public class Biquadratic : ISlae
                         )
                     };
 
-                    RhsVec[upperBorder[0]] = _evalBoundaryFuncUpperAt(upperBorderPoints[0]);
-                    RhsVec[upperBorder[1]] = _evalBoundaryFuncUpperAt(upperBorderPoints[1]);
-                    RhsVec[upperBorder[2]] = _evalBoundaryFuncUpperAt(upperBorderPoints[2]);
+                    RhsVec[upperBorder[0]] = bigConst * _evalBoundaryFuncUpperAt(upperBorderPoints[0]);
+                    RhsVec[upperBorder[1]] = bigConst * _evalBoundaryFuncUpperAt(upperBorderPoints[1]);
+                    RhsVec[upperBorder[2]] = bigConst * _evalBoundaryFuncUpperAt(upperBorderPoints[2]);
                 }
 
                 break;
@@ -1069,7 +1072,7 @@ public class Biquadratic : ISlae
     private void AssemblyLocally(FiniteElement finiteElement)
     {
         var points = GetAllPointsIn(finiteElement);
-        var localLambdaValue = GetLocalLambdaValueFrom(finiteElement);
+        var localLambdaValue = EvalAverageValueOn(finiteElement, _evalLambdaFuncAt);
 
         var hR = finiteElement.Nodes[1].r - finiteElement.Nodes[0].r;
         var hZ = finiteElement.Nodes[2].z - finiteElement.Nodes[0].z;
@@ -1102,10 +1105,11 @@ public class Biquadratic : ISlae
                         finiteElement.Nodes[k].z
                     );
 
-                    localMass[i, j] += _evalGammaFuncAt(point) * _integralMassValues[i, j, k];
+                    localMass[i, j] += _evalGammaFuncAt(point) * _integralMassValues[k, i, j];
                 }
 
                 localMass[i, j] *= hR * hZ;
+
                 localC[i, j] += hR * hZ * _integralCValues[i, j];
             }
         }
@@ -1149,8 +1153,7 @@ public class Biquadratic : ISlae
     private double[,,] GetIntegralMassValues()
     {
         var integrationMesh = Utils.Create1DIntegrationMesh(0, 1);
-        var integralMassValues = new double[9, 9, 4];
-
+        var integralMassValues = new double[4, 9, 9];
 
         for (var i = 0; i < 9; i++)
         {
@@ -1168,14 +1171,14 @@ public class Biquadratic : ISlae
                     QuadraticBasis.Func[indXj](x) *
                     QuadraticBasis.Func[indYj](y);
 
+
                 for (var k = 0; k < 4; k++)
                 {
                     var k1 = k;
-                    integralMassValues[i, j, k] = _integrator.Integrate2D
-                    (
-                        integrationMesh,
-                        (r, z) => r * basisPartMassIntegrand(r, z) * BilinearBasis.Func[k1](r, z)
-                    );
+                    var massIntegrand = (double r, double z) =>
+                        r * basisPartMassIntegrand(r, z) * BilinearBasis.Func[k1](r, z);
+
+                    integralMassValues[k, i, j] = _integrator.Integrate2D(integrationMesh, massIntegrand);
                 }
             }
         }
@@ -1268,10 +1271,9 @@ public class Biquadratic : ISlae
             {
                 if (Matrix.Profile["jg"][ind] == i)
                 {
+                    Matrix.Data["ggu"][ind] += a;
                     break;
                 }
-
-                Matrix.Data["ggu"][ind] += a;
             }
         }
         else
@@ -1280,19 +1282,22 @@ public class Biquadratic : ISlae
             {
                 if (Matrix.Profile["jg"][ind] == j)
                 {
+                    Matrix.Data["ggl"][ind] += a;
                     break;
                 }
-
-                Matrix.Data["ggl"][ind] += a;
             }
         }
     }
 
-    private double GetLocalLambdaValueFrom(FiniteElement finiteElement)
+    private double EvalAverageValueOn
+    (
+        FiniteElement finiteElement,
+        Func<Dictionary<string, double>, double> func
+    )
     {
         var points = GetAllPointsIn(finiteElement);
 
-        return points.Sum(point => _evalLambdaFuncAt(point)) / 9.0;
+        return points.Sum(func) / 9.0;
     }
 
     private static Dictionary<string, double>[] GetAllPointsIn(FiniteElement finiteElement)

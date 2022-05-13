@@ -49,8 +49,9 @@ public class LocalOptimalScheme : ISlaeSolver
 
         // Current iteration
         var k = 1;
+        Console.Write($"\r[INFO] Iter: {0}, Residual: {residual}, Stagnation value: {absResidualDifference}");
 
-        for (; residual > accuracy.Eps && k < accuracy.MaxIter && absResidualDifference > accuracy.Delta; k++)
+        for (; Math.Abs(residual) > accuracy.Eps && k < accuracy.MaxIter && absResidualDifference > accuracy.Delta; k++)
         {
             var pp = GeneralOperations.Dot(p, p);
             var alpha = GeneralOperations.Dot(p, r) / pp;
@@ -92,6 +93,7 @@ public class LocalOptimalScheme : ISlaeSolver
             }
         }
 
+        x.AsSpan().CopyTo(slae.ResVec);
         return x;
     }
 
