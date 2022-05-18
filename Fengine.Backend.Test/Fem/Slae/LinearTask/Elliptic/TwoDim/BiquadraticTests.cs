@@ -26,7 +26,8 @@ public class BiquadraticTests
             Gamma = "1",
             Lambda = "1",
             UStar = "5",
-            RhsFunc = "5"
+            RhsFunc = "5",
+            Sigma = "1"
         };
 
         var area = new DataModels.Area.TwoDim
@@ -60,7 +61,7 @@ public class BiquadraticTests
             MaxIter = 1000
         };
 
-        var slae = new Backend.Fem.Slae.LinearTask.Elliptic.TwoDim.Biquadratic
+        var slae = new Backend.Fem.Slae.LinearTask.Hyperbolic.TwoDim.BiquadraticImplictit4Layer
         (
             area,
             mesh,
@@ -82,9 +83,9 @@ public class BiquadraticTests
         var actual = slae.Solve(accuracy);
 
         // Assert
-        // for (var i = 0; i < expected.Length; i++)
-        // {
-        //     Assert.AreEqual(expected[i], actual[i], 1e-6);
-        // }
+        for (var i = 0; i < expected.Length; i++)
+        {
+            Assert.AreEqual(expected[i], actual[i], 1e-3);
+        }
     }
 }

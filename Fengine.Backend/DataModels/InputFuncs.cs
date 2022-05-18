@@ -12,6 +12,8 @@ public class InputFuncs
     /// </summary>
     public string Lambda { get; init; } = string.Empty;
 
+    public string Sigma { get; init; } = string.Empty;
+
     /// <summary>
     ///     gamma part of differential equation
     ///     -div(\lambda * grad(u)) + \gamma * u = f. Represented by string

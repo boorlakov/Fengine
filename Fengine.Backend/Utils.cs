@@ -53,6 +53,18 @@ public static class Utils
     }
 
     /// <summary>
+    ///     Makes specific dictionary for passing into function in string form
+    /// </summary>
+    /// <param name="r">Value of passing argument r to function</param>
+    /// <param name="z">Value of passing argument z to function</param>
+    /// <param name="t">Value of passing argument t to function</param>
+    /// <returns>Dictionary like {{"x", x}, {"u": u}}</returns>
+    public static Dictionary<string, double> MakeDict2DCylindricalTime(double r, double z, double t)
+    {
+        return new Dictionary<string, double> {{"r", r}, {"z", z}, {"t", t}};
+    }
+
+    /// <summary>
     ///     Makes 1D grid with 11 points in it
     /// </summary>
     /// <param name="leftBorder">LeftType border point</param>

@@ -328,23 +328,5 @@ public class GaussFourPointsTests
         Assert.AreEqual(result, expected, 1.0e-7);
     }
 
-    [Test]
-    public void Integrate2D_WhenPassStiffness_ShouldReturnArea()
-    {
-        // Arrange
-        var grid = Utils.Create1DIntegrationMesh(0.0, 1.0);
-        var func = (double r, double z) =>
-            ((4 * r - 3) * (2 * (z - 0.5) * (z - 1)) * (2 * (z - 0.5) * (z - 1)) * (-8 * r + 4) +
-             2 * (r - 0.5) * (r - 1) * (4 * z - 3) * (4 * z - 3) * (-4 * r * (r - 1))) * r;
-
-        const double expected = 3.5;
-
-        // Act
-        var result = _integrator.Integrate2D(grid, func);
-
-        // Assert
-        Assert.AreEqual(result, expected, 1.0e-7);
-    }
-
     #endregion
 }
