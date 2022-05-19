@@ -1,11 +1,12 @@
 using Fengine.Backend.DataModels;
+using Fengine.Backend.Fem.Mesh;
 using Fengine.Backend.Integration;
 using Fengine.Backend.LinearAlgebra.Matrix;
 using Sprache.Calc;
 
 namespace Fengine.Backend.Fem.Slae.LinearTask.Hyperbolic.TwoDim;
 
-public class BiquadraticImplictit4Layer : ISlae
+public class BiquadraticImplicit4Layer : ISlae
 {
     private readonly FiniteElement[] _finiteElements;
     private SortedSet<int>[] _boundsList;
@@ -18,6 +19,7 @@ public class BiquadraticImplictit4Layer : ISlae
     private Func<Dictionary<string, double>, double> _evalBoundaryFuncRightAt;
     private Func<Dictionary<string, double>, double> _evalBoundaryFuncLowerAt;
     private Func<Dictionary<string, double>, double> _evalBoundaryFuncUpperAt;
+    private Func<Dictionary<string, double>, double> _evalSigmaFuncAt;
 
     private readonly double[,] _localMatrixForThirdBoundaryCondition =
     {
@@ -34,57 +36,227 @@ public class BiquadraticImplictit4Layer : ISlae
 
     private IIntegrator _integrator;
     private LinearAlgebra.SlaeSolver.ISlaeSolver _slaeSolver;
+    private Func<Dictionary<string, double>, double> _evalInitialFuncUpperAt;
 
-    private Func<Dictionary<string, double>, double> _evalSigmaFuncAt;
-
-    public BiquadraticImplictit4Layer(IMatrix matrix, double[] rhsVec, double[] resVec)
+    public BiquadraticImplicit4Layer(IMatrix matrix, double[] rhsVec, double[] resVec)
     {
         Matrix = matrix;
         RhsVec = rhsVec;
         ResVec = resVec;
     }
 
-    public BiquadraticImplictit4Layer(IMatrix matrix, double[] rhsVec)
+    public BiquadraticImplicit4Layer(IMatrix matrix, double[] rhsVec)
     {
         Matrix = matrix;
         RhsVec = rhsVec;
         ResVec = new double[rhsVec.Length];
     }
 
-    public BiquadraticImplictit4Layer
+    private IMatrix _stiffnesses;
+
+    private IMatrix _masses;
+    private IMatrix _massesChi;
+    private IMatrix _massesSigma;
+    private Func<Dictionary<string, double>, double> _evalChiFuncAt;
+
+    public BiquadraticImplicit4Layer
     (
         DataModels.Area.TwoDim area,
-        Mesh.Cylindrical.TwoDim mesh,
+        Mesh.Cylindrical.TwoDim meshSpatial,
+        Mesh.Time.OneDim meshTime,
         InputFuncs inputFuncs,
         DataModels.Conditions.Boundary.TwoDim boundaryConditions,
         LinearAlgebra.SlaeSolver.ISlaeSolver slaeSolver,
-        IIntegrator integrator
+        IIntegrator integrator,
+        DataModels.Conditions.Initial initialCondition
     )
     {
         ConfigureServices(slaeSolver, integrator);
 
-        CompileInputFunctions(inputFuncs, boundaryConditions);
+        CompileInputFunctions(inputFuncs, boundaryConditions, initialCondition);
 
-        _finiteElements = GetFiniteElementsFrom(mesh);
+        _finiteElements = GetFiniteElementsFrom(meshSpatial);
 
-        (Matrix, ResVec, RhsVec) = GetPortraitFrom(mesh);
+        (Matrix, ResVec, RhsVec) = GetPortraitFrom(meshSpatial);
 
-        AssemblyGlobally(area, mesh);
+        (_stiffnesses, _, _) = GetPortraitFrom(meshSpatial);
 
-        ApplyBoundaryConditions(boundaryConditions, area, mesh);
+        (_masses, _, _) = GetPortraitFrom(meshSpatial);
+
+        Weights = new double[meshTime.Nodes.Length][];
+
+        for (var i = 0; i < Weights.Length; i++)
+        {
+            Weights[i] = new double[ResVec.Length];
+        }
+
+        GetInitialWeights(meshTime);
+
+        AssemblyGlobally(area, meshSpatial);
+
+        for (var timeStamp = 3; timeStamp < meshTime.Nodes.Length; timeStamp++)
+        {
+            ApplyScheme(meshTime, meshSpatial, timeStamp);
+            ApplyBoundaryConditions(boundaryConditions, area, meshSpatial);
+        }
     }
 
-    private void CompileInputFunctions(InputFuncs inputFuncs, DataModels.Conditions.Boundary.TwoDim boundaryConditions)
+    private void GetInitialWeights(Mesh.Time.OneDim meshTime)
+    {
+        var k = 0;
+
+        foreach (var finiteElement in _finiteElements)
+        {
+            var kCopy = k;
+            var points = new[]
+            {
+                GetAllPointsIn(finiteElement, meshTime.Nodes[0].Coordinates[Axis.T]),
+                GetAllPointsIn(finiteElement, meshTime.Nodes[1].Coordinates[Axis.T]),
+                GetAllPointsIn(finiteElement, meshTime.Nodes[2].Coordinates[Axis.T])
+            };
+
+            foreach (var p in points[0])
+            {
+                Weights[0][k] = _evalInitialFuncUpperAt(p);
+                k++;
+            }
+
+            k = kCopy;
+
+            foreach (var p in points[1])
+            {
+                Weights[1][k] = _evalInitialFuncUpperAt(p);
+                k++;
+            }
+
+            k = kCopy;
+
+            foreach (var p in points[2])
+            {
+                Weights[1][k] = _evalInitialFuncUpperAt(p);
+                k++;
+            }
+        }
+    }
+
+    private void ApplyScheme(Mesh.Time.OneDim meshTime, Mesh.Cylindrical.TwoDim meshSpatial, int timeStamp)
+    {
+        var t = new[]
+        {
+            meshTime.Nodes[timeStamp].Coordinates[Axis.T],
+            meshTime.Nodes[timeStamp - 1].Coordinates[Axis.T],
+            meshTime.Nodes[timeStamp - 2].Coordinates[Axis.T],
+            meshTime.Nodes[timeStamp - 3].Coordinates[Axis.T],
+        };
+
+        var t0 = new[]
+        {
+            t[0] - t[1],
+            t[0] - t[2],
+            t[0] - t[3]
+        };
+
+        var t1 = new[]
+        {
+            t[1] - t[2],
+            t[1] - t[3]
+        };
+
+        var t2 = t[2] - t[3];
+
+        var schemeWeightsChi = new[]
+        {
+            2 * (t0[0] + t0[1] + t0[2]) / (t0[2] * t0[1] * t0[0]),
+            2 * (t0[0] + t0[1]) / (t0[2] * t1[1] * t2),
+            2 * (t0[0] + t0[2]) / (t0[1] * t1[0] * t2),
+            2 * (t0[1] + t0[2]) / (t0[0] * t1[0] * t1[1])
+        };
+
+        var schemeWeightsSigma = new[]
+        {
+            (t0[0] * t0[1] + t0[0] * t0[2] + t0[1] * t0[2]) / (t0[2] * t0[1] * t0[0]),
+            t0[0] * t0[1] / (t0[2] * t1[1] * t2),
+            t0[0] * t0[2] / (t0[1] * t1[0] * t2),
+            (t0[1] + t0[2]) / (t0[0] * t1[0] * t1[1]),
+        };
+
+        for (var i = 0; i < Matrix.Data["di"].Length; i++)
+        {
+            Matrix.Data["di"][i] = _stiffnesses.Data["di"][i] +
+                                   schemeWeightsChi[0] * _massesChi.Data["di"][i] +
+                                   schemeWeightsSigma[0] * _massesSigma.Data["di"][i];
+        }
+
+        for (var i = 0; i < Matrix.Data["ggl"].Length; i++)
+        {
+            Matrix.Data["ggl"][i] = _stiffnesses.Data["ggl"][i] +
+                                    schemeWeightsChi[0] * _massesChi.Data["ggl"][i] +
+                                    schemeWeightsSigma[0] * _massesSigma.Data["ggl"][i];
+        }
+
+        for (var i = 0; i < Matrix.Data["ggu"].Length; i++)
+        {
+            Matrix.Data["ggu"][i] = _stiffnesses.Data["ggu"][i] +
+                                    schemeWeightsChi[0] * _massesChi.Data["ggu"][i] +
+                                    schemeWeightsSigma[0] * _massesSigma.Data["ggu"][i];
+        }
+
+        EvalTaskRhs(t[0], meshSpatial);
+
+        var rhsWeights = new[]
+        {
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_masses, Weights[timeStamp - 3]),
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_masses, Weights[timeStamp - 2]),
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_masses, Weights[timeStamp - 1])
+        };
+
+        for (var i = 0; i < RhsVec.Length; i++)
+        {
+            RhsVec[i] += schemeWeightsSigma[1] * rhsWeights[0][i];
+            RhsVec[i] += schemeWeightsSigma[2] * rhsWeights[1][i];
+            RhsVec[i] += schemeWeightsSigma[3] * rhsWeights[2][i];
+        }
+    }
+
+    private void EvalTaskRhs(double time, Mesh.Cylindrical.TwoDim meshSpatial)
+    {
+        var f = new double[(2 * meshSpatial.R.Length - 1) * (2 * meshSpatial.Z.Length - 1)];
+
+        var k = 0;
+
+        foreach (var finiteElement in _finiteElements)
+        {
+            var points = GetAllPointsIn(finiteElement, time);
+
+            foreach (var point in points)
+            {
+                f[k] = _evalRhsFuncAt(point);
+                k++;
+            }
+        }
+
+        var b = LinearAlgebra.GeneralOperations.MatrixMultiply(Matrix, f);
+        b.AsSpan().CopyTo(RhsVec);
+    }
+
+    private void CompileInputFunctions
+    (
+        InputFuncs inputFuncs,
+        DataModels.Conditions.Boundary.TwoDim boundaryConditions,
+        DataModels.Conditions.Initial initialCondition
+    )
     {
         var calculator = new XtensibleCalculator();
         _evalRhsFuncAt = calculator.ParseFunction(inputFuncs.RhsFunc).Compile();
         _evalLambdaFuncAt = calculator.ParseFunction(inputFuncs.Lambda).Compile();
         _evalGammaFuncAt = calculator.ParseFunction(inputFuncs.Gamma).Compile();
         _evalSigmaFuncAt = calculator.ParseFunction(inputFuncs.Sigma).Compile();
+        _evalChiFuncAt = calculator.ParseFunction(inputFuncs.Chi).Compile();
         _evalBoundaryFuncLeftAt = calculator.ParseFunction(boundaryConditions.LeftFunc).Compile();
         _evalBoundaryFuncRightAt = calculator.ParseFunction(boundaryConditions.RightFunc).Compile();
         _evalBoundaryFuncLowerAt = calculator.ParseFunction(boundaryConditions.LowerFunc).Compile();
         _evalBoundaryFuncUpperAt = calculator.ParseFunction(boundaryConditions.UpperFunc).Compile();
+        _evalInitialFuncUpperAt = calculator.ParseFunction(initialCondition.T0).Compile();
     }
 
     public double[] Solve(Accuracy accuracy)
@@ -95,6 +267,8 @@ public class BiquadraticImplictit4Layer : ISlae
     public IMatrix Matrix { get; set; }
     public double[] RhsVec { get; set; }
     public double[] ResVec { get; set; }
+
+    public double[][] Weights { get; set; }
 
     private void ConfigureServices
     (
@@ -1057,7 +1231,7 @@ public class BiquadraticImplictit4Layer : ISlae
         Mesh.Cylindrical.TwoDim mesh
     )
     {
-        double gamma = 0;
+        double sigma = 0;
         var locB = new double[9];
         var localStiffness = new double[][] { };
         var localMasses = new double[][] { };
@@ -1069,8 +1243,10 @@ public class BiquadraticImplictit4Layer : ISlae
             var hR = _finiteElements[i].Nodes[1].r - startPos;
             var hZ = _finiteElements[i].Nodes[2].z - _finiteElements[i].Nodes[0].z;
 
+            var chi = EvalAverageValueOn(_finiteElements[i], _evalChiFuncAt);
+
             AssemblyLocalMatrices(startPos, hR, hZ, ref localMasses, ref locStiffness);
-            AssemblyGamma(i, ref gamma, mesh, 0);
+            AssemblySigma(i, ref sigma, mesh, 0);
             AssemblyRhs(ref locB, i, mesh, 0);
             Multiply(ref locB, localMasses);
 
@@ -1083,8 +1259,11 @@ public class BiquadraticImplictit4Layer : ISlae
 
             for (var k = 0; k < 9; k++)
             {
-                Matrix.Data["di"][_finiteElements[i].FictiveNumeration[k]] +=
-                    gamma * localMasses[k][k] + localStiffness[k][k];
+                _stiffnesses.Data["di"][_finiteElements[i].FictiveNumeration[k]] += localStiffness[k][k];
+
+                _masses.Data["di"][_finiteElements[i].FictiveNumeration[k]] += localMasses[k][k];
+                _massesSigma.Data["di"][_finiteElements[i].FictiveNumeration[k]] += sigma * localMasses[k][k];
+                _massesChi.Data["di"][_finiteElements[i].FictiveNumeration[k]] += chi * localMasses[k][k];
             }
 
             for (var k = 1; k < 9; k++)
@@ -1099,12 +1278,20 @@ public class BiquadraticImplictit4Layer : ISlae
                         ind++;
                     }
 
-                    Matrix.Data["ggl"][ind] += gamma * localMasses[k][j] + localStiffness[k][j];
+                    _stiffnesses.Data["ggl"][ind] += localStiffness[k][j];
+
+                    _masses.Data["ggl"][ind] += localMasses[k][j];
+                    _massesSigma.Data["ggl"][ind] += sigma * localMasses[k][j];
+                    _massesChi.Data["ggl"][ind] += chi * localMasses[k][j];
                 }
             }
         }
 
-        Matrix.Data["ggl"].AsSpan().CopyTo(Matrix.Data["ggu"]);
+        _stiffnesses.Data["ggl"].AsSpan().CopyTo(_stiffnesses.Data["ggu"]);
+
+        _masses.Data["ggl"].AsSpan().CopyTo(_masses.Data["ggu"]);
+        _massesSigma.Data["ggl"].AsSpan().CopyTo(_massesSigma.Data["ggu"]);
+        _massesChi.Data["ggl"].AsSpan().CopyTo(_massesChi.Data["ggu"]);
     }
 
     private void AssemblyStiffness
@@ -1221,7 +1408,7 @@ public class BiquadraticImplictit4Layer : ISlae
         sigma = g / 9.0;
     }
 
-    private void AssemblyGamma
+    private void AssemblySigma
     (
         int num,
         ref double gamma,
@@ -1621,6 +1808,18 @@ public class BiquadraticImplictit4Layer : ISlae
             Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r + hR, finiteElement.Nodes[1].z),
             Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[1].z),
         };
+        return points;
+    }
+
+    private static Dictionary<string, double>[] GetAllPointsIn(FiniteElement finiteElement, double time)
+    {
+        var points = GetAllPointsIn(finiteElement);
+
+        foreach (var point in points)
+        {
+            point.Add("t", time);
+        }
+
         return points;
     }
 

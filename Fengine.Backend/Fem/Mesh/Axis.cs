@@ -9,4 +9,5 @@ public static class Axis
     public const int R = 3;
     public const int Phi = 4;
     public const int Psi = 5;
+    public const int T = 6;
 }

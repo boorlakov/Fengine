@@ -5,5 +5,5 @@ public class Initial
     /// <summary>
     ///     Initial function. Represented by string
     /// </summary>
-    public string Func { get; init; } = string.Empty;
+    public string T0 { get; init; } = string.Empty;
 }

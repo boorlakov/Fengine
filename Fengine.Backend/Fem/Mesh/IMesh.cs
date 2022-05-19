@@ -4,7 +4,7 @@ public interface IMesh
 {
     public class Node
     {
-        public double[] Coordinates { get; set; } = new double[6];
+        public double[] Coordinates { get; set; } = new double[7];
     }
 
     Node[] Nodes { get; init; }
