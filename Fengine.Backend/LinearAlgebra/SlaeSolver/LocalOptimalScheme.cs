@@ -17,6 +17,7 @@ public class LocalOptimalScheme : ISlaeSolver
         precondMatrix.Factorize();
 
         var x = new double[slae.RhsVec.Length];
+        slae.ResVec.AsSpan().CopyTo(x);
 
         // A x_{0}
         var matMulRes = GeneralOperations.MatrixMultiply(slae.Matrix, x);

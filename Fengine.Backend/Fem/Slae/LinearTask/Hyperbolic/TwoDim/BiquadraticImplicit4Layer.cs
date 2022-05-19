@@ -68,7 +68,8 @@ public class BiquadraticImplicit4Layer : ISlae
         DataModels.Conditions.Boundary.TwoDim boundaryConditions,
         LinearAlgebra.SlaeSolver.ISlaeSolver slaeSolver,
         IIntegrator integrator,
-        DataModels.Conditions.Initial initialCondition
+        DataModels.Conditions.Initial initialCondition,
+        DataModels.Accuracy accuracy
     )
     {
         ConfigureServices(slaeSolver, integrator);
@@ -82,6 +83,10 @@ public class BiquadraticImplicit4Layer : ISlae
         (_stiffnesses, _, _) = GetPortraitFrom(meshSpatial);
 
         (_masses, _, _) = GetPortraitFrom(meshSpatial);
+
+        (_massesChi, _, _) = GetPortraitFrom(meshSpatial);
+
+        (_massesSigma, _, _) = GetPortraitFrom(meshSpatial);
 
         Weights = new double[meshTime.Nodes.Length][];
 
@@ -97,7 +102,15 @@ public class BiquadraticImplicit4Layer : ISlae
         for (var timeStamp = 3; timeStamp < meshTime.Nodes.Length; timeStamp++)
         {
             ApplyScheme(meshTime, meshSpatial, timeStamp);
-            ApplyBoundaryConditions(boundaryConditions, area, meshSpatial);
+            ApplyBoundaryConditions
+            (
+                boundaryConditions,
+                area,
+                meshSpatial,
+                meshTime.Nodes[timeStamp].Coordinates[Axis.T]
+            );
+            Weights[timeStamp - 3].AsSpan().CopyTo(ResVec);
+            Weights[timeStamp] = _slaeSolver.Solve(this, accuracy);
         }
     }
 
@@ -133,13 +146,18 @@ public class BiquadraticImplicit4Layer : ISlae
 
             foreach (var p in points[2])
             {
-                Weights[1][k] = _evalInitialFuncUpperAt(p);
+                Weights[2][k] = _evalInitialFuncUpperAt(p);
                 k++;
             }
         }
     }
 
-    private void ApplyScheme(Mesh.Time.OneDim meshTime, Mesh.Cylindrical.TwoDim meshSpatial, int timeStamp)
+    private void ApplyScheme
+    (
+        Mesh.Time.OneDim meshTime,
+        Mesh.Cylindrical.TwoDim meshSpatial,
+        int timeStamp
+    )
     {
         var t = new[]
         {
@@ -177,7 +195,7 @@ public class BiquadraticImplicit4Layer : ISlae
             (t0[0] * t0[1] + t0[0] * t0[2] + t0[1] * t0[2]) / (t0[2] * t0[1] * t0[0]),
             t0[0] * t0[1] / (t0[2] * t1[1] * t2),
             t0[0] * t0[2] / (t0[1] * t1[0] * t2),
-            (t0[1] + t0[2]) / (t0[0] * t1[0] * t1[1]),
+            t0[1] * t0[2] / (t0[0] * t1[0] * t1[1])
         };
 
         for (var i = 0; i < Matrix.Data["di"].Length; i++)
@@ -203,18 +221,29 @@ public class BiquadraticImplicit4Layer : ISlae
 
         EvalTaskRhs(t[0], meshSpatial);
 
-        var rhsWeights = new[]
+        var rhsWeightsSigma = new[]
         {
-            LinearAlgebra.GeneralOperations.MatrixMultiply(_masses, Weights[timeStamp - 3]),
-            LinearAlgebra.GeneralOperations.MatrixMultiply(_masses, Weights[timeStamp - 2]),
-            LinearAlgebra.GeneralOperations.MatrixMultiply(_masses, Weights[timeStamp - 1])
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_massesSigma, Weights[timeStamp - 3]),
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_massesSigma, Weights[timeStamp - 2]),
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_massesSigma, Weights[timeStamp - 1])
+        };
+
+        var rhsWeightsChi = new[]
+        {
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_massesChi, Weights[timeStamp - 3]),
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_massesChi, Weights[timeStamp - 2]),
+            LinearAlgebra.GeneralOperations.MatrixMultiply(_massesChi, Weights[timeStamp - 1])
         };
 
         for (var i = 0; i < RhsVec.Length; i++)
         {
-            RhsVec[i] += schemeWeightsSigma[1] * rhsWeights[0][i];
-            RhsVec[i] += schemeWeightsSigma[2] * rhsWeights[1][i];
-            RhsVec[i] += schemeWeightsSigma[3] * rhsWeights[2][i];
+            RhsVec[i] += schemeWeightsSigma[1] * rhsWeightsSigma[0][i];
+            RhsVec[i] -= schemeWeightsSigma[2] * rhsWeightsSigma[1][i];
+            RhsVec[i] += schemeWeightsSigma[3] * rhsWeightsSigma[2][i];
+
+            RhsVec[i] += schemeWeightsChi[1] * rhsWeightsChi[0][i];
+            RhsVec[i] -= schemeWeightsChi[2] * rhsWeightsChi[1][i];
+            RhsVec[i] += schemeWeightsChi[3] * rhsWeightsChi[2][i];
         }
     }
 
@@ -249,7 +278,6 @@ public class BiquadraticImplicit4Layer : ISlae
         var calculator = new XtensibleCalculator();
         _evalRhsFuncAt = calculator.ParseFunction(inputFuncs.RhsFunc).Compile();
         _evalLambdaFuncAt = calculator.ParseFunction(inputFuncs.Lambda).Compile();
-        _evalGammaFuncAt = calculator.ParseFunction(inputFuncs.Gamma).Compile();
         _evalSigmaFuncAt = calculator.ParseFunction(inputFuncs.Sigma).Compile();
         _evalChiFuncAt = calculator.ParseFunction(inputFuncs.Chi).Compile();
         _evalBoundaryFuncLeftAt = calculator.ParseFunction(boundaryConditions.LeftFunc).Compile();
@@ -284,7 +312,8 @@ public class BiquadraticImplicit4Layer : ISlae
     (
         DataModels.Conditions.Boundary.TwoDim boundaryConditions,
         DataModels.Area.TwoDim area,
-        Mesh.Cylindrical.TwoDim mesh
+        Mesh.Cylindrical.TwoDim mesh,
+        double time
     )
     {
         var numberOfFiniteElementsAtAxisR = mesh.R.Length - 1;
@@ -801,7 +830,8 @@ public class BiquadraticImplicit4Layer : ISlae
         (
             boundaryConditions,
             mesh,
-            numberOfFiniteElementsAtAxisZ, numberOfFiniteElementsAtAxisR
+            numberOfFiniteElementsAtAxisZ, numberOfFiniteElementsAtAxisR,
+            time
         );
     }
 
@@ -809,7 +839,8 @@ public class BiquadraticImplicit4Layer : ISlae
     (
         DataModels.Conditions.Boundary.TwoDim boundaryConditions,
         Mesh.Cylindrical.TwoDim mesh,
-        int numberOfFiniteElementsAtAxisZ, int numberOfFiniteElementsAtAxisR
+        int numberOfFiniteElementsAtAxisZ, int numberOfFiniteElementsAtAxisR,
+        double time
     )
     {
         const double bigConst = 1e+10;
@@ -860,6 +891,10 @@ public class BiquadraticImplicit4Layer : ISlae
                             _finiteElements[numberOfCurrentFiniteElement].Nodes[2].z
                         )
                     };
+
+                    leftBorderPoints[0].Add("t", time);
+                    leftBorderPoints[1].Add("t", time);
+                    leftBorderPoints[2].Add("t", time);
 
                     RhsVec[leftBorder[0]] = bigConst * _evalBoundaryFuncLeftAt(leftBorderPoints[0]);
                     RhsVec[leftBorder[1]] = bigConst * _evalBoundaryFuncLeftAt(leftBorderPoints[1]);
@@ -917,6 +952,10 @@ public class BiquadraticImplicit4Layer : ISlae
                         )
                     };
 
+                    rightBorderPoints[0].Add("t", time);
+                    rightBorderPoints[1].Add("t", time);
+                    rightBorderPoints[2].Add("t", time);
+
                     RhsVec[rightBorder[0]] = bigConst * _evalBoundaryFuncRightAt(rightBorderPoints[0]);
                     RhsVec[rightBorder[1]] = bigConst * _evalBoundaryFuncRightAt(rightBorderPoints[1]);
                     RhsVec[rightBorder[2]] = bigConst * _evalBoundaryFuncRightAt(rightBorderPoints[2]);
@@ -969,6 +1008,10 @@ public class BiquadraticImplicit4Layer : ISlae
                             _finiteElements[i].Nodes[1].z
                         )
                     };
+
+                    lowerBorderPoints[0].Add("t", time);
+                    lowerBorderPoints[1].Add("t", time);
+                    lowerBorderPoints[2].Add("t", time);
 
                     RhsVec[lowerBorder[0]] = bigConst * _evalBoundaryFuncLowerAt(lowerBorderPoints[0]);
                     RhsVec[lowerBorder[1]] = bigConst * _evalBoundaryFuncLowerAt(lowerBorderPoints[1]);
@@ -1025,6 +1068,10 @@ public class BiquadraticImplicit4Layer : ISlae
                             _finiteElements[numberOfCurrentFiniteElement].Nodes[3].z
                         )
                     };
+
+                    upperBorderPoints[0].Add("t", time);
+                    upperBorderPoints[1].Add("t", time);
+                    upperBorderPoints[2].Add("t", time);
 
                     RhsVec[upperBorder[0]] = bigConst * _evalBoundaryFuncUpperAt(upperBorderPoints[0]);
                     RhsVec[upperBorder[1]] = bigConst * _evalBoundaryFuncUpperAt(upperBorderPoints[1]);
@@ -1401,7 +1448,6 @@ public class BiquadraticImplicit4Layer : ISlae
                 time
             );
 
-            // TODO: Parse new func
             g += _evalSigmaFuncAt(point);
         }
 
@@ -1429,7 +1475,7 @@ public class BiquadraticImplicit4Layer : ISlae
                 time
             );
 
-            g += _evalGammaFuncAt(point);
+            g += _evalSigmaFuncAt(point);
         }
 
         gamma = g / 9.0;
@@ -1793,7 +1839,7 @@ public class BiquadraticImplicit4Layer : ISlae
     private static Dictionary<string, double>[] GetAllPointsIn(FiniteElement finiteElement)
     {
         var hR = (finiteElement.Nodes[1].r - finiteElement.Nodes[0].r) / 2.0;
-        var hZ = (finiteElement.Nodes[1].z - finiteElement.Nodes[0].z) / 2.0;
+        var hZ = (finiteElement.Nodes[2].z - finiteElement.Nodes[0].z) / 2.0;
         var points = new[]
         {
             Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[0].z),
@@ -1804,9 +1850,9 @@ public class BiquadraticImplicit4Layer : ISlae
             Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r + hR, finiteElement.Nodes[0].z + hZ),
             Utils.MakeDict2DCylindrical(finiteElement.Nodes[1].r, finiteElement.Nodes[0].z + hZ),
 
-            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[1].z),
-            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r + hR, finiteElement.Nodes[1].z),
-            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[1].z),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r, finiteElement.Nodes[2].z),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[0].r + hR, finiteElement.Nodes[2].z),
+            Utils.MakeDict2DCylindrical(finiteElement.Nodes[1].r, finiteElement.Nodes[3].z),
         };
         return points;
     }
