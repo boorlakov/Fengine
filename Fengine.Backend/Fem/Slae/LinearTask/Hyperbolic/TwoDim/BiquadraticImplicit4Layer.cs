@@ -264,7 +264,7 @@ public class BiquadraticImplicit4Layer : ISlae
             }
         }
 
-        var b = LinearAlgebra.GeneralOperations.MatrixMultiply(Matrix, f);
+        var b = LinearAlgebra.GeneralOperations.MatrixMultiply(_masses, f);
         b.AsSpan().CopyTo(RhsVec);
     }
 
