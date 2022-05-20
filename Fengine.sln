@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fengine.Backend.Test", "Fen
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fengine.Frontend", "Fengine.Frontend\Fengine.Frontend.csproj", "{D32ED58A-298E-41B5-9016-BD36815EA950}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fengine.Research", "Fengine.Research\Fengine.Research.csproj", "{EE141049-6017-4093-80EA-FC22C582D6F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{D32ED58A-298E-41B5-9016-BD36815EA950}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D32ED58A-298E-41B5-9016-BD36815EA950}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D32ED58A-298E-41B5-9016-BD36815EA950}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE141049-6017-4093-80EA-FC22C582D6F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE141049-6017-4093-80EA-FC22C582D6F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE141049-6017-4093-80EA-FC22C582D6F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE141049-6017-4093-80EA-FC22C582D6F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

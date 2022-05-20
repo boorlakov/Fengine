@@ -1,6 +1,8 @@
+using Fengine.Backend.Fem.Mesh;
 using NUnit.Framework;
+using Sprache.Calc;
 
-namespace Fengine.Backend.Test.Fem.Slae.LinearTask.Elliptic.TwoDim;
+namespace Fengine.Backend.Test.Fem.Slae.LinearTask.Hyperbolic.TwoDim;
 
 [TestFixture]
 public class BiquadraticTests
@@ -74,7 +76,8 @@ public class BiquadraticTests
             MaxIter = 1000
         };
 
-        var slae = new Backend.Fem.Slae.LinearTask.Hyperbolic.TwoDim.BiquadraticImplicit4Layer(
+        var slae = new Backend.Fem.Slae.LinearTask.Hyperbolic.TwoDim.BiquadraticImplicit4Layer
+        (
             area,
             meshSpatial,
             meshTime,
@@ -86,12 +89,16 @@ public class BiquadraticTests
             accuracy
         );
 
-        var expected = new[]
+        var points = slae.GetAllPoints(meshSpatial, meshTime.Nodes[^1].Coordinates[Axis.T]);
+        var calc = new XtensibleCalculator();
+        var evalUStar = calc.ParseFunction(inputFuncs.UStar).Compile();
+
+        var expected = new double[slae.ResVec.Length];
+
+        for (var i = 0; i < points.Length; i++)
         {
-            5.0, 5.0, 5.0,
-            5.0, 5.0, 5.0,
-            5.0, 5.0, 5.0,
-        };
+            expected[i] = evalUStar(points[i]);
+        }
 
         // Act
         var actual = slae.Solve(accuracy);
@@ -160,7 +167,8 @@ public class BiquadraticTests
             MaxIter = 1000
         };
 
-        var slae = new Backend.Fem.Slae.LinearTask.Hyperbolic.TwoDim.BiquadraticImplicit4Layer(
+        var slae = new Backend.Fem.Slae.LinearTask.Hyperbolic.TwoDim.BiquadraticImplicit4Layer
+        (
             area,
             meshSpatial,
             meshTime,
@@ -172,12 +180,16 @@ public class BiquadraticTests
             accuracy
         );
 
-        var expected = new[]
+        var points = slae.GetAllPoints(meshSpatial, meshTime.Nodes[^1].Coordinates[Axis.T]);
+        var calc = new XtensibleCalculator();
+        var evalUStar = calc.ParseFunction(inputFuncs.UStar).Compile();
+
+        var expected = new double[slae.ResVec.Length];
+
+        for (var i = 0; i < points.Length; i++)
         {
-            5.0, 5.0, 5.0,
-            5.0, 5.0, 5.0,
-            5.0, 5.0, 5.0,
-        };
+            expected[i] = evalUStar(points[i]);
+        }
 
         // Act
         var actual = slae.Solve(accuracy);
@@ -259,12 +271,16 @@ public class BiquadraticTests
             accuracy
         );
 
-        var expected = new[]
+        var points = slae.GetAllPoints(meshSpatial, meshTime.Nodes[^1].Coordinates[Axis.T]);
+        var calc = new XtensibleCalculator();
+        var evalUStar = calc.ParseFunction(inputFuncs.UStar).Compile();
+
+        var expected = new double[slae.ResVec.Length];
+
+        for (var i = 0; i < points.Length; i++)
         {
-            2.0, 2.5, 3.0,
-            2.5, 3.0, 3.5,
-            3.0, 3.5, 4.0
-        };
+            expected[i] = evalUStar(points[i]);
+        }
 
         // Act
         var actual = slae.Weights[3];
@@ -346,12 +362,16 @@ public class BiquadraticTests
             accuracy
         );
 
-        var expected = new[]
+        var points = slae.GetAllPoints(meshSpatial, meshTime.Nodes[^1].Coordinates[Axis.T]);
+        var calc = new XtensibleCalculator();
+        var evalUStar = calc.ParseFunction(inputFuncs.UStar).Compile();
+
+        var expected = new double[slae.ResVec.Length];
+
+        for (var i = 0; i < points.Length; i++)
         {
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-        };
+            expected[i] = evalUStar(points[i]);
+        }
 
         // Act
         var actual = slae.Weights[3];
@@ -432,12 +452,16 @@ public class BiquadraticTests
             accuracy
         );
 
-        var expected = new[]
+        var points = slae.GetAllPoints(meshSpatial, meshTime.Nodes[^1].Coordinates[Axis.T]);
+        var calc = new XtensibleCalculator();
+        var evalUStar = calc.ParseFunction(inputFuncs.UStar).Compile();
+
+        var expected = new double[slae.ResVec.Length];
+
+        for (var i = 0; i < points.Length; i++)
         {
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-        };
+            expected[i] = evalUStar(points[i]);
+        }
 
         // Act
         var actual = slae.Weights[3];
@@ -518,12 +542,16 @@ public class BiquadraticTests
             accuracy
         );
 
-        var expected = new[]
+        var points = slae.GetAllPoints(meshSpatial, meshTime.Nodes[^1].Coordinates[Axis.T]);
+        var calc = new XtensibleCalculator();
+        var evalUStar = calc.ParseFunction(inputFuncs.UStar).Compile();
+
+        var expected = new double[slae.ResVec.Length];
+
+        for (var i = 0; i < points.Length; i++)
         {
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-            1.0, 1.0, 1.0,
-        };
+            expected[i] = evalUStar(points[i]);
+        }
 
         // Act
         var actual = slae.Weights[3];

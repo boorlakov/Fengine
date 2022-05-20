@@ -1869,6 +1869,28 @@ public class BiquadraticImplicit4Layer : ISlae
         return points;
     }
 
+    public Dictionary<string, double>[] GetAllPointsIn(int globalNumber, double time)
+    {
+        return GetAllPointsIn(_finiteElements[globalNumber], time);
+    }
+
+    public Dictionary<string, double>[] GetAllPoints(Mesh.Cylindrical.TwoDim mesh, double time)
+    {
+        var points = new Dictionary<string, double>[(2 * mesh.R.Length - 1) * (2 * mesh.Z.Length - 1)];
+
+        foreach (var finiteElement in _finiteElements)
+        {
+            var p = GetAllPointsIn(finiteElement, time);
+
+            for (var i = 0; i < 9; i++)
+            {
+                points[finiteElement.FictiveNumeration[i]] = p[i];
+            }
+        }
+
+        return points;
+    }
+
     private class FiniteElement
     {
         public readonly (int globalNumber, double r, double z)[] Nodes;
